@@ -61,6 +61,24 @@ src/
 Це SPA: хостинг має віддавати `index.html` для всіх шляхів (SPA fallback / rewrite на `/index.html`).
 `vite preview` робить це автоматично.
 
+## Деплой на Cloudflare Pages
+
+Проєкт готовий до Cloudflare Pages: SPA-fallback там працює автоматично (у збірці немає `404.html`),
+заголовки кешування лежать у `public/_headers`, версія Node задана в `.node-version`.
+
+1. Cloudflare Dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git** → репозиторій `homeestet`.
+2. Налаштування збірки:
+
+   | Поле                  | Значення        |
+   | --------------------- | --------------- |
+   | Framework preset      | Vite            |
+   | Build command         | `npm run build` |
+   | Build output directory| `dist`          |
+
+3. **Save and Deploy**. Кожен push у `main` публікує нову версію, pull request отримує preview-адресу.
+
+Після деплою замінити відносний `og:image` в `index.html` на повну адресу сайту.
+
 ## Дані користувача (localStorage)
 
 | Ключ                        | Вміст                                   |
