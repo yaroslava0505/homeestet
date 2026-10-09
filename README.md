@@ -77,7 +77,9 @@ src/
 
 3. **Save and Deploy**. Кожен push у `main` публікує нову версію, pull request отримує preview-адресу.
 
-Після деплою замінити відносний `og:image` в `index.html` на повну адресу сайту.
+Основний домен сайту: **https://homeestet.com** (підключається в проєкті Pages → Custom domains).
+Адреса прописана в `index.html` (og:url, og:image, canonical), `public/robots.txt` і `public/sitemap.xml`;
+при зміні домену оновити ці три файли.
 
 ## Дані користувача (localStorage)
 
