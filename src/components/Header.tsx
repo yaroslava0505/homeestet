@@ -35,18 +35,19 @@ export function Header({ onNavigate, currentView, onOpenSurprise, onOpenAIAnalyz
         <button
           type="button"
           onClick={() => handleNavClick({ type: 'home' })}
-          className="text-left group flex items-baseline gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8A9A86] rounded"
+          className="text-left group flex items-baseline gap-2 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8A9A86] rounded"
           aria-label="HomeEstet, на головну"
         >
           <span className="font-serif text-2xl sm:text-3xl font-medium tracking-tight text-[#2C2C2C] group-hover:text-[#967259] transition-colors">
             HOMEESTET
           </span>
-          <span className="hidden sm:inline-block text-[11px] font-sans tracking-widest uppercase text-stone-500 font-light">
+          {/* One-line tagline next to the logo; hidden where the desktop menu needs the room. */}
+          <span className="hidden sm:inline-block xl:hidden whitespace-nowrap text-[11px] font-sans tracking-widest uppercase text-stone-500 font-light">
             · Сервіс затишного дому
           </span>
         </button>
 
-        <nav className="hidden lg:flex items-center gap-5 text-[13px] font-medium text-stone-600" aria-label="Головне меню">
+        <nav className="hidden xl:flex items-center gap-4 text-[13px] font-medium text-stone-600" aria-label="Головне меню">
           {NAV_ITEMS.map((item) => {
             const active = isActive(item.view);
             return (
@@ -66,21 +67,22 @@ export function Header({ onNavigate, currentView, onOpenSurprise, onOpenAIAnalyz
           })}
         </nav>
 
-        <div className="flex items-center gap-2 sm:gap-2.5">
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
           <button
             type="button"
             onClick={onOpenAIAnalyzer}
-            className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-stone-700 hover:text-black bg-stone-100 hover:bg-stone-200/80 rounded-lg transition-colors border border-stone-200"
+            className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-stone-700 hover:text-black bg-stone-100 hover:bg-stone-200/80 rounded-lg transition-colors border border-stone-200 whitespace-nowrap"
             title="Аналіз фото кімнати"
+            aria-label="Аналіз фото кімнати"
           >
             <Camera className="w-3.5 h-3.5 text-[#967259]" aria-hidden="true" />
-            <span>Аналіз фото</span>
+            <span className="hidden 2xl:inline">Аналіз фото</span>
           </button>
 
           <button
             type="button"
             onClick={onOpenSurprise}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#FAF2EB] hover:bg-[#F2E5D5] text-[#967259] border border-[#E8D4C0] rounded-lg text-xs font-semibold transition-all hover:scale-102 active:scale-98 shadow-2xs"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#FAF2EB] hover:bg-[#F2E5D5] text-[#967259] border border-[#E8D4C0] rounded-lg text-xs font-semibold transition-all hover:scale-102 active:scale-98 shadow-2xs whitespace-nowrap"
             title="Отримати випадкову практичну пораду для дому"
           >
             <Dices className="w-3.5 h-3.5" aria-hidden="true" />
@@ -113,7 +115,7 @@ export function Header({ onNavigate, currentView, onOpenSurprise, onOpenAIAnalyz
           <button
             type="button"
             onClick={() => setMobileMenuOpen((open) => !open)}
-            className="lg:hidden p-2 text-stone-700 hover:text-stone-900 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8A9A86]"
+            className="xl:hidden p-2 text-stone-700 hover:text-stone-900 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8A9A86]"
             aria-label={mobileMenuOpen ? 'Закрити меню' : 'Відкрити меню'}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-menu"
@@ -124,7 +126,7 @@ export function Header({ onNavigate, currentView, onOpenSurprise, onOpenAIAnalyz
       </div>
 
       {mobileMenuOpen && (
-        <div id="mobile-menu" className="lg:hidden bg-[#FAF8F5] border-b border-[#ECE8E1] px-5 py-6 space-y-4 shadow-xl">
+        <div id="mobile-menu" className="xl:hidden bg-[#FAF8F5] border-b border-[#ECE8E1] px-5 py-6 space-y-4 shadow-xl">
           <p className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold">Сервіси HomeEstet</p>
 
           <nav className="grid grid-cols-1 gap-2" aria-label="Мобільне меню">
