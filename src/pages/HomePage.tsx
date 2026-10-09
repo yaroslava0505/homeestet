@@ -3,28 +3,18 @@ import { ARTICLES_CATALOG } from '../data/articles.ts';
 import { IMAGES } from '../data/images.ts';
 import { BeforeAfterSlider } from '../components/BeforeAfterSlider.tsx';
 import { AppImage } from '../components/AppImage.tsx';
-import type { ImageAsset, PageView } from '../types.ts';
+import type { PageView } from '../types.ts';
 import { ArrowRight, Calendar } from 'lucide-react';
 
 interface HomePageProps {
   onNavigate: (view: PageView) => void;
-  onOpenSurprise: () => void;
 }
 
-const INTENT_CARDS: { icon: string; title: string; hint: string; image: ImageAsset; view?: PageView; accent?: boolean }[] = [
-  { icon: '✨', title: 'Зробити красивіше', hint: '→ готові рішення', image: IMAGES.coffeeCorner, view: { type: 'zone-builder' } },
-  { icon: '🧺', title: 'Навести порядок', hint: '→ план на 30 днів', image: IMAGES.pantryHero, view: { type: 'personal-plan' } },
-  { icon: '🛋️', title: 'Оновити кімнату', hint: '→ рішення для кімнат', image: IMAGES.bedroomCalm, view: { type: 'zone-builder' } },
-  { icon: '💰', title: 'Вкластися в бюджет', hint: '→ бюджетні рішення', image: IMAGES.spicesDrawer, view: { type: 'zone-builder' } },
-  { icon: '🎨', title: 'Знайти свій стиль', hint: '→ генератор стилю', image: IMAGES.sofaLiving, view: { type: 'style-quiz' } },
-  { icon: '🎲', title: 'Здивуй мене', hint: '→ випадкова ідея', image: IMAGES.smallStudio, accent: true },
-];
-
-export function HomePage({ onNavigate, onOpenSurprise }: HomePageProps) {
+export function HomePage({ onNavigate }: HomePageProps) {
   return (
     <div className="space-y-0">
-      {/* 1. Intent navigator */}
-      <section className="relative overflow-hidden bg-[#FAF8F5] pt-14 pb-16 sm:pt-20 sm:pb-20 border-b border-[#ECE8E1]">
+      {/* 1. Hero */}
+      <section className="relative overflow-hidden bg-[#FAF8F5] pt-14 pb-14 sm:pt-20 sm:pb-20 border-b border-[#ECE8E1]">
         {/* Decorative backdrop: brand photo under a warm frosted wash, fading into the page background. */}
         <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
           <AppImage
@@ -41,7 +31,7 @@ export function HomePage({ onNavigate, onOpenSurprise }: HomePageProps) {
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+          <div className="text-center max-w-3xl mx-auto">
             <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold mb-2 inline-block">
               HOMEESTET · Сервіс естетичного та затишного дому
             </span>
@@ -51,46 +41,6 @@ export function HomePage({ onNavigate, onOpenSurprise }: HomePageProps) {
             <p className="text-stone-700 text-sm sm:text-lg font-light leading-relaxed max-w-xl mx-auto">
               Обери категорію чи кімнату, і HomeEstet підкаже, з чого почати, як організувати речі та як вкластися у свій бюджет.
             </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-            {INTENT_CARDS.map((card) => (
-              <button
-                type="button"
-                key={card.title}
-                onClick={() => (card.view ? onNavigate(card.view) : onOpenSurprise())}
-                className={`rounded-2xl border overflow-hidden text-left transition-all duration-200 hover:-translate-y-1 shadow-sm hover:shadow-md backdrop-blur-sm group flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8A9A86] ${
-                  card.accent
-                    ? 'bg-[#FAF2EB]/95 hover:bg-[#F2E5D5] border-[#E8D4C0] hover:border-[#967259]'
-                    : 'bg-white/92 hover:bg-white border-[#ECE8E1] hover:border-[#967259]'
-                }`}
-              >
-                <span className="relative block aspect-[4/3] overflow-hidden bg-stone-100">
-                  <AppImage
-                    image={card.image}
-                    alt=""
-                    sizes="(min-width: 1024px) 16vw, (min-width: 768px) 33vw, 50vw"
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
-                  />
-                  <span
-                    className="absolute top-2.5 left-2.5 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm shadow-sm flex items-center justify-center text-lg"
-                    aria-hidden="true"
-                  >
-                    {card.icon}
-                  </span>
-                </span>
-                <span className="block p-4 flex-1">
-                  <span
-                    className={`font-serif text-base sm:text-lg font-medium block leading-tight transition-colors ${
-                      card.accent ? 'text-[#967259]' : 'text-stone-900 group-hover:text-[#967259]'
-                    }`}
-                  >
-                    {card.title}
-                  </span>
-                  <span className={`text-[11px] mt-1 block ${card.accent ? 'text-[#967259]/80' : 'text-stone-500'}`}>{card.hint}</span>
-                </span>
-              </button>
-            ))}
           </div>
         </div>
       </section>

@@ -106,7 +106,7 @@ export default function App() {
   const renderPage = () => {
     switch (pageView.type) {
       case 'home':
-        return <HomePage onNavigate={navigate} onOpenSurprise={openSurprise} />;
+        return <HomePage onNavigate={navigate} />;
       case 'zone-builder':
         return (
           <ZoneBuilderPage
