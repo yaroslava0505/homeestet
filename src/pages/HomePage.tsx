@@ -46,10 +46,10 @@ export function HomePage({ onNavigate, onOpenSurprise }: HomePageProps) {
               HOMEESTET · Сервіс естетичного та затишного дому
             </span>
             <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-[#2C2C2C] font-normal leading-[1.12] tracking-tight mb-4 text-balance">
-              Як хочеш змінити свій дім?
+              Створи простір, у який приємно повертатися
             </h1>
             <p className="text-stone-700 text-sm sm:text-lg font-light leading-relaxed max-w-xl mx-auto">
-              Обери, що тобі потрібно, і HomeEstet підкаже, з чого почати, що змінити та як вкластися у свій бюджет.
+              Обери категорію чи кімнату, і HomeEstet підкаже, з чого почати, як організувати речі та як вкластися у свій бюджет.
             </p>
           </div>
 
