@@ -1,5 +1,6 @@
 import { ZONES, HOME_BEFORE_AFTER } from '../data/homeestetData.ts';
 import { ARTICLES_CATALOG } from '../data/articles.ts';
+import { IMAGES } from '../data/images.ts';
 import { BeforeAfterSlider } from '../components/BeforeAfterSlider.tsx';
 import { AppImage } from '../components/AppImage.tsx';
 import type { PageView } from '../types.ts';
@@ -23,8 +24,23 @@ export function HomePage({ onNavigate, onOpenSurprise }: HomePageProps) {
   return (
     <div className="space-y-0">
       {/* 1. Intent navigator */}
-      <section className="relative overflow-hidden bg-[#FAF8F5] pt-12 pb-16 sm:pt-16 sm:pb-20 border-b border-[#ECE8E1]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-[#FAF8F5] pt-14 pb-16 sm:pt-20 sm:pb-20 border-b border-[#ECE8E1]">
+        {/* Decorative backdrop: brand photo under a warm frosted wash, fading into the page background. */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <AppImage
+            image={IMAGES.sofaWarm}
+            alt=""
+            priority
+            sizes="100vw"
+            className="w-full h-full object-cover object-[center_40%] scale-105"
+          />
+          <div className="absolute inset-0 bg-[#FAF8F5]/78" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#FAF8F5]/30 via-[#FAF8F5]/10 to-[#FAF8F5]" />
+          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[80vw] max-w-5xl h-[28rem] rounded-full bg-[#E8D4C0]/45 blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-[#8A9A86]/15 blur-3xl" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
             <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold mb-2 inline-block">
               HOMEESTET · Сервіс естетичного та затишного дому
@@ -32,7 +48,7 @@ export function HomePage({ onNavigate, onOpenSurprise }: HomePageProps) {
             <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-[#2C2C2C] font-normal leading-[1.12] tracking-tight mb-4 text-balance">
               Як хочеш змінити свій дім?
             </h1>
-            <p className="text-stone-600 text-sm sm:text-lg font-light leading-relaxed max-w-xl mx-auto">
+            <p className="text-stone-700 text-sm sm:text-lg font-light leading-relaxed max-w-xl mx-auto">
               Обери, що тобі потрібно, і HomeEstet підкаже, з чого почати, що змінити та як вкластися у свій бюджет.
             </p>
           </div>
@@ -43,10 +59,10 @@ export function HomePage({ onNavigate, onOpenSurprise }: HomePageProps) {
                 type="button"
                 key={card.title}
                 onClick={() => (card.view ? onNavigate(card.view) : onOpenSurprise())}
-                className={`p-5 rounded-2xl border text-left transition-all duration-200 hover:-translate-y-1 shadow-2xs group flex flex-col justify-between aspect-square focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8A9A86] ${
+                className={`p-5 rounded-2xl border text-left transition-all duration-200 hover:-translate-y-1 shadow-sm backdrop-blur-sm group flex flex-col justify-between aspect-square focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8A9A86] ${
                   card.accent
-                    ? 'bg-[#FAF2EB] hover:bg-[#F2E5D5] border-[#E8D4C0] hover:border-[#967259]'
-                    : 'bg-white hover:bg-[#FAF8F5] border-[#ECE8E1] hover:border-[#967259]'
+                    ? 'bg-[#FAF2EB]/95 hover:bg-[#F2E5D5] border-[#E8D4C0] hover:border-[#967259]'
+                    : 'bg-white/92 hover:bg-white border-[#ECE8E1] hover:border-[#967259]'
                 }`}
               >
                 <span className="text-3xl block mb-2" aria-hidden="true">
