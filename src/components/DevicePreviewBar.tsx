@@ -8,7 +8,6 @@ interface DevicePreviewBarProps {
   setDeviceMode: (mode: DeviceMode) => void;
   pageView: PageView;
   setPageView: (view: PageView) => void;
-  onOpenAIAnalyzer: () => void;
   onOpenSurprise: () => void;
 }
 
@@ -27,7 +26,6 @@ export function DevicePreviewBar({
   setDeviceMode,
   pageView,
   setPageView,
-  onOpenAIAnalyzer,
   onOpenSurprise,
 }: DevicePreviewBarProps) {
   return (
@@ -76,7 +74,7 @@ export function DevicePreviewBar({
 
           <button
             type="button"
-            onClick={onOpenAIAnalyzer}
+            onClick={() => setPageView({ type: 'analyze' })}
             className="text-stone-300 hover:text-white transition-colors px-2 py-1 text-[11px] border border-stone-700 rounded flex items-center gap-1"
           >
             <Camera className="w-3 h-3 text-[#967259]" aria-hidden="true" />

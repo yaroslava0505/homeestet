@@ -10,17 +10,21 @@
     "dev": "vite --port=3000",
     "build": "vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit",
-    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc -p functions/tsconfig.json",
+    "lint": "tsc --noEmit && tsc -p functions/tsconfig.json",
     "test": "vitest run",
-    "images": "node scripts/optimize-images.mjs"
+    "images": "node scripts/optimize-images.mjs",
+    "dev:cf": "npm run build && wrangler pages dev dist"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
     "lucide-react": "^0.546.0",
     "react": "^19.0.1",
-    "react-dom": "^19.0.1"
+    "react-dom": "^19.0.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261010.1",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^22.14.0",
     "@types/react": "^19.3.0",
@@ -30,6 +34,7 @@
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
     "vite": "^8.3.0",
-    "vitest": "^4.0.0"
+    "vitest": "^4.0.0",
+    "wrangler": "^4.149.0"
   }
 }

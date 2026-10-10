@@ -4,7 +4,7 @@ import { IMAGES } from '../data/images.ts';
 import { BeforeAfterSlider } from '../components/BeforeAfterSlider.tsx';
 import { AppImage } from '../components/AppImage.tsx';
 import type { PageView } from '../types.ts';
-import { ArrowRight, Calendar } from 'lucide-react';
+import { ArrowRight, ArrowDown, Calendar, Camera } from 'lucide-react';
 
 interface HomePageProps {
   onNavigate: (view: PageView) => void;
@@ -41,12 +41,31 @@ export function HomePage({ onNavigate }: HomePageProps) {
             <p className="text-stone-700 text-sm sm:text-lg font-light leading-relaxed max-w-xl mx-auto">
               Обери категорію чи кімнату, і HomeEstet підкаже, з чого почати, як організувати речі та як вкластися у свій бюджет.
             </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-8">
+              <button
+                type="button"
+                onClick={() => onNavigate({ type: 'analyze' })}
+                className="w-full sm:w-auto px-7 py-3.5 bg-[#2C2C2C] hover:bg-[#444] text-white text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-md"
+              >
+                <Camera className="w-4 h-4" aria-hidden="true" />
+                <span>Сфотографуй кут, отримай план</span>
+              </button>
+              <a
+                href="#zones"
+                className="w-full sm:w-auto px-5 py-3.5 bg-white/80 hover:bg-white text-stone-800 border border-stone-300 text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2 backdrop-blur-sm"
+              >
+                <span>Або обери зону вручну</span>
+                <ArrowDown className="w-4 h-4 text-stone-500" aria-hidden="true" />
+              </a>
+            </div>
+            <p className="text-[11px] text-stone-500 mt-3">Один знімок, 20–60 секунд: діагноз, 5 кроків і покупки в межах бюджету.</p>
           </div>
         </div>
       </section>
 
       {/* 2. Zones */}
-      <section className="py-16 sm:py-20 bg-white border-b border-[#ECE8E1]">
+      <section id="zones" className="py-16 sm:py-20 bg-white border-b border-[#ECE8E1] scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
             <div>

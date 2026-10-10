@@ -9,3 +9,7 @@ coverage/
 
 # Claude Code personal overrides
 .claude/settings.local.json
+
+# Cloudflare local secrets and cache
+.dev.vars
+.wrangler/

@@ -6,7 +6,6 @@ interface HeaderProps {
   onNavigate: (view: PageView) => void;
   currentView: PageView;
   onOpenSurprise: () => void;
-  onOpenAIAnalyzer: () => void;
   savedCount: number;
 }
 
@@ -19,7 +18,7 @@ const NAV_ITEMS: { label: string; view: PageView }[] = [
   { label: '💡 Натхнення', view: { type: 'inspiration' } },
 ];
 
-export function Header({ onNavigate, currentView, onOpenSurprise, onOpenAIAnalyzer, savedCount }: HeaderProps) {
+export function Header({ onNavigate, currentView, onOpenSurprise, savedCount }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleNavClick = (view: PageView) => {
@@ -68,26 +67,29 @@ export function Header({ onNavigate, currentView, onOpenSurprise, onOpenAIAnalyz
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+          {/* Primary action of the service: photo → plan */}
           <button
             type="button"
-            onClick={onOpenAIAnalyzer}
-            className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-stone-700 hover:text-black bg-stone-100 hover:bg-stone-200/80 rounded-lg transition-colors border border-stone-200 whitespace-nowrap"
-            title="Аналіз фото кімнати"
-            aria-label="Аналіз фото кімнати"
+            onClick={() => handleNavClick({ type: 'analyze' })}
+            aria-current={currentView.type === 'analyze' ? 'page' : undefined}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap shadow-2xs ${
+              currentView.type === 'analyze' ? 'bg-[#2C2C2C] text-white' : 'bg-[#967259] hover:bg-[#7e5f49] text-white'
+            }`}
+            title="Сфотографуй кут, отримай план"
           >
-            <Camera className="w-3.5 h-3.5 text-[#967259]" aria-hidden="true" />
-            <span className="hidden 2xl:inline">Аналіз фото</span>
+            <Camera className="w-3.5 h-3.5" aria-hidden="true" />
+            <span className="hidden md:inline">Аналіз фото</span>
+            <span className="sr-only md:hidden">Аналіз фото</span>
           </button>
 
           <button
             type="button"
             onClick={onOpenSurprise}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#FAF2EB] hover:bg-[#F2E5D5] text-[#967259] border border-[#E8D4C0] rounded-lg text-xs font-semibold transition-all hover:scale-102 active:scale-98 shadow-2xs whitespace-nowrap"
-            title="Отримати випадкову практичну пораду для дому"
+            className="p-2 rounded-full text-[#967259] hover:bg-[#FAF2EB] transition-colors"
+            title="Здивуй мене: випадкова ідея для дому"
+            aria-label="Здивуй мене: випадкова ідея для дому"
           >
-            <Dices className="w-3.5 h-3.5" aria-hidden="true" />
-            <span className="hidden sm:inline">Здивуй мене</span>
-            <span className="sr-only sm:hidden">Здивуй мене</span>
+            <Dices className="w-4 h-4" aria-hidden="true" />
           </button>
 
           <button
@@ -130,6 +132,15 @@ export function Header({ onNavigate, currentView, onOpenSurprise, onOpenAIAnalyz
           <p className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold">Сервіси HomeEstet</p>
 
           <nav className="grid grid-cols-1 gap-2" aria-label="Мобільне меню">
+            <button
+              type="button"
+              onClick={() => handleNavClick({ type: 'analyze' })}
+              aria-current={currentView.type === 'analyze' ? 'page' : undefined}
+              className="text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold text-[#967259] bg-[#FAF2EB] hover:bg-[#F2E5D5] transition-colors flex items-center justify-between"
+            >
+              <span>📸 Аналіз фото: сфотографуй кут, отримай план</span>
+              <span aria-hidden="true">→</span>
+            </button>
             {NAV_ITEMS.map((item) => (
               <button
                 type="button"
@@ -145,17 +156,6 @@ export function Header({ onNavigate, currentView, onOpenSurprise, onOpenAIAnalyz
           </nav>
 
           <div className="pt-3 border-t border-stone-200 flex flex-col gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenAIAnalyzer();
-              }}
-              className="w-full py-2.5 bg-stone-100 text-stone-800 text-xs font-medium rounded-lg flex items-center justify-center gap-2"
-            >
-              <Camera className="w-4 h-4 text-[#967259]" aria-hidden="true" />
-              <span>Аналіз фото кімнати</span>
-            </button>
             <button
               type="button"
               onClick={() => {

@@ -1,9 +1,9 @@
 import { STYLES, PLAN_TASKS, findProduct } from '../data/homeestetData.ts';
-import type { PageView, PlanState, ProductItem, QuizResult, SavedItem } from '../types.ts';
+import type { PageView, PlanState, ProductItem, QuizResult, SavedItem, SavedPhotoPlan } from '../types.ts';
 import { AppImage } from '../components/AppImage.tsx';
 import { ProductMiniCard } from '../components/ProductMiniCard.tsx';
 import { formatUAH } from '../utils/format.ts';
-import { User, Bookmark, ArrowRight, Trash2, Calendar, Palette, Lightbulb } from 'lucide-react';
+import { User, Bookmark, ArrowRight, Trash2, Calendar, Palette, Lightbulb, Camera } from 'lucide-react';
 
 interface MyHomeEstetPageProps {
   styleId?: string;
@@ -12,6 +12,8 @@ interface MyHomeEstetPageProps {
   onRemoveSaved: (id: string) => void;
   savedProductIds: string[];
   onToggleSavedProduct: (productId: string) => void;
+  photoPlans: SavedPhotoPlan[];
+  onRemovePhotoPlan: (id: string) => void;
   plan: PlanState;
   onNavigate: (view: PageView) => void;
   onOpenProduct: (product: ProductItem) => void;
@@ -24,6 +26,8 @@ export function MyHomeEstetPage({
   onRemoveSaved,
   savedProductIds,
   onToggleSavedProduct,
+  photoPlans,
+  onRemovePhotoPlan,
   plan,
   onNavigate,
   onOpenProduct,
@@ -120,6 +124,77 @@ export function MyHomeEstetPage({
                 <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
               </button>
             </>
+          )}
+        </section>
+
+        {/* Photo analyses */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-serif text-2xl text-stone-900 font-normal">Аналізи за фото ({photoPlans.length})</h2>
+            <button
+              type="button"
+              onClick={() => onNavigate({ type: 'analyze' })}
+              className="text-xs font-semibold text-[#967259] hover:text-[#7e5f49] flex items-center gap-1"
+            >
+              <Camera className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>Новий аналіз</span>
+            </button>
+          </div>
+
+          {photoPlans.length === 0 ? (
+            <div className="bg-white rounded-2xl p-8 border border-stone-200 text-center space-y-3">
+              <Camera className="w-10 h-10 text-stone-300 mx-auto" aria-hidden="true" />
+              <h3 className="font-serif text-lg text-stone-800">Ще немає жодного аналізу</h3>
+              <p className="text-xs text-stone-500 max-w-md mx-auto">
+                Сфотографуй кут кімнати, і HomeEstet складе план: що прибрати, що переставити і що докупити в бюджет.
+              </p>
+              <button
+                type="button"
+                onClick={() => onNavigate({ type: 'analyze' })}
+                className="px-5 py-2.5 bg-[#2C2C2C] text-white text-xs font-semibold rounded-lg hover:bg-[#444] transition-colors inline-flex items-center gap-1.5"
+              >
+                <span>📸 Сфотографувати кут</span>
+                <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {photoPlans.map((item) => (
+                <div key={item.id} className="bg-white rounded-xl p-4 border border-stone-200 hover:border-stone-400 transition-all flex gap-4">
+                  <img src={item.thumbnail} alt="" className="w-24 h-24 rounded-lg object-cover bg-stone-100 shrink-0 border border-stone-200" />
+                  <div className="flex-1 min-w-0 flex flex-col justify-between">
+                    <div>
+                      <span className="text-xs text-[#967259] font-medium block">
+                        {item.plan.zoneLabel} · шум {item.plan.noiseLevel}%
+                      </span>
+                      <p className="text-sm text-stone-800 line-clamp-2 mt-0.5">{item.plan.summary}</p>
+                      <span className="text-xs text-stone-500 block mt-1">
+                        Покупки: <strong>{formatUAH(item.plan.estimatedCost)}</strong> · {new Date(item.createdAt).toLocaleDateString('uk-UA')}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between pt-2 mt-2 border-t border-stone-100 text-xs">
+                      <button
+                        type="button"
+                        onClick={() => onNavigate({ type: 'analyze', planId: item.id })}
+                        className="font-semibold text-stone-900 hover:text-[#967259] flex items-center gap-1"
+                      >
+                        <span>Відкрити план</span>
+                        <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onRemovePhotoPlan(item.id)}
+                        className="p-1.5 text-stone-400 hover:text-red-500 transition-colors"
+                        title="Видалити аналіз"
+                        aria-label="Видалити аналіз"
+                      >
+                        <Trash2 className="w-4 h-4" aria-hidden="true" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </section>
 

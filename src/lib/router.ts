@@ -5,6 +5,7 @@ import type { PageView, SolutionParams } from '../types.ts';
  * Minimal history-based router.
  *
  *  /                          home
+ *  /analyze                   photo analysis ("Фото → план"); /analyze/:planId opens a saved analysis
  *  /zones                     zone wizard, step "choose zone"
  *  /zones/:zoneId             zone wizard for a zone (optional ?style=)
  *  /zones/:zoneId/result?…    generated solution (style, mood, budget, have)
@@ -16,6 +17,8 @@ export function viewToPath(view: PageView): string {
   switch (view.type) {
     case 'home':
       return '/';
+    case 'analyze':
+      return view.planId ? `/analyze/${encodeURIComponent(view.planId)}` : '/analyze';
     case 'zone-builder': {
       if (!view.zoneId) return '/zones';
       const base = `/zones/${encodeURIComponent(view.zoneId)}`;
@@ -66,6 +69,8 @@ export function pathToView(pathname: string, search: string): PageView {
   if (!root) return { type: 'home' };
 
   switch (root) {
+    case 'analyze':
+      return { type: 'analyze', planId: second };
     case 'zones': {
       if (!second) return { type: 'zone-builder' };
       if (third === 'result') {

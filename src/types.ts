@@ -19,6 +19,7 @@ export interface SolutionParams {
 
 export type PageView =
   | { type: 'home' }
+  | { type: 'analyze'; planId?: string }
   | { type: 'zone-builder'; zoneId?: string; prefilledStyle?: string; params?: SolutionParams }
   | { type: 'style-quiz' }
   | { type: 'small-spaces' }
@@ -296,4 +297,72 @@ export interface QuizResult {
   scores: Record<string, number>;
   answers: Record<string, string>;
   completedAt: string;
+}
+
+// ---- Photo analysis ("Фото → план") ----
+
+/** What the user sends together with the photo. */
+export interface AnalyzeParams {
+  budgetId: string;
+  /** Rented home: no drilling, painting or replacing the landlord's furniture. */
+  rental: boolean;
+  /** Optional free-text note from the user (what bothers them, constraints). */
+  note?: string;
+}
+
+export interface PhotoPlanStep {
+  title: string;
+  description: string;
+  impact: string;
+}
+
+export interface PhotoPlanProduct {
+  id: string;
+  reason: string;
+}
+
+/** Normalised analysis result the client renders. Produced server-side from the model output. */
+export interface PhotoPlan {
+  /** False when the photo does not show an interior; then only `summary` is meaningful. */
+  isInterior: boolean;
+  /** Zone id from ZONES, or null when the model could not map the room to a zone. */
+  zoneId: string | null;
+  zoneLabel: string;
+  currentStyle: string;
+  /** Style id from STYLES the room could grow into. */
+  suggestedStyleId: string;
+  palette: string[];
+  materials: string[];
+  /** 0–100, how visually noisy the space is. */
+  noiseLevel: number;
+  noiseComment: string;
+  problems: string[];
+  remove: string[];
+  rearrange: string[];
+  useOwned: string[];
+  steps: PhotoPlanStep[];
+  /** Products from the catalogue that fit the budget, at most 4. */
+  products: PhotoPlanProduct[];
+  /** Sum of the selected products' prices. */
+  estimatedCost: number;
+  budgetLimit: number;
+  budgetMin: number;
+  budgetMax: number;
+  summary: string;
+  confidence: 'low' | 'medium' | 'high';
+}
+
+export interface AnalyzeResponse {
+  plan: PhotoPlan;
+  model: string;
+  usage: { inputTokens: number; outputTokens: number };
+}
+
+export interface SavedPhotoPlan {
+  id: string;
+  createdAt: string;
+  /** Small JPEG data URL of the analysed photo for the saved list. */
+  thumbnail: string;
+  params: AnalyzeParams;
+  plan: PhotoPlan;
 }

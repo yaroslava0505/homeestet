@@ -4,6 +4,7 @@ import type {
   Preferences,
   QuizResult,
   SavedItem,
+  SavedPhotoPlan,
 } from '../types.ts';
 
 /**
@@ -18,7 +19,11 @@ export const STORAGE_KEYS = {
   plan: 'homeestet_plan',
   savedProducts: 'homeestet_saved_products',
   quiz: 'homeestet_quiz',
+  photoPlans: 'homeestet_photo_plans',
 } as const;
+
+/** Each saved analysis carries a small thumbnail, so keep the list short to stay within localStorage quota. */
+const MAX_PHOTO_PLANS = 12;
 
 function read<T>(key: string, fallback: T): T {
   try {
@@ -129,4 +134,27 @@ export function getQuiz(): QuizResult | null {
 
 export function saveQuiz(result: QuizResult): QuizResult {
   return write(STORAGE_KEYS.quiz, result);
+}
+
+// ---- Photo analyses ----
+
+export function getPhotoPlans(): SavedPhotoPlan[] {
+  const items = read<SavedPhotoPlan[]>(STORAGE_KEYS.photoPlans, []);
+  return Array.isArray(items) ? items : [];
+}
+
+export function findPhotoPlan(id: string): SavedPhotoPlan | undefined {
+  return getPhotoPlans().find((p) => p.id === id);
+}
+
+export function savePhotoPlan(item: SavedPhotoPlan): SavedPhotoPlan[] {
+  const rest = getPhotoPlans().filter((p) => p.id !== item.id);
+  return write(STORAGE_KEYS.photoPlans, [item, ...rest].slice(0, MAX_PHOTO_PLANS));
+}
+
+export function removePhotoPlan(id: string): SavedPhotoPlan[] {
+  return write(
+    STORAGE_KEYS.photoPlans,
+    getPhotoPlans().filter((p) => p.id !== id)
+  );
 }

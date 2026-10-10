@@ -6,6 +6,7 @@ import type {
   ProductItem,
   QuizResult,
   SavedItem,
+  SavedPhotoPlan,
   SurpriseIdea,
   ZoneSolution,
 } from './types.ts';
@@ -15,6 +16,7 @@ import { DevicePreviewBar, type DeviceMode } from './components/DevicePreviewBar
 import { Header } from './components/Header.tsx';
 import { Footer } from './components/Footer.tsx';
 import { HomePage } from './pages/HomePage.tsx';
+import { AnalyzePage } from './pages/AnalyzePage.tsx';
 import { ZoneBuilderPage } from './pages/ZoneBuilderPage.tsx';
 import { StyleQuizPage } from './pages/StyleQuizPage.tsx';
 import { SmallSpacesPage } from './pages/SmallSpacesPage.tsx';
@@ -23,7 +25,6 @@ import { PersonalPlanPage } from './pages/PersonalPlanPage.tsx';
 import { InspirationPage } from './pages/InspirationPage.tsx';
 import { MyHomeEstetPage } from './pages/MyHomeEstetPage.tsx';
 import { SurpriseModal } from './components/SurpriseModal.tsx';
-import { PhotoAIAnalyzerModal } from './components/PhotoAIAnalyzerModal.tsx';
 import { ProductModal } from './components/ProductModal.tsx';
 
 /** The layout preview bar is a design-review tool and exists only in development builds. */
@@ -39,10 +40,10 @@ export default function App() {
   const [savedItems, setSavedItems] = useState<SavedItem[]>(() => storage.getSavedIdeas());
   const [plan, setPlan] = useState<PlanState>(() => storage.getPlan());
   const [savedProductIds, setSavedProductIds] = useState<string[]>(() => storage.getSavedProducts());
+  const [photoPlans, setPhotoPlans] = useState<SavedPhotoPlan[]>(() => storage.getPhotoPlans());
 
   // Modals
   const [surpriseOpen, setSurpriseOpen] = useState(false);
-  const [aiAnalyzerOpen, setAiAnalyzerOpen] = useState(false);
   const [activeProduct, setActiveProduct] = useState<ProductItem | null>(null);
 
   // Scroll to top when the route changes.
@@ -96,17 +97,32 @@ export default function App() {
   const handleToggleTask = (taskId: string) => setPlan(storage.toggleTask(taskId));
   const handleToggleSavedProduct = (productId: string) =>
     setSavedProductIds(storage.toggleSavedProduct(productId));
+  const handleSavePhotoPlan = (item: SavedPhotoPlan) => setPhotoPlans(storage.savePhotoPlan(item));
+  const handleRemovePhotoPlan = (id: string) => setPhotoPlans(storage.removePhotoPlan(id));
 
   const isSaved = (id: string) => savedItems.some((item) => item.id === id);
   const isInPlan = (entryId: string) => plan.entries.some((entry) => entry.id === entryId);
 
   const openSurprise = () => setSurpriseOpen(true);
-  const openAiAnalyzer = () => setAiAnalyzerOpen(true);
 
   const renderPage = () => {
     switch (pageView.type) {
       case 'home':
         return <HomePage onNavigate={navigate} />;
+      case 'analyze':
+        return (
+          <AnalyzePage
+            key={`analyze-${pageView.planId ?? 'new'}`}
+            planId={pageView.planId}
+            savedPlans={photoPlans}
+            onSavePlan={handleSavePhotoPlan}
+            onRemovePlan={handleRemovePhotoPlan}
+            onAddToPlan={handleAddToPlan}
+            isInPlan={isInPlan}
+            onNavigate={navigate}
+            onOpenProduct={setActiveProduct}
+          />
+        );
       case 'zone-builder':
         return (
           <ZoneBuilderPage
@@ -155,6 +171,8 @@ export default function App() {
             onRemoveSaved={handleRemoveSaved}
             savedProductIds={savedProductIds}
             onToggleSavedProduct={handleToggleSavedProduct}
+            photoPlans={photoPlans}
+            onRemovePhotoPlan={handleRemovePhotoPlan}
             plan={plan}
             onNavigate={navigate}
             onOpenProduct={setActiveProduct}
@@ -179,7 +197,6 @@ export default function App() {
           setDeviceMode={setDeviceMode}
           pageView={pageView}
           setPageView={navigate}
-          onOpenAIAnalyzer={openAiAnalyzer}
           onOpenSurprise={openSurprise}
         />
       )}
@@ -189,8 +206,7 @@ export default function App() {
           onNavigate={navigate}
           currentView={pageView}
           onOpenSurprise={openSurprise}
-          onOpenAIAnalyzer={openAiAnalyzer}
-          savedCount={savedItems.length}
+          savedCount={savedItems.length + photoPlans.length}
         />
 
         <main className="min-h-[65vh]">{renderPage()}</main>
@@ -207,12 +223,6 @@ export default function App() {
           setSurpriseOpen(false);
           navigate({ type: 'zone-builder', zoneId: idea.zoneId });
         }}
-      />
-
-      <PhotoAIAnalyzerModal
-        isOpen={aiAnalyzerOpen}
-        onClose={() => setAiAnalyzerOpen(false)}
-        onNavigate={navigate}
       />
 
       <ProductModal
