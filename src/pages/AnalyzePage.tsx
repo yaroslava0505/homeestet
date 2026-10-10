@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { AnalyzeParams, PageView, PhotoPlan, PlanEntry, ProductItem, SavedPhotoPlan } from '../types.ts';
-import { BUDGET_TIERS, STYLES, ZONES, findProduct } from '../data/homeestetData.ts';
+import { BUDGET_TIERS, PRODUCTS_CATALOG, STYLES, ZONES, findProduct } from '../data/homeestetData.ts';
 import { AnalyzeError, prepareImage, requestAnalysis, type PreparedImage } from '../lib/analyzeClient.ts';
 import { consumeAnalysisQuota, getAnalysisQuota, type AnalysisQuota } from '../lib/storage.ts';
 import { formatUAH, formatUAHRange, hashString } from '../utils/format.ts';
@@ -45,6 +45,13 @@ const LOADING_STEPS = [
 
 function planEntryId(id: string): string {
   return `plan-photo-${id}`;
+}
+
+/** Up to three other catalogue items of the same kind for this zone, so the user can compare, not just accept. */
+function alternativesFor(product: ProductItem, zoneId: string | null): ProductItem[] {
+  return PRODUCTS_CATALOG.filter(
+    (p) => p.id !== product.id && p.category === product.category && (!zoneId || p.zones.includes(zoneId))
+  ).slice(0, 3);
 }
 
 /** "5 кроків", "3 кроки", "1 крок" */
@@ -101,6 +108,7 @@ export function AnalyzePage({
       setError(
         e instanceof AnalyzeError ? { code: e.code, message: e.message } : { code: 'decode', message: 'Не вдалося обробити файл.' }
       );
+      window.setTimeout(() => document.querySelector('[role="alert"]')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 50);
     } finally {
       setPreparing(false);
     }
@@ -116,6 +124,8 @@ export function AnalyzePage({
     const params: AnalyzeParams = { budgetId, rental, note: note.trim() || undefined };
     setError(null);
     setStage('loading');
+    // The button sits at the bottom of a tall form; bring the progress card into view so the wait is visible.
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     try {
       const response = await requestAnalysis(image, params);
       const id = `${Date.now().toString(36)}-${hashString(image.data.slice(0, 4000))}`;
@@ -129,6 +139,7 @@ export function AnalyzePage({
       setError(
         e instanceof AnalyzeError ? { code: e.code, message: e.message } : { code: 'unknown', message: 'Щось пішло не так. Спробуйте ще раз.' }
       );
+      window.setTimeout(() => document.querySelector('[role="alert"]')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 50);
     }
   };
 
@@ -249,11 +260,12 @@ export function AnalyzePage({
                   dragging ? 'border-[#967259] bg-[#FAF2EB]' : 'border-[#D5CBB9] hover:border-[#967259] bg-[#FAF8F5] hover:bg-white'
                 } ${image ? 'p-2' : 'p-8 sm:p-12'}`}
               >
+                {/* No HEIC in accept on purpose: iPhone then converts its photos to JPEG itself, which every browser can decode. */}
                 <input
                   ref={inputRef}
                   id={inputId}
                   type="file"
-                  accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic,.heif"
+                  accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
                   className="sr-only"
                   onChange={(e) => void handleFile(e.target.files?.[0])}
                 />
@@ -272,7 +284,7 @@ export function AnalyzePage({
                       <UploadCloud className="w-12 h-12 text-stone-400 group-hover:text-[#967259] mx-auto mb-3 transition-colors" aria-hidden="true" />
                     )}
                     <span className="font-medium text-base text-stone-800 block">Перетягни фото сюди або натисни, щоб обрати</span>
-                    <span className="text-xs text-stone-500 mt-1.5 block">JPG, PNG, WebP або HEIC. Фотографуй при денному світлі, щоб було видно весь кут.</span>
+                    <span className="text-xs text-stone-500 mt-1.5 block">JPG, PNG або WebP. Фотографуй при денному світлі, щоб було видно весь кут.</span>
                     <span className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 bg-[#2C2C2C] text-white text-xs font-semibold rounded-lg">
                       <Camera className="w-4 h-4" aria-hidden="true" />
                       Обрати фото
@@ -592,14 +604,31 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
 
         {products.length > 0 ? (
           <div className="space-y-3">
-            {products.map(({ item, product }) => (
-              <div key={product.id} className="p-3 rounded-xl border border-stone-200/80 bg-[#FAF8F5] flex flex-col sm:flex-row sm:items-center gap-3">
-                <ProductMiniCard product={product} onOpen={onOpenProduct} className="sm:w-80 shrink-0" />
-                <p className="text-xs text-stone-700 leading-relaxed sm:pl-2">
-                  <strong className="text-stone-900">Чому:</strong> {item.reason}
-                </p>
-              </div>
-            ))}
+            {products.map(({ item, product }) => {
+              const alternatives = alternativesFor(product, plan.zoneId);
+              return (
+                <div key={product.id} className="p-3 rounded-xl border border-stone-200/80 bg-[#FAF8F5] space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                    <ProductMiniCard product={product} onOpen={onOpenProduct} className="sm:w-80 shrink-0" />
+                    <p className="text-xs text-stone-700 leading-relaxed sm:pl-2">
+                      <strong className="text-stone-900">Чому:</strong> {item.reason}
+                    </p>
+                  </div>
+                  {alternatives.length > 0 && (
+                    <div className="pt-3 border-t border-stone-200/70">
+                      <span className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold block mb-2">
+                        Інші варіанти: {product.category.toLowerCase()}
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        {alternatives.map((alt) => (
+                          <ProductMiniCard key={alt.id} product={alt} onOpen={onOpenProduct} caption={alt.merchant} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
             <div className="flex items-center justify-between pt-3 border-t border-stone-100 text-sm">
               <span className="text-stone-600">Разом за покупки</span>
               <span className="font-serif text-xl font-bold text-stone-900 tabular-nums">{formatUAH(plan.estimatedCost)}</span>
