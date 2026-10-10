@@ -5,16 +5,22 @@ pages_build_output_dir = "dist"
 compatibility_date = "2025-09-01"
 compatibility_flags = ["nodejs_compat"]
 
+# Workers AI: free daily allocation, no card needed. Used automatically while no Anthropic key is set.
+[ai]
+binding = "AI"
+
 # Plain (non-secret) settings for the photo analysis. Secrets are NOT stored here:
-# set ANTHROPIC_API_KEY in the dashboard (Workers & Pages → homeestet → Settings → Variables and secrets → Secret).
+# set ANTHROPIC_API_KEY in the dashboard (Workers & Pages → homeestet → Settings → Variables and secrets → Secret)
+# and the function switches to Claude on the next deploy. ANALYSIS_PROVIDER pins a provider explicitly.
 [vars]
 ANALYSIS_MODEL = "claude-haiku-4-5"
+WORKERS_AI_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct"
 ANALYSIS_DAILY_LIMIT = "100"
 ANALYSIS_IP_DAILY_LIMIT = "5"
 
 # Daily quotas need a KV namespace. Create one in the dashboard (Storage & Databases → KV → Create,
 # name "homeestet-analysis"), copy its ID here and uncomment. Without it the function still works,
-# only the daily caps are skipped (the Anthropic spend limit remains the hard ceiling).
+# only the daily caps are skipped (the provider's own limit remains the hard ceiling).
 # [[kv_namespaces]]
 # binding = "ANALYSIS_KV"
 # id = "<paste the namespace id>"

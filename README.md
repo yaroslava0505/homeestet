@@ -43,10 +43,17 @@ AnalyzePage ──prepareImage──►  POST /api/analyze (functions/api/)  ─
 - `src/lib/analyzeClient.ts`: валідація файлу, стискання в браузері, запит.
 - Збережені аналізи: `homeestet_photo_plans` у localStorage (до 12, з мініатюрою).
 
-**Підключення в Cloudflare (один раз):** Workers & Pages → homeestet → Settings → Variables and secrets →
-Add → тип **Secret**, ім’я `ANTHROPIC_API_KEY`, значення з console.anthropic.com. Після збереження зробити
-новий деплой (push або Retry deployment). Без ключа функція відповідає 503, а сторінка показує чесне
-повідомлення «аналіз ще не підключено».
+**Два постачальники моделі**, вибір автоматичний:
+
+- **Cloudflare Workers AI** (типово, поки немає ключа): модель `@cf/meta/llama-4-scout-17b-16e-instruct`
+  через `[ai]`-binding у `wrangler.toml`. Безкоштовна денна квота (10 000 «нейронів», це приблизно
+  60–80 аналізів на день), картка не потрібна. Поради простіші, українська мова слабша за Claude.
+- **Anthropic (Claude)**: щойно в Cloudflare з’являється секрет `ANTHROPIC_API_KEY` (Workers & Pages →
+  homeestet → Settings → Variables and secrets → Add → тип **Secret**, значення з console.anthropic.com),
+  після наступного деплою функція сама переходить на Claude. `ANALYSIS_PROVIDER=anthropic|workers-ai`
+  закріплює постачальника примусово.
+
+Без жодного з них функція відповідає 503, а сторінка показує чесне повідомлення «аналіз ще не підключено».
 
 **Модель і вартість.** Модель задається у `wrangler.toml` (`ANALYSIS_MODEL`), типово `claude-haiku-4-5`.
 Один аналіз ≈ 2,5–3 тис. вхідних токенів (фото 1024 px + промпт із каталогом) і близько 1 тис. вихідних:

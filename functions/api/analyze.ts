@@ -5,10 +5,14 @@ import { PRODUCTS_CATALOG } from '../../src/data/products.ts';
 import { BUDGET_TIERS } from '../../src/data/homeestetData.ts';
 import {
   DEFAULT_ANALYSIS_MODEL,
+  DEFAULT_WORKERS_AI_MODEL,
   MOCK_MODEL_PLAN,
   ModelPlanSchema,
+  type ModelPlan,
   buildSystemPrompt,
   buildUserPrompt,
+  extractJsonObject,
+  modelPlanJsonSchema,
   modelRequestOptions,
   normalizePlan,
 } from '../../src/lib/photoPlan.ts';
@@ -18,20 +22,33 @@ import {
  * Body: { image: { data: <base64>, mediaType: 'image/jpeg' | 'image/png' | 'image/webp' }, budgetId, rental, note? }
  * Reply: AnalyzeResponse, or { error: <code>, message } with a matching HTTP status.
  *
+ * Two model providers, chosen automatically unless ANALYSIS_PROVIDER pins one:
+ *  - "anthropic": Claude via the Anthropic SDK when ANTHROPIC_API_KEY is set (best quality, paid per request).
+ *  - "workers-ai": Cloudflare Workers AI through the AI binding (free daily allocation, simpler answers).
+ *
  * Cost control, in layers:
- *  1. The spend limit in the Anthropic console is the hard ceiling (set by the owner, outside this code).
+ *  1. The spend limit in the Anthropic console (or the Workers AI free allocation) is the hard ceiling.
  *  2. With a KV namespace bound as ANALYSIS_KV this function caps analyses per day, globally and per IP.
  *  3. The client additionally limits each browser to a few analyses per day.
  *
- * The API key lives only in Cloudflare (Settings → Variables and secrets → ANTHROPIC_API_KEY).
  * The photo is forwarded to the model for this one request and is not stored anywhere by HomeEstet.
  */
 
+interface WorkersAi {
+  run(model: string, inputs: Record<string, unknown>): Promise<unknown>;
+}
+
 interface Env {
   ANTHROPIC_API_KEY?: string;
-  /** Override the model id; defaults to the cheapest capable model (see DEFAULT_ANALYSIS_MODEL). */
+  /** "anthropic" | "workers-ai"; when unset the function picks what is configured. */
+  ANALYSIS_PROVIDER?: string;
+  /** Anthropic model id; defaults to the cheapest capable model (see DEFAULT_ANALYSIS_MODEL). */
   ANALYSIS_MODEL?: string;
-  /** "1" returns a canned plan without calling the model (local development only). */
+  /** Workers AI model id; defaults to DEFAULT_WORKERS_AI_MODEL. */
+  WORKERS_AI_MODEL?: string;
+  /** Workers AI binding ([ai] in wrangler.toml). */
+  AI?: WorkersAi;
+  /** "1" returns a canned plan without calling any model (local development only). */
   ANALYSIS_MOCK?: string;
   /** Optional KV binding; when present, daily quotas below are enforced. */
   ANALYSIS_KV?: KVNamespace;
@@ -40,6 +57,8 @@ interface Env {
   /** Analyses per day from one IP address (default 5). */
   ANALYSIS_IP_DAILY_LIMIT?: string;
 }
+
+type Provider = 'anthropic' | 'workers-ai';
 
 const MEDIA_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
 type MediaType = (typeof MEDIA_TYPES)[number];
@@ -50,12 +69,29 @@ const DEFAULT_DAILY_LIMIT = 100;
 const DEFAULT_IP_DAILY_LIMIT = 5;
 
 const SYSTEM_PROMPT = buildSystemPrompt(PRODUCTS_CATALOG);
+const JSON_SCHEMA = modelPlanJsonSchema();
 
 interface AnalyzeBody {
   image: { data: string; mediaType: MediaType };
   budgetId: string;
   rental: boolean;
   note?: string;
+}
+
+interface ModelResult {
+  raw: ModelPlan;
+  model: string;
+  usage: { inputTokens: number; outputTokens: number };
+}
+
+class AnalysisFailure extends Error {
+  constructor(
+    public readonly status: number,
+    public readonly code: string,
+    message: string
+  ) {
+    super(message);
+  }
 }
 
 function json(body: unknown, status = 200): Response {
@@ -99,6 +135,17 @@ function positiveInt(value: string | undefined, fallback: number): number {
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback;
 }
 
+function resolveProvider(env: Env): Provider | null {
+  const pinned = env.ANALYSIS_PROVIDER?.trim().toLowerCase();
+  if (pinned === 'anthropic') return env.ANTHROPIC_API_KEY ? 'anthropic' : null;
+  if (pinned === 'workers-ai') return env.AI ? 'workers-ai' : null;
+  if (env.ANTHROPIC_API_KEY) return 'anthropic';
+  if (env.AI) return 'workers-ai';
+  return null;
+}
+
+// ---- Quotas (optional KV) ----
+
 async function sha256(text: string): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
   return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('');
@@ -111,7 +158,6 @@ interface Quota {
   ipUsed: number;
 }
 
-/** Reads today's counters. Returns null when no KV namespace is bound (quotas disabled). */
 async function readQuota(env: Env, request: Request): Promise<Quota | null> {
   const kv = env.ANALYSIS_KV;
   if (!kv) return null;
@@ -133,39 +179,9 @@ async function consumeQuota(env: Env, quota: Quota): Promise<void> {
   ]);
 }
 
-export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUntil }) => {
-  let parsed: unknown;
-  try {
-    parsed = await request.json();
-  } catch {
-    return fail(400, 'bad_request', 'Не вдалося прочитати запит.');
-  }
+// ---- Provider: Anthropic (Claude) ----
 
-  const body = parseBody(parsed);
-  if (typeof body === 'string') return fail(400, 'bad_request', body);
-
-  const params: AnalyzeParams = { budgetId: body.budgetId, rental: body.rental, note: body.note };
-
-  if (env.ANALYSIS_MOCK === '1') {
-    const plan = normalizePlan(MOCK_MODEL_PLAN, params, PRODUCTS_CATALOG);
-    const reply: AnalyzeResponse = { plan, model: 'mock', usage: { inputTokens: 0, outputTokens: 0 } };
-    return json(reply);
-  }
-
-  if (!env.ANTHROPIC_API_KEY) {
-    return fail(503, 'not_configured', 'Аналіз фото ще не підключено на сервері.');
-  }
-
-  const quota = await readQuota(env, request);
-  if (quota) {
-    if (quota.globalUsed >= positiveInt(env.ANALYSIS_DAILY_LIMIT, DEFAULT_DAILY_LIMIT)) {
-      return fail(429, 'daily_limit', 'На сьогодні ліміт аналізів на сайті вичерпано. Повертайся завтра.');
-    }
-    if (quota.ipUsed >= positiveInt(env.ANALYSIS_IP_DAILY_LIMIT, DEFAULT_IP_DAILY_LIMIT)) {
-      return fail(429, 'ip_limit', 'З цієї адреси сьогодні вже зроблено максимум аналізів. Спробуй завтра.');
-    }
-  }
-
+async function runAnthropic(env: Env, body: AnalyzeBody, params: AnalyzeParams): Promise<ModelResult> {
   const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 1, timeout: 90_000 });
   const model = env.ANALYSIS_MODEL || DEFAULT_ANALYSIS_MODEL;
   const options = modelRequestOptions(model);
@@ -192,35 +208,31 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
     });
 
     if (response.stop_reason === 'refusal') {
-      return fail(422, 'refused', 'Модель не змогла проаналізувати це фото. Спробуйте інший знімок кімнати.');
+      throw new AnalysisFailure(422, 'refused', 'Модель не змогла проаналізувати це фото. Спробуйте інший знімок кімнати.');
     }
     if (response.stop_reason === 'max_tokens' || !response.parsed_output) {
-      return fail(502, 'bad_model_output', 'Не вдалося отримати структурований план. Спробуйте ще раз.');
+      throw new AnalysisFailure(502, 'bad_model_output', 'Не вдалося отримати структурований план. Спробуйте ще раз.');
     }
-
-    if (quota) waitUntil(consumeQuota(env, quota));
-
-    const plan = normalizePlan(response.parsed_output, params, PRODUCTS_CATALOG);
-    const reply: AnalyzeResponse = {
-      plan,
+    return {
+      raw: response.parsed_output,
       model: response.model,
       usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens },
     };
-    return json(reply);
   } catch (error) {
+    if (error instanceof AnalysisFailure) throw error;
     if (error instanceof Anthropic.RateLimitError) {
-      return fail(429, 'rate_limited', 'Забагато запитів одночасно. Зачекайте хвилину і спробуйте знову.');
+      throw new AnalysisFailure(429, 'rate_limited', 'Забагато запитів одночасно. Зачекайте хвилину і спробуйте знову.');
     }
     if (error instanceof Anthropic.AuthenticationError) {
-      return fail(503, 'not_configured', 'Ключ доступу до моделі недійсний.');
+      throw new AnalysisFailure(503, 'not_configured', 'Ключ доступу до моделі недійсний.');
     }
     if (error instanceof Anthropic.BadRequestError) {
-      return fail(400, 'bad_request', 'Модель не прийняла зображення. Спробуйте інше фото у форматі JPEG.');
+      throw new AnalysisFailure(400, 'bad_request', 'Модель не прийняла зображення. Спробуйте інше фото у форматі JPEG.');
     }
     if (error instanceof Anthropic.APIError) {
       // 402/403 from the provider usually means the monthly spend limit or balance is exhausted.
       const exhausted = error.status === 402 || error.status === 403;
-      return fail(
+      throw new AnalysisFailure(
         503,
         exhausted ? 'budget_exhausted' : 'upstream',
         exhausted
@@ -228,6 +240,118 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
           : `Сервіс аналізу тимчасово недоступний (${error.status ?? 'помилка'}).`
       );
     }
+    throw error;
+  }
+}
+
+// ---- Provider: Cloudflare Workers AI ----
+
+const WORKERS_AI_JSON_REMINDER =
+  'Відповідай лише одним JSON-об’єктом за схемою, без пояснень і без тексту до чи після нього.';
+
+function workersAiText(result: unknown): unknown {
+  if (!result || typeof result !== 'object') return null;
+  const value = (result as { response?: unknown }).response;
+  if (typeof value === 'string') return extractJsonObject(value);
+  if (value && typeof value === 'object') return value;
+  return null;
+}
+
+function workersAiUsage(result: unknown): { inputTokens: number; outputTokens: number } {
+  const usage = (result as { usage?: { prompt_tokens?: number; completion_tokens?: number } } | null)?.usage;
+  return { inputTokens: usage?.prompt_tokens ?? 0, outputTokens: usage?.completion_tokens ?? 0 };
+}
+
+async function runWorkersAi(env: Env, body: AnalyzeBody, params: AnalyzeParams): Promise<ModelResult> {
+  const ai = env.AI;
+  if (!ai) throw new AnalysisFailure(503, 'not_configured', 'Аналіз фото ще не підключено на сервері.');
+  const model = env.WORKERS_AI_MODEL || DEFAULT_WORKERS_AI_MODEL;
+  const imageUrl = `data:${body.image.mediaType};base64,${body.image.data}`;
+
+  const ask = async (extraInstruction: string) => {
+    try {
+      return await ai.run(model, {
+        messages: [
+          { role: 'system', content: `${SYSTEM_PROMPT}\n\n${WORKERS_AI_JSON_REMINDER}${extraInstruction}` },
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: buildUserPrompt(params) },
+              { type: 'image_url', image_url: { url: imageUrl } },
+            ],
+          },
+        ],
+        response_format: { type: 'json_schema', json_schema: JSON_SCHEMA },
+        max_tokens: 2000,
+        temperature: 0.3,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (/quota|limit|neurons|exceed/i.test(message)) {
+        throw new AnalysisFailure(503, 'budget_exhausted', 'Аналіз фото тимчасово недоступний: вичерпано денний ліміт сервісу.');
+      }
+      if (/image|unsupported|invalid/i.test(message)) {
+        throw new AnalysisFailure(400, 'bad_request', 'Модель не прийняла зображення. Спробуйте інше фото у форматі JPEG.');
+      }
+      throw new AnalysisFailure(503, 'upstream', 'Сервіс аналізу тимчасово недоступний. Спробуйте ще раз за хвилину.');
+    }
+  };
+
+  let result = await ask('');
+  let parsed = ModelPlanSchema.safeParse(workersAiText(result));
+  if (!parsed.success) {
+    // One retry with a stricter instruction: open models occasionally wrap or truncate the JSON.
+    result = await ask(' Усі поля обов’язкові. Масиви можуть бути порожніми, але мають бути присутні.');
+    parsed = ModelPlanSchema.safeParse(workersAiText(result));
+  }
+  if (!parsed.success) {
+    throw new AnalysisFailure(502, 'bad_model_output', 'Не вдалося отримати структурований план. Спробуйте ще раз.');
+  }
+  return { raw: parsed.data, model, usage: workersAiUsage(result) };
+}
+
+// ---- Handler ----
+
+export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUntil }) => {
+  let parsedBody: unknown;
+  try {
+    parsedBody = await request.json();
+  } catch {
+    return fail(400, 'bad_request', 'Не вдалося прочитати запит.');
+  }
+
+  const body = parseBody(parsedBody);
+  if (typeof body === 'string') return fail(400, 'bad_request', body);
+
+  const params: AnalyzeParams = { budgetId: body.budgetId, rental: body.rental, note: body.note };
+
+  if (env.ANALYSIS_MOCK === '1') {
+    const plan = normalizePlan(MOCK_MODEL_PLAN, params, PRODUCTS_CATALOG);
+    const reply: AnalyzeResponse = { plan, model: 'mock', usage: { inputTokens: 0, outputTokens: 0 } };
+    return json(reply);
+  }
+
+  const provider = resolveProvider(env);
+  if (!provider) return fail(503, 'not_configured', 'Аналіз фото ще не підключено на сервері.');
+
+  const quota = await readQuota(env, request);
+  if (quota) {
+    if (quota.globalUsed >= positiveInt(env.ANALYSIS_DAILY_LIMIT, DEFAULT_DAILY_LIMIT)) {
+      return fail(429, 'daily_limit', 'На сьогодні ліміт аналізів на сайті вичерпано. Повертайся завтра.');
+    }
+    if (quota.ipUsed >= positiveInt(env.ANALYSIS_IP_DAILY_LIMIT, DEFAULT_IP_DAILY_LIMIT)) {
+      return fail(429, 'ip_limit', 'З цієї адреси сьогодні вже зроблено максимум аналізів. Спробуй завтра.');
+    }
+  }
+
+  try {
+    const result = provider === 'anthropic' ? await runAnthropic(env, body, params) : await runWorkersAi(env, body, params);
+    if (quota) waitUntil(consumeQuota(env, quota));
+    const plan = normalizePlan(result.raw, params, PRODUCTS_CATALOG);
+    const reply: AnalyzeResponse = { plan, model: result.model, usage: result.usage };
+    return json(reply);
+  } catch (error) {
+    if (error instanceof AnalysisFailure) return fail(error.status, error.code, error.message);
     return fail(500, 'internal', 'Несподівана помилка. Спробуйте ще раз.');
   }
 };

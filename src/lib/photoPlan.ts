@@ -82,6 +82,45 @@ export const ModelPlanSchema = z.object({
 
 export type ModelPlan = z.infer<typeof ModelPlanSchema>;
 
+/** JSON Schema for providers that take a plain schema (Cloudflare Workers AI JSON mode). */
+export function modelPlanJsonSchema(): Record<string, unknown> {
+  return z.toJSONSchema(ModelPlanSchema) as Record<string, unknown>;
+}
+
+/**
+ * Pulls the first JSON object out of a model reply that may be wrapped in prose or code fences.
+ * Returns null when nothing parseable is found; the caller decides whether to retry.
+ */
+export function extractJsonObject(text: string): unknown {
+  const trimmed = text.trim();
+  const direct = tryParse(trimmed);
+  if (direct !== undefined) return direct;
+  const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fenced) {
+    const inner = tryParse(fenced[1].trim());
+    if (inner !== undefined) return inner;
+  }
+  const start = trimmed.indexOf('{');
+  const end = trimmed.lastIndexOf('}');
+  if (start >= 0 && end > start) {
+    const slice = tryParse(trimmed.slice(start, end + 1));
+    if (slice !== undefined) return slice;
+  }
+  return null;
+}
+
+function tryParse(text: string): unknown {
+  try {
+    const value = JSON.parse(text) as unknown;
+    return value && typeof value === 'object' ? value : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Default Cloudflare Workers AI model: multimodal, free daily allocation, no card required. */
+export const DEFAULT_WORKERS_AI_MODEL = '@cf/meta/llama-4-scout-17b-16e-instruct';
+
 export function budgetLimitFor(budgetId: string): number {
   return (BUDGET_TIERS.find((b) => b.id === budgetId) ?? BUDGET_TIERS[1]).limit;
 }

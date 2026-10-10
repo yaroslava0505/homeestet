@@ -6,6 +6,8 @@ import {
   ModelPlanSchema,
   buildSystemPrompt,
   buildUserPrompt,
+  extractJsonObject,
+  modelPlanJsonSchema,
   modelRequestOptions,
   normalizePlan,
 } from '../lib/photoPlan.ts';
@@ -31,6 +33,24 @@ describe('photo plan schema and prompt', () => {
     expect(modelRequestOptions('claude-sonnet-5')).toMatchObject({ family: 'sonnet', effort: 'low', fallbacks: false });
     expect(modelRequestOptions('claude-opus-5')).toMatchObject({ family: 'opus', effort: 'low', fallbacks: true });
     expect(modelRequestOptions('claude-haiku-4-5').effort).toBeUndefined();
+  });
+
+  it('JSON schema for open models lists every required field', () => {
+    const schema = modelPlanJsonSchema() as { type: string; required?: string[]; properties: Record<string, unknown> };
+    expect(schema.type).toBe('object');
+    for (const key of ['is_interior', 'zone_id', 'steps', 'products', 'summary', 'confidence']) {
+      expect(schema.properties).toHaveProperty(key);
+      expect(schema.required).toContain(key);
+    }
+  });
+
+  it('extracts a JSON object from prose, code fences or bare text', () => {
+    const plain = JSON.stringify(MOCK_MODEL_PLAN);
+    expect(extractJsonObject(plain)).toEqual(MOCK_MODEL_PLAN);
+    expect(extractJsonObject('Ось план:\n```json\n' + plain + '\n```\nГотово.')).toEqual(MOCK_MODEL_PLAN);
+    expect(extractJsonObject('Відповідь: ' + plain + ' кінець')).toEqual(MOCK_MODEL_PLAN);
+    expect(extractJsonObject('жодного json тут немає')).toBeNull();
+    expect(extractJsonObject('{"broken": ')).toBeNull();
   });
 
   it('user prompt carries budget, rental flag and a trimmed note', () => {
