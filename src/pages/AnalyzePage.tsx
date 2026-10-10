@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import type { AnalyzeParams, PageView, PhotoPlan, PlanEntry, ProductItem, SavedPhotoPlan } from '../types.ts';
 import { BUDGET_TIERS, STYLES, ZONES, findProduct } from '../data/homeestetData.ts';
 import { AnalyzeError, prepareImage, requestAnalysis, type PreparedImage } from '../lib/analyzeClient.ts';
+import { consumeAnalysisQuota, getAnalysisQuota, type AnalysisQuota } from '../lib/storage.ts';
 import { formatUAH, formatUAHRange, hashString } from '../utils/format.ts';
 import { ProductMiniCard } from '../components/ProductMiniCard.tsx';
 import {
@@ -69,6 +70,7 @@ export function AnalyzePage({
   const [error, setError] = useState<{ code: string; message: string } | null>(null);
   const [loadingStep, setLoadingStep] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const [quota, setQuota] = useState<AnalysisQuota>(() => getAnalysisQuota());
   const inputRef = useRef<HTMLInputElement>(null);
   const inputId = useId();
   const noteId = useId();
@@ -98,12 +100,18 @@ export function AnalyzePage({
 
   const runAnalysis = async () => {
     if (!image) return;
+    if (getAnalysisQuota().remaining <= 0) {
+      setQuota(getAnalysisQuota());
+      setError({ code: 'daily_limit', message: `На сьогодні ${quota.limit} аналізи використано. Повертайся завтра або відкрий збережені плани.` });
+      return;
+    }
     const params: AnalyzeParams = { budgetId, rental, note: note.trim() || undefined };
     setError(null);
     setStage('loading');
     try {
       const response = await requestAnalysis(image, params);
       const id = `${Date.now().toString(36)}-${hashString(image.data.slice(0, 4000))}`;
+      setQuota(consumeAnalysisQuota());
       setPlan(response.plan);
       setResultId(id);
       setStage('result');
@@ -318,7 +326,7 @@ export function AnalyzePage({
                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
                 <span>
                   {error.message}
-                  {error.code === 'not_configured' && (
+                  {(error.code === 'not_configured' || error.code === 'budget_exhausted' || error.code === 'daily_limit' || error.code === 'ip_limit') && (
                     <span className="block text-xs text-red-700/80 mt-1">
                       Поки що можна отримати рішення вручну: обери зону, стиль і бюджет у майстрі «Зроби цю зону».
                     </span>
@@ -329,12 +337,17 @@ export function AnalyzePage({
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-stone-100">
               <p className="text-[11px] text-stone-500 leading-relaxed max-w-sm">
-                Фото обробляється в браузері до 1280 px і надсилається моделі лише для цього аналізу. HomeEstet не зберігає знімки.
+                Фото стискається в браузері і надсилається моделі лише для цього аналізу. HomeEstet не зберігає знімки.
+                <span className="block mt-1 text-stone-600">
+                  {quota.remaining > 0
+                    ? `Сьогодні доступно ще ${quota.remaining} з ${quota.limit} безкоштовних аналізів.`
+                    : `Сьогодні всі ${quota.limit} безкоштовні аналізи використано.`}
+                </span>
               </p>
               <button
                 type="button"
                 onClick={() => void runAnalysis()}
-                disabled={!image || preparing}
+                disabled={!image || preparing || quota.remaining <= 0}
                 className="px-6 py-3 bg-[#967259] hover:bg-[#7e5f49] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg flex items-center justify-center gap-2 shadow-sm shrink-0"
               >
                 <Sparkles className="w-4 h-4" aria-hidden="true" />

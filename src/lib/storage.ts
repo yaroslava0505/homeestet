@@ -20,10 +20,14 @@ export const STORAGE_KEYS = {
   savedProducts: 'homeestet_saved_products',
   quiz: 'homeestet_quiz',
   photoPlans: 'homeestet_photo_plans',
+  analysisQuota: 'homeestet_analysis_quota',
 } as const;
 
 /** Each saved analysis carries a small thumbnail, so keep the list short to stay within localStorage quota. */
 const MAX_PHOTO_PLANS = 12;
+
+/** Free analyses per browser per day. The server enforces its own daily caps on top of this. */
+export const DAILY_ANALYSIS_LIMIT = 3;
 
 function read<T>(key: string, fallback: T): T {
   try {
@@ -157,4 +161,39 @@ export function removePhotoPlan(id: string): SavedPhotoPlan[] {
     STORAGE_KEYS.photoPlans,
     getPhotoPlans().filter((p) => p.id !== id)
   );
+}
+
+// ---- Daily analysis quota (per browser) ----
+
+export interface AnalysisQuota {
+  used: number;
+  limit: number;
+  remaining: number;
+}
+
+interface StoredQuota {
+  day: string;
+  used: number;
+}
+
+const today = () => new Date().toISOString().slice(0, 10);
+
+function readQuota(): StoredQuota {
+  const stored = read<StoredQuota>(STORAGE_KEYS.analysisQuota, { day: today(), used: 0 });
+  return stored.day === today() && Number.isFinite(stored.used) ? stored : { day: today(), used: 0 };
+}
+
+function toQuota(stored: StoredQuota): AnalysisQuota {
+  const used = Math.max(0, stored.used);
+  return { used, limit: DAILY_ANALYSIS_LIMIT, remaining: Math.max(0, DAILY_ANALYSIS_LIMIT - used) };
+}
+
+export function getAnalysisQuota(): AnalysisQuota {
+  return toQuota(readQuota());
+}
+
+/** Counts one completed analysis for today and returns the updated quota. */
+export function consumeAnalysisQuota(): AnalysisQuota {
+  const stored = readQuota();
+  return toQuota(write(STORAGE_KEYS.analysisQuota, { day: stored.day, used: stored.used + 1 }));
 }

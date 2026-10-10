@@ -31,8 +31,8 @@ npm run dev        # http://localhost:3000
 
 ```
 браузер                          Cloudflare Pages Function            Anthropic API
-AnalyzePage ──prepareImage──►  POST /api/analyze (functions/api/)  ──►  claude-opus-5 (vision,
- стискає до 1280px, JPEG         перевіряє тіло, збирає промпт          structured output)
+AnalyzePage ──prepareImage──►  POST /api/analyze (functions/api/)  ──►  claude-haiku-4-5 (vision,
+ стискає до 1024px, JPEG         перевіряє тіло, квоти, промпт          structured output)
  ◄── PhotoPlan (JSON) ◄──────  normalizePlan: товари ≤ бюджету  ◄──────  ModelPlanSchema (zod)
 ```
 
@@ -48,11 +48,26 @@ Add → тип **Secret**, ім’я `ANTHROPIC_API_KEY`, значення з co
 новий деплой (push або Retry deployment). Без ключа функція відповідає 503, а сторінка показує чесне
 повідомлення «аналіз ще не підключено».
 
-Необов’язкові змінні: `ANALYSIS_MODEL` (інша модель, типово `claude-opus-5`).
+**Модель і вартість.** Модель задається у `wrangler.toml` (`ANALYSIS_MODEL`), типово `claude-haiku-4-5`.
+Один аналіз ≈ 2,5–3 тис. вхідних токенів (фото 1024 px + промпт із каталогом) і близько 1 тис. вихідних:
 
-**Орієнтовна вартість:** один аналіз ≈ 3–4 тис. вхідних токенів (фото + промпт) і до 2 тис. вихідних,
-тобто близько $0.04–0.07 за запит на Opus 5. Варто додати Rate Limiting Rule у Cloudflare (Security → WAF)
-для шляху `/api/analyze`, наприклад 10 запитів на хвилину з однієї IP.
+| Модель            | За аналіз      | 1 000 аналізів |
+| ----------------- | -------------- | -------------- |
+| `claude-haiku-4-5` | ≈ $0.01, 0,4 ₴ | ≈ $10          |
+| `claude-sonnet-5` | ≈ $0.02–0.03   | ≈ $25          |
+| `claude-opus-5`   | ≈ $0.05–0.08   | ≈ $60          |
+
+Запит підлаштовується під модель (`modelRequestOptions` у `src/lib/photoPlan.ts`): `effort: low` для
+Sonnet/Opus, серверні fallbacks лише для Opus, Haiku без цих параметрів.
+
+**Контроль витрат, три шари:**
+
+1. **Ліміт витрат у кабінеті Anthropic** (console.anthropic.com → Limits): це жорстка стеля, рахунок не може
+   її перевищити. Коли її вичерпано, функція відповідає 503, а сторінка показує «тимчасово недоступний».
+2. **Денні квоти у функції:** `ANALYSIS_DAILY_LIMIT` (на весь сайт, типово 100) і `ANALYSIS_IP_DAILY_LIMIT`
+   (на адресу, типово 5). Працюють, коли до проєкту прив’язано KV-простір `ANALYSIS_KV`, див. коментар у
+   `wrangler.toml`. Додатково варто створити Rate Limiting Rule у Cloudflare (Security → WAF) для `/api/analyze`.
+3. **Ліміт у браузері:** 3 аналізи на день (`DAILY_ANALYSIS_LIMIT` у `src/lib/storage.ts`), лічильник у localStorage.
 
 **Локально:** скопіювати `.dev.vars.example` у `.dev.vars`. З `ANALYSIS_MOCK=1` функція повертає готовий
 план без виклику моделі (для роботи над інтерфейсом); з `ANTHROPIC_API_KEY=` викликає модель. Запуск:

@@ -12,6 +12,33 @@ import { BUDGET_TIERS, STYLES, ZONES } from '../data/homeestetData.ts';
 
 export const MAX_PLAN_PRODUCTS = 4;
 
+/** Cheapest model that handles a photo plus structured JSON well; switch via ANALYSIS_MODEL. */
+export const DEFAULT_ANALYSIS_MODEL = 'claude-haiku-4-5';
+
+export type ModelFamily = 'haiku' | 'sonnet' | 'opus';
+
+export interface ModelRequestOptions {
+  family: ModelFamily;
+  /** Output cap: the plan JSON is ~1 000 tokens, thinking (where enabled) needs headroom. */
+  maxTokens: number;
+  /** `output_config.effort` is accepted on Sonnet 5 and Opus-tier models, rejected by Haiku 4.5. */
+  effort?: 'low';
+  /** Server-side refusal fallbacks exist on Opus 5 / Fable; other models do without. */
+  fallbacks: boolean;
+}
+
+/** Request shape per model family, so a cheaper or stronger model is a config change, not a code change. */
+export function modelRequestOptions(model: string): ModelRequestOptions {
+  const id = model.toLowerCase();
+  if (id.includes('opus') || id.includes('fable') || id.includes('mythos')) {
+    return { family: 'opus', maxTokens: 6000, effort: 'low', fallbacks: true };
+  }
+  if (id.includes('sonnet')) {
+    return { family: 'sonnet', maxTokens: 6000, effort: 'low', fallbacks: false };
+  }
+  return { family: 'haiku', maxTokens: 4000, fallbacks: false };
+}
+
 const ZONE_IDS = ZONES.map((z) => z.id) as [string, ...string[]];
 const STYLE_IDS = STYLES.map((s) => s.id) as [string, ...string[]];
 

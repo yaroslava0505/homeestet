@@ -1,7 +1,7 @@
 import type { AnalyzeParams, AnalyzeResponse } from '../types.ts';
 
-/** Longest side the photo is downscaled to before upload: enough detail for the model, small upload. */
-const MAX_SIDE = 1280;
+/** Longest side the photo is downscaled to before upload: enough detail for the model, fewer image tokens. */
+const MAX_SIDE = 1024;
 const JPEG_QUALITY = 0.82;
 /** Thumbnail kept with a saved analysis (localStorage), so keep it tiny. */
 const THUMB_SIDE = 320;

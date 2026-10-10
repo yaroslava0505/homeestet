@@ -4,10 +4,12 @@ import type { AnalyzeParams, AnalyzeResponse } from '../../src/types.ts';
 import { PRODUCTS_CATALOG } from '../../src/data/products.ts';
 import { BUDGET_TIERS } from '../../src/data/homeestetData.ts';
 import {
+  DEFAULT_ANALYSIS_MODEL,
   MOCK_MODEL_PLAN,
   ModelPlanSchema,
   buildSystemPrompt,
   buildUserPrompt,
+  modelRequestOptions,
   normalizePlan,
 } from '../../src/lib/photoPlan.ts';
 
@@ -16,24 +18,36 @@ import {
  * Body: { image: { data: <base64>, mediaType: 'image/jpeg' | 'image/png' | 'image/webp' }, budgetId, rental, note? }
  * Reply: AnalyzeResponse, or { error: <code>, message } with a matching HTTP status.
  *
+ * Cost control, in layers:
+ *  1. The spend limit in the Anthropic console is the hard ceiling (set by the owner, outside this code).
+ *  2. With a KV namespace bound as ANALYSIS_KV this function caps analyses per day, globally and per IP.
+ *  3. The client additionally limits each browser to a few analyses per day.
+ *
  * The API key lives only in Cloudflare (Settings → Variables and secrets → ANTHROPIC_API_KEY).
  * The photo is forwarded to the model for this one request and is not stored anywhere by HomeEstet.
  */
 
 interface Env {
   ANTHROPIC_API_KEY?: string;
-  /** Override the model id; defaults to claude-opus-5. */
+  /** Override the model id; defaults to the cheapest capable model (see DEFAULT_ANALYSIS_MODEL). */
   ANALYSIS_MODEL?: string;
   /** "1" returns a canned plan without calling the model (local development only). */
   ANALYSIS_MOCK?: string;
+  /** Optional KV binding; when present, daily quotas below are enforced. */
+  ANALYSIS_KV?: KVNamespace;
+  /** Analyses per day for the whole site (default 100). */
+  ANALYSIS_DAILY_LIMIT?: string;
+  /** Analyses per day from one IP address (default 5). */
+  ANALYSIS_IP_DAILY_LIMIT?: string;
 }
 
-const DEFAULT_MODEL = 'claude-opus-5';
 const MEDIA_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
 type MediaType = (typeof MEDIA_TYPES)[number];
-/** ~3 MB of base64 ≈ 2.2 MB image; the client resizes to 1280px so real requests are far smaller. */
+/** ~3 MB of base64 ≈ 2.2 MB image; the client resizes to 1024px so real requests are far smaller. */
 const MAX_BASE64_LENGTH = 3_000_000;
 const MAX_NOTE_LENGTH = 300;
+const DEFAULT_DAILY_LIMIT = 100;
+const DEFAULT_IP_DAILY_LIMIT = 5;
 
 const SYSTEM_PROMPT = buildSystemPrompt(PRODUCTS_CATALOG);
 
@@ -80,7 +94,46 @@ function parseBody(input: unknown): AnalyzeBody | string {
   };
 }
 
-export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+function positiveInt(value: string | undefined, fallback: number): number {
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback;
+}
+
+async function sha256(text: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+interface Quota {
+  globalKey: string;
+  ipKey: string;
+  globalUsed: number;
+  ipUsed: number;
+}
+
+/** Reads today's counters. Returns null when no KV namespace is bound (quotas disabled). */
+async function readQuota(env: Env, request: Request): Promise<Quota | null> {
+  const kv = env.ANALYSIS_KV;
+  if (!kv) return null;
+  const day = new Date().toISOString().slice(0, 10);
+  const ip = request.headers.get('cf-connecting-ip') ?? 'unknown';
+  const globalKey = `quota:global:${day}`;
+  const ipKey = `quota:ip:${(await sha256(ip)).slice(0, 32)}:${day}`;
+  const [globalRaw, ipRaw] = await Promise.all([kv.get(globalKey), kv.get(ipKey)]);
+  return { globalKey, ipKey, globalUsed: Number(globalRaw) || 0, ipUsed: Number(ipRaw) || 0 };
+}
+
+async function consumeQuota(env: Env, quota: Quota): Promise<void> {
+  const kv = env.ANALYSIS_KV;
+  if (!kv) return;
+  const ttl = 2 * 24 * 60 * 60;
+  await Promise.all([
+    kv.put(quota.globalKey, String(quota.globalUsed + 1), { expirationTtl: ttl }),
+    kv.put(quota.ipKey, String(quota.ipUsed + 1), { expirationTtl: ttl }),
+  ]);
+}
+
+export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUntil }) => {
   let parsed: unknown;
   try {
     parsed = await request.json();
@@ -103,16 +156,29 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     return fail(503, 'not_configured', 'Аналіз фото ще не підключено на сервері.');
   }
 
+  const quota = await readQuota(env, request);
+  if (quota) {
+    if (quota.globalUsed >= positiveInt(env.ANALYSIS_DAILY_LIMIT, DEFAULT_DAILY_LIMIT)) {
+      return fail(429, 'daily_limit', 'На сьогодні ліміт аналізів на сайті вичерпано. Повертайся завтра.');
+    }
+    if (quota.ipUsed >= positiveInt(env.ANALYSIS_IP_DAILY_LIMIT, DEFAULT_IP_DAILY_LIMIT)) {
+      return fail(429, 'ip_limit', 'З цієї адреси сьогодні вже зроблено максимум аналізів. Спробуй завтра.');
+    }
+  }
+
   const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 1, timeout: 90_000 });
-  const model = env.ANALYSIS_MODEL || DEFAULT_MODEL;
+  const model = env.ANALYSIS_MODEL || DEFAULT_ANALYSIS_MODEL;
+  const options = modelRequestOptions(model);
 
   try {
     const response = await client.beta.messages.parse({
       model,
-      max_tokens: 6000,
-      betas: ['server-side-fallback-2026-07-01'],
-      fallbacks: 'default',
-      output_config: { format: zodOutputFormat(ModelPlanSchema), effort: 'medium' },
+      max_tokens: options.maxTokens,
+      ...(options.fallbacks ? { betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' as const } : {}),
+      output_config: {
+        format: zodOutputFormat(ModelPlanSchema),
+        ...(options.effort ? { effort: options.effort } : {}),
+      },
       system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
       messages: [
         {
@@ -132,6 +198,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       return fail(502, 'bad_model_output', 'Не вдалося отримати структурований план. Спробуйте ще раз.');
     }
 
+    if (quota) waitUntil(consumeQuota(env, quota));
+
     const plan = normalizePlan(response.parsed_output, params, PRODUCTS_CATALOG);
     const reply: AnalyzeResponse = {
       plan,
@@ -150,7 +218,15 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       return fail(400, 'bad_request', 'Модель не прийняла зображення. Спробуйте інше фото у форматі JPEG.');
     }
     if (error instanceof Anthropic.APIError) {
-      return fail(502, 'upstream', `Сервіс аналізу тимчасово недоступний (${error.status ?? 'помилка'}).`);
+      // 402/403 from the provider usually means the monthly spend limit or balance is exhausted.
+      const exhausted = error.status === 402 || error.status === 403;
+      return fail(
+        503,
+        exhausted ? 'budget_exhausted' : 'upstream',
+        exhausted
+          ? 'Аналіз фото тимчасово недоступний: вичерпано місячний ліміт сервісу.'
+          : `Сервіс аналізу тимчасово недоступний (${error.status ?? 'помилка'}).`
+      );
     }
     return fail(500, 'internal', 'Несподівана помилка. Спробуйте ще раз.');
   }

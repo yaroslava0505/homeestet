@@ -3,8 +3,8 @@
 # Real analysis: your Anthropic API key (console.anthropic.com → API keys).
 # ANTHROPIC_API_KEY=sk-ant-...
 
-# Optional: another model id (default claude-opus-5).
-# ANALYSIS_MODEL=claude-opus-5
+# Optional: another model id. Default claude-haiku-4-5 (cheapest); claude-sonnet-5 is the quality step up.
+# ANALYSIS_MODEL=claude-sonnet-5
 
 # Canned answer without calling the model, for UI work:
 ANALYSIS_MOCK=1

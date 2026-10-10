@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+  DEFAULT_ANALYSIS_MODEL,
   MAX_PLAN_PRODUCTS,
   MOCK_MODEL_PLAN,
   ModelPlanSchema,
   buildSystemPrompt,
   buildUserPrompt,
+  modelRequestOptions,
   normalizePlan,
 } from '../lib/photoPlan.ts';
 import { PRODUCTS_CATALOG } from '../data/products.ts';
@@ -22,6 +24,13 @@ describe('photo plan schema and prompt', () => {
     for (const p of PRODUCTS_CATALOG) expect(prompt).toContain(p.id);
     for (const z of ZONES) expect(prompt).toContain(z.id);
     expect(prompt).toContain('warm-minimalism');
+  });
+
+  it('request options follow the model family (effort and fallbacks only where supported)', () => {
+    expect(modelRequestOptions(DEFAULT_ANALYSIS_MODEL)).toEqual({ family: 'haiku', maxTokens: 4000, fallbacks: false });
+    expect(modelRequestOptions('claude-sonnet-5')).toMatchObject({ family: 'sonnet', effort: 'low', fallbacks: false });
+    expect(modelRequestOptions('claude-opus-5')).toMatchObject({ family: 'opus', effort: 'low', fallbacks: true });
+    expect(modelRequestOptions('claude-haiku-4-5').effort).toBeUndefined();
   });
 
   it('user prompt carries budget, rental flag and a trimmed note', () => {
