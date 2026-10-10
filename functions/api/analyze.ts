@@ -3,6 +3,7 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import type { AnalyzeParams, AnalyzeResponse } from '../../src/types.ts';
 import { PRODUCTS_CATALOG } from '../../src/data/products.ts';
 import { BUDGET_TIERS } from '../../src/data/homeestetData.ts';
+import { isShopCategoryId } from '../../src/data/shopCategories.ts';
 import {
   DEFAULT_ANALYSIS_MODEL,
   DEFAULT_WORKERS_AI_MODEL,
@@ -255,9 +256,17 @@ function workersAiText(result: unknown): unknown {
   if (!result || typeof result !== 'object') return null;
   const value = (result as { response?: unknown }).response;
   const json = typeof value === 'string' ? extractJsonObject(value) : value && typeof value === 'object' ? value : null;
-  // Open models sometimes drop list fields they had nothing to say about; an empty list is a valid answer.
-  if (json && typeof json === 'object' && !('shopping' in json)) (json as Record<string, unknown>).shopping = [];
-  return json;
+  if (!json || typeof json !== 'object') return null;
+  // Open models sometimes drop the list or invent a category label instead of an id. A shorter list is a valid
+  // answer (normalizePlan fills zone defaults), a failed parse would cost a retry or a 502.
+  const record = json as Record<string, unknown>;
+  const shopping = Array.isArray(record.shopping) ? record.shopping : [];
+  record.shopping = shopping.filter(
+    (entry): entry is { category: string; why: string } =>
+      !!entry && typeof entry === 'object' && isShopCategoryId(String((entry as { category?: unknown }).category)) &&
+      typeof (entry as { why?: unknown }).why === 'string'
+  );
+  return record;
 }
 
 function workersAiUsage(result: unknown): { inputTokens: number; outputTokens: number } {
