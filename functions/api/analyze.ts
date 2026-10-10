@@ -254,9 +254,10 @@ const WORKERS_AI_JSON_REMINDER =
 function workersAiText(result: unknown): unknown {
   if (!result || typeof result !== 'object') return null;
   const value = (result as { response?: unknown }).response;
-  if (typeof value === 'string') return extractJsonObject(value);
-  if (value && typeof value === 'object') return value;
-  return null;
+  const json = typeof value === 'string' ? extractJsonObject(value) : value && typeof value === 'object' ? value : null;
+  // Open models sometimes drop list fields they had nothing to say about; an empty list is a valid answer.
+  if (json && typeof json === 'object' && !('shopping' in json)) (json as Record<string, unknown>).shopping = [];
+  return json;
 }
 
 function workersAiUsage(result: unknown): { inputTokens: number; outputTokens: number } {
@@ -304,7 +305,7 @@ async function runWorkersAi(env: Env, body: AnalyzeBody, params: AnalyzeParams):
   if (!parsed.success) {
     // One retry with a stricter instruction: open models occasionally wrap or truncate the JSON.
     result = await ask(
-      ' Усі поля обов’язкові. steps має містити рівно 5 кроків; problems, remove, rearrange, use_owned не менше 2 пунктів кожен.'
+      ' Усі поля обов’язкові. steps має містити рівно 5 кроків; problems, remove, rearrange, use_owned не менше 2 пунктів кожен; shopping 2–4 категорії з переліку.'
     );
     parsed = ModelPlanSchema.safeParse(workersAiText(result));
   }

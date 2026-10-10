@@ -5,6 +5,8 @@ import { AnalyzeError, prepareImage, requestAnalysis, type PreparedImage } from 
 import { consumeAnalysisQuota, getAnalysisQuota, type AnalysisQuota } from '../lib/storage.ts';
 import { formatUAH, formatUAHRange, hashString } from '../utils/format.ts';
 import { ProductMiniCard } from '../components/ProductMiniCard.tsx';
+import { ShopVariants } from '../components/ShopVariants.tsx';
+import { shoppingFor } from '../lib/shop.ts';
 import {
   Camera,
   UploadCloud,
@@ -641,6 +643,9 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
           </p>
         )}
       </section>
+
+      {/* Real store variants for the categories the analysis suggested */}
+      <ShopVariants shopping={shoppingFor(plan)} budgetLimit={plan.budgetLimit} />
 
       {/* Actions */}
       <div className="p-5 sm:p-6 bg-[#FAF2EB] rounded-2xl border border-[#E6D4C2] flex flex-col sm:flex-row sm:items-center justify-between gap-4">

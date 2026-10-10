@@ -1,0 +1,581 @@
+{
+"store": "sinsay",
+"collected": "2026-10-10",
+"note": "Зібрано вручну зі сторінок sinsay.com/ua/uk/dim (сайт рендериться скриптами, curl не підходить). cat = наша робоча назва категорії.",
+"items": [
+{
+"cat": "pledy",
+"name": "Однотонний плед - пастельний рожевий",
+"price": 349,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/5/9/592IX-03X-001-1-1298199_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/odnotonnyi-pled-592ix-03x"
+},
+{
+"cat": "pledy",
+"name": "Структурний плед - нюдовий",
+"price": 999,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/9/4/943KY-02X-001-1-1311154_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/strukturna-pled-943ky-02x"
+},
+{
+"cat": "pledy",
+"name": "Однотонний плед - нюдовий",
+"price": 189,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/9/9/999IT-02X-001-1-1255800.jpg",
+"url": "https://www.sinsay.com/ua/uk/odnotonnyi-pled-999it-02x"
+},
+{
+"cat": "pledy",
+"name": "Однотонний плед - рожевий",
+"price": 189,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/9/9/999IT-30X-001-1-1255801.jpg",
+"url": "https://www.sinsay.com/ua/uk/odnotonnyi-pled-999it-30x"
+},
+{
+"cat": "pledy",
+"name": "Плед bubble - сірий",
+"price": 599,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/2/8/280BG-09X-001-1-1132517_2.jpg",
+"url": "https://www.sinsay.com/ua/uk/pled-bubble-280bg-09x"
+},
+{
+"cat": "navolochky",
+"name": "Декоративна наволочка зі стьобаним візерунком і срібною ниткою - бежевий",
+"price": 349,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/4/6/469IR-08X-001-1-1295199.jpg",
+"url": "https://www.sinsay.com/ua/uk/dekoratyvna-navolochka-z-stobanym-vizerunkom-i-sribnoiu-nytkoiu-469ir-08x"
+},
+{
+"cat": "navolochky",
+"name": "Набір наволочок із драпіруванням та вишивкою у вигляді бантів",
+"price": 349,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/9/8/980LA-03X-001-1-1299127.jpg",
+"url": "https://www.sinsay.com/ua/uk/nabir-navolochok-iz-drapiruvanniam-ta-vyshyvkoiu-u-vyhliadi-bantiv-980la-03x"
+},
+{
+"cat": "navolochky",
+"name": "Наволочки 2 шт - пастельний рожевий",
+"price": 229,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/1/4/143GU-03X-001-1-1121361.jpg",
+"url": "https://www.sinsay.com/ua/uk/navolochky-2-sht-143gu-03x"
+},
+{
+"cat": "navolochky",
+"name": "Декоративна наволочка - кремовий",
+"price": 189,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/9/5/955KY-01X-001-1-1306795.jpg",
+"url": "https://www.sinsay.com/ua/uk/dekoratyvna-navolochka-955ky-01x"
+},
+{
+"cat": "navolochky",
+"name": "Декоративна подушка в клітинку - нюдовий",
+"price": 269,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/9/9/996GN-02X-001-1-1018641.jpg",
+"url": "https://www.sinsay.com/ua/uk/dekoratyvna-podushka-v-klitynku-996gn-02x"
+},
+{
+"cat": "tatsi",
+"name": "Декоративний піднос із дзеркальним дном - золотий",
+"price": 349,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/3/4/349IA-GLD-001-1-1283650.jpg",
+"url": "https://www.sinsay.com/ua/uk/dekoratyvnyi-pidnos-iz-dzerkalnym-dnom-349ia-gld"
+},
+{
+"cat": "tatsi",
+"name": "Підноси декоративні 2 шт - золотий",
+"price": 189,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/4/0/407IA-GLD-001-1-1341238.jpg",
+"url": "https://www.sinsay.com/ua/uk/pidnosy-dekoratyvni-2-sht-407ia-gld"
+},
+{
+"cat": "tatsi",
+"name": "Декоративна таця - чорний",
+"price": 229,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/0/7/071MF-99X-003-1-1343395.jpg",
+"url": "https://www.sinsay.com/ua/uk/dekoratyvna-tatsia-071mf-99x"
+},
+{
+"cat": "tatsi",
+"name": "Металева декоративна таця на ніжках - кремовий",
+"price": 229,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/1/9/194KQ-01X-003-1-1306642_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/metaleva-dekoratyvna-tatsia-na-nizhkakh-194kq-01x"
+},
+{
+"cat": "tatsi",
+"name": "Дерев’яна декоративна таця - бежевий",
+"price": 189,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/3/8/384IA-08X-003-1-1272702.jpg",
+"url": "https://www.sinsay.com/ua/uk/derev-yana-dekoratyvna-tatsia-384ia-08x"
+},
+{
+"cat": "tatsi",
+"name": "Дерев’яна декоративна таця з ручкою - кремовий",
+"price": 229,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/1/8/187IA-01X-001-1-1185444.jpg",
+"url": "https://www.sinsay.com/ua/uk/derev-yana-dekoratyvna-tatsia-z-ruchkoiu-187ia-01x"
+},
+{
+"cat": "tatsi",
+"name": "Дерев'яна декоративна таця з ручками - бежевий",
+"price": 399,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/7/0/700BU-08X-003-1-1276536.jpg",
+"url": "https://www.sinsay.com/ua/uk/dereviana-dekoratyvna-tatsia-z-ruchkamy-700bu-08x"
+},
+{
+"cat": "vazy",
+"name": "Скляна ваза - прозора",
+"price": 199,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/0/0/008JD-CLR-001-1-1212499_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/skliana-vaza-008jd-clr"
+},
+{
+"cat": "vazy",
+"name": "Ваза у формі пончика - золота",
+"price": 279,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/7/2/726KP-GLD-003-1-1336362.jpg",
+"url": "https://www.sinsay.com/ua/uk/vaza-u-formi-ponchyka-726kp-gld"
+},
+{
+"cat": "vazy",
+"name": "Скляна ваза - прозора",
+"price": 199,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/0/0/007JD-CLR-001-1-1136598_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/skliana-vaza-007jd-clr"
+},
+{
+"cat": "vazy",
+"name": "Рифлений вазон - бежевий",
+"price": 229,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/2/1/219GJ-08X-001-1-1076834_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/ryflenyi-vazon-219gj-08x"
+},
+{
+"cat": "vazy",
+"name": "Декоративна керамічна ваза зі скульптурною формою - біла",
+"price": 249,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/1/5/150JD-00X-001-1-1191445.jpg",
+"url": "https://www.sinsay.com/ua/uk/dekoratyvna-keramichna-vaza-zi-skulpturnoiu-formoiu-150jd-00x"
+},
+{
+"cat": "vazy",
+"name": "Скляна ваза - прозора",
+"price": 189,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/0/1/014JD-CLR-001-1-1260625_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/skliana-vaza-014jd-clr"
+},
+{
+"cat": "vazy",
+"name": "Рифлений вазон - зелений",
+"price": 229,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/2/1/219GJ-77X-001-1-1076835_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/ryflenyi-vazon-219gj-77x"
+},
+{
+"cat": "vazy",
+"name": "Однотонна керамічна ваза - сіра",
+"price": 449,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/1/1/113KQ-09X-004-1-1306633_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/odnotonna-keramichna-vaza-113kq-09x"
+},
+{
+"cat": "vazy",
+"name": "Ваза для квітів - біла",
+"price": 399,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/0/0/008EQ-00X-050-1-912373_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/vaza-dlia-kvitiv-008eq-00x"
+},
+{
+"cat": "vazy",
+"name": "Ваза для квітів - пшенична",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/6/2/625GL-12X-001-1-1048066_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/vaza-dlia-kvitiv-625gl-12x"
+},
+{
+"cat": "zberihannia",
+"name": "Контейнер - сірий",
+"price": 199,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/8/2/826KV-09X-003-1-1334154.jpg",
+"url": "https://www.sinsay.com/ua/uk/konteiner-826kv-09x"
+},
+{
+"cat": "zberihannia",
+"name": "Контейнер - чорний",
+"price": 199,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/8/2/826KV-99X-003-1-1334155.jpg",
+"url": "https://www.sinsay.com/ua/uk/konteiner-826kv-99x"
+},
+{
+"cat": "zberihannia",
+"name": "Складна коробка для зберігання з тканинною передньою частиною - бежева",
+"price": 199,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/7/5/757BU-08X-050-1-1352805.jpg",
+"url": "https://www.sinsay.com/ua/uk/skladna-korobka-dlia-zberihannia-z-tkanynnoiu-peredn-oiu-chastynoiu-ta-dekoratyvnoiu-kytytseiu-757bu-08x"
+},
+{
+"cat": "zberihannia",
+"name": "Контейнер для зберігання з кришкою - сірий",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/8/2/828KV-09X-003-1-1339360.jpg",
+"url": "https://www.sinsay.com/ua/uk/konteiner-dlia-zberihannia-z-kryshkoiu-828kv-09x"
+},
+{
+"cat": "zberihannia",
+"name": "Коробка для зберігання з рифленою передньою панеллю - бежева",
+"price": 189,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/9/0/908AG-08X-050-1-1300271.jpg",
+"url": "https://www.sinsay.com/ua/uk/korobka-dlia-zberihannia-z-ryflenoiu-peredn-oiu-panelliu-908ag-08x"
+},
+{
+"cat": "zberihannia",
+"name": "Коробка для зберігання з рифленою передньою панеллю - сіра",
+"price": 189,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/9/0/908AG-09X-050-1-1300270.jpg",
+"url": "https://www.sinsay.com/ua/uk/korobka-dlia-zberihannia-z-ryflenoiu-peredn-oiu-panelliu-908ag-09x"
+},
+{
+"cat": "zberihannia",
+"name": "Кошик для зберігання з рослинним візерунком і ручками - нюдовий",
+"price": 229,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/7/1/718BU-02P-001-1-1332571.jpg",
+"url": "https://www.sinsay.com/ua/uk/koshyk-dlia-zberihannia-z-roslynnym-vizerunkom-i-ruchkamy-718bu-02p"
+},
+{
+"cat": "zberihannia",
+"name": "Кошик для зберігання з рослинним візерунком і ручками - сірий",
+"price": 229,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/7/1/718BU-09P-050-1-1300268.jpg",
+"url": "https://www.sinsay.com/ua/uk/koshyk-dlia-zberihannia-z-roslynnym-vizerunkom-i-ruchkamy-718bu-09p"
+},
+{
+"cat": "zberihannia",
+"name": "Велюровий кошик для зберігання з квітковим візерунком всередині",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/7/6/769BU-83X-001-1-1297686.jpg",
+"url": "https://www.sinsay.com/ua/uk/veliurovyi-koshyk-dlia-zberihannia-z-kvitkovym-vizerunkom-vseredyni-769bu-83x"
+},
+{
+"cat": "zberihannia",
+"name": "Контейнер - кремовий",
+"price": 229,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/9/2/925LR-01X-050-1-1335821.jpg",
+"url": "https://www.sinsay.com/ua/uk/konteiner-925lr-01x"
+},
+{
+"cat": "aromat",
+"name": "Аромадифузор з паличками Dark Opium - срібний",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/3/9/395KE-SLV-001-1-1303483.jpg",
+"url": "https://www.sinsay.com/ua/uk/aromadyfuzor-z-palychkamy-dark-opium-395ke-slv"
+},
+{
+"cat": "aromat",
+"name": "Аромадифузор з паличками - золотий",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/3/9/395KE-GLD-002-1-1305815.jpg",
+"url": "https://www.sinsay.com/ua/uk/aromadyfuzor-z-palychkamy-395ke-gld"
+},
+{
+"cat": "aromat",
+"name": "Аромадифузор з паличками Olive Leaf - темно-зелений",
+"price": 229,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/3/8/387KE-79X-001-1-1294064.jpg",
+"url": "https://www.sinsay.com/ua/uk/aromadyfuzor-z-palychkamy-olive-leaf-387ke-79x"
+},
+{
+"cat": "aromat",
+"name": "Аромадифузор з паличками Cozy Solar - коричневий",
+"price": 199,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/4/3/434KQ-88X-002-1-1332485.jpg",
+"url": "https://www.sinsay.com/ua/uk/aromadyfuzor-z-palychkamy-cozy-solar-434kq-88x"
+},
+{
+"cat": "aromat",
+"name": "Ароматична свічка Sandalwood - зелена",
+"price": 229,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/3/6/362KE-77X-001-1-1314055.jpg",
+"url": "https://www.sinsay.com/ua/uk/aromatychna-svichka-sandalwood-362ke-77x"
+},
+{
+"cat": "aromat",
+"name": "Ароматична свічка Chocolate Caramel - темно-коричнева",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/3/4/340KE-89X-001-1-1293425_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/aromatychna-svichka-chocolate-caramel-340ke-89x"
+},
+{
+"cat": "aromat",
+"name": "Набір чайних свічок 50 шт - білі",
+"price": 189,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/3/6/368KE-00X-001-1-1340344.jpg",
+"url": "https://www.sinsay.com/ua/uk/nabir-chainykh-svichok-50-pack-368ke-00x"
+},
+{
+"cat": "svichnyky",
+"name": "Керамічна аромалампа для чайної свічки - золота",
+"price": 189,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/0/9/094KQ-GLD-001-1-1288199_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/keramichna-aromalampa-dlia-chainoi-svichky-094kq-gld"
+},
+{
+"cat": "svichnyky",
+"name": "Керамічна ароматична лампа - чорна",
+"price": 159,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/7/1/713KJ-99X-001-1-1326889.jpg",
+"url": "https://www.sinsay.com/ua/uk/keramichna-aromatychna-lampa-713kj-99x"
+},
+{
+"cat": "svichnyky",
+"name": "Набір металевих свічників, 2 шт - золоті",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/8/2/820IO-GLD-001-1-1296228_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/nabir-metalevykh-svichnykiv-2-sht-820io-gld"
+},
+{
+"cat": "svichnyky",
+"name": "Керамічна ароматична лампа - кремова",
+"price": 159,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/7/2/720KJ-01X-001-1-1326885.jpg",
+"url": "https://www.sinsay.com/ua/uk/keramichna-aromatychna-lampa-720kj-01x"
+},
+{
+"cat": "svichnyky",
+"name": "Скляний свічник - прозорий",
+"price": 189,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/2/7/278GM-CLR-001-1-1241297_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/sklianyi-svichnyk-278gm-clr"
+},
+{
+"cat": "svichnyky",
+"name": "Підсвічник у формі будинку - бежевий",
+"price": 189,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/6/5/659HZ-08X-001-1-1208560_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/pidsvichnyk-u-formi-budynku-659hz-08x"
+},
+{
+"cat": "svichnyky",
+"name": "Набір прозорих свічників 2 шт",
+"price": 169,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/2/2/229GM-CLR-001-1-1139791_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/nabir-prozorykh-svichnykiv-2-pack-229gm-clr"
+},
+{
+"cat": "lampy",
+"name": "LED лампа на USB - золота",
+"price": 449,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/5/0/505FS-GLD-001-1-1003163_3.jpg",
+"url": "https://www.sinsay.com/ua/uk/led-lampa-na-usb-505fs-gld"
+},
+{
+"cat": "lampy",
+"name": "Світловий паперовий символ - білий",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/5/4/544FS-00X-050-1-1074135_7.jpg",
+"url": "https://www.sinsay.com/ua/uk/svitlovyi-paperovyi-symvol-544fs-00x"
+},
+{
+"cat": "lampy",
+"name": "Лампа світлодіодна - світло-жовта",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/0/0/006FS-10X-001-1-1287133.jpg",
+"url": "https://www.sinsay.com/ua/uk/lampa-svitlodiodna-006fs-10x"
+},
+{
+"cat": "lampy",
+"name": "Підлогова лампа в стилі бохо - коричнева",
+"price": 1999,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/5/3/535HD-88X-001-1-1091192_2.jpg",
+"url": "https://www.sinsay.com/ua/uk/pidlohova-lampa-v-styli-bokho-535hd-88x"
+},
+{
+"cat": "lampy",
+"name": "Світловий паперовий символ - білий",
+"price": 399,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/5/4/545FS-00X-001-1-1336060.jpg",
+"url": "https://www.sinsay.com/ua/uk/svitlovyi-paperovyi-symvol-545fs-00x"
+},
+{
+"cat": "dzerkala",
+"name": "Набір дзеркал неправильної форми 5 шт",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/4/6/461KX-CLR-001-1-1332303.jpg",
+"url": "https://www.sinsay.com/ua/uk/nabir-dzerkal-nepravylnoi-formy-5-pack-461kx-clr"
+},
+{
+"cat": "dzerkala",
+"name": "Дзеркало з полицею - рожеве",
+"price": 389,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/6/7/673GN-30X-001-1-1220822_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/dzerkalo-z-polytseiu-673gn-30x"
+},
+{
+"cat": "dzerkala",
+"name": "Дзеркало з полицею - бежеве",
+"price": 389,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/6/7/673GN-08X-001-1-1220823_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/dzerkalo-z-polytseiu-673gn-08x"
+},
+{
+"cat": "dzerkala",
+"name": "Декоративне дзеркало неправильної форми в золотій рамі",
+"price": 349,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/9/9/991IN-GLD-001-1-1177621_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/dekoratyvne-dzerkalo-nepravylnoi-formy-v-zolotii-rami-991in-gld"
+},
+{
+"cat": "dzerkala",
+"name": "Дзеркало в золотій рамці",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/8/1/814IO-GLD-001-1-1181882_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/dzerkalo-v-zolotii-ramtsi-814io-gld"
+},
+{
+"cat": "dzerkala",
+"name": "Дзеркало в плетеній рамі",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/6/9/694HZ-MLC-001-1-1219644.jpg",
+"url": "https://www.sinsay.com/ua/uk/dzerkalo-v-pletenii-rami-694hz-mlc"
+},
+{
+"cat": "dzerkala",
+"name": "Кругле підвісне дзеркало на ремінці - срібне",
+"price": 189,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/7/4/745HZ-SLV-001-1-1205163.jpg",
+"url": "https://www.sinsay.com/ua/uk/kruhle-pidvisne-dzerkalo-na-remintsi-745hz-slv"
+},
+{
+"cat": "spetsii",
+"name": "Баночки для спецій з бамбуковою кришкою, 3 шт",
+"price": 159,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/9/0/906KY-CLR-001-1-1302255.jpg",
+"url": "https://www.sinsay.com/ua/uk/banochky-dlia-spetsii-z-bambukovoiu-kryshkoiu-nabir-iz-3-sht-906ky-clr"
+},
+{
+"cat": "spetsii",
+"name": "Контейнери для приправ - бежеві",
+"price": 349,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/1/0/106GC-08X-001-1-1016532_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/konteinery-dlia-pryprav-106gc-08x"
+},
+{
+"cat": "spetsii",
+"name": "Контейнери для спецій зі стійкою, 7 шт - бежеві",
+"price": 449,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/1/3/132MM-08X-003-1-1341971.jpg",
+"url": "https://www.sinsay.com/ua/uk/konteinery-dlia-spetsii-zi-stankom-7-pack-132mm-08x"
+},
+{
+"cat": "spetsii",
+"name": "Скляні ємності для спецій з дозатором і лійкою, 8 шт",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/5/4/541JI-CLR-001-1-1342724.jpg",
+"url": "https://www.sinsay.com/ua/uk/skliani-yemnosti-dlia-spetsii-z-dozatorom-i-liikoiu-8-shtuk-541ji-clr"
+},
+{
+"cat": "spetsii",
+"name": "Контейнери для приправ - прозорі",
+"price": 549,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/7/8/782GJ-CLR-001-1-1022554_2.jpg",
+"url": "https://www.sinsay.com/ua/uk/konteinery-dlia-pryprav-782gj-clr"
+},
+{
+"cat": "spetsii",
+"name": "Набір контейнерів для спецій з наліпками, 4 шт",
+"price": 129,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/5/1/516JI-CLR-001-1-1278107.jpg",
+"url": "https://www.sinsay.com/ua/uk/nabir-konteineriv-dlia-spetsii-z-nalipkamy-4-pack-516ji-clr"
+},
+{
+"cat": "spetsii",
+"name": "Скринька - бежева",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/5/5/550JI-08X-001-1-1309371.jpg",
+"url": "https://www.sinsay.com/ua/uk/skryn-ka-550ji-08x"
+},
+{
+"cat": "doshky",
+"name": "Обробні дошки, 2 шт - бежеві",
+"price": 249,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/2/1/216LD-08X-004-1-1332369.jpg",
+"url": "https://www.sinsay.com/ua/uk/obrobni-doshky-2-sht-216ld-08x"
+},
+{
+"cat": "doshky",
+"name": "Обробні дошки, 2 шт - бежеві",
+"price": 269,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/6/0/601FP-08X-001-1-1089574_2.jpg",
+"url": "https://www.sinsay.com/ua/uk/obrobni-doshky-2-sht-601fp-08x"
+},
+{
+"cat": "doshky",
+"name": "Дерев’яна дошка для нарізання - коричнева",
+"price": 249,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/1/9/198LD-88X-003-1-1297624_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/derev-yana-doshka-dlia-narizannia-198ld-88x"
+},
+{
+"cat": "doshky",
+"name": "Дерев’яна таця для сервірування з трьома керамічними мисочками",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/0/5/058JZ-00X-002-1-1278083.jpg",
+"url": "https://www.sinsay.com/ua/uk/derev-yana-tatsia-dlia-serviruvannia-z-troma-keramichnymy-mysochkamy-058jz-00x"
+},
+{
+"cat": "doshky",
+"name": "Набір з 2 бамбукових дощок для нарізання",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/2/2/229LD-88X-001-1-1297628_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/nabir-z-2-bambukovykh-doshchok-dlia-narizannia-229ld-88x"
+},
+{
+"cat": "doshky",
+"name": "Бамбукова дошка для нарізання - бежева",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/1/2/128MM-08X-003-1-1341968.jpg",
+"url": "https://www.sinsay.com/ua/uk/bambukova-doshka-dlia-narizannia-128mm-08x"
+},
+{
+"cat": "chai",
+"name": "Скляний глечик",
+"price": 299,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/3/6/361GJ-CLR-001-1-1089890.jpg",
+"url": "https://www.sinsay.com/ua/uk/pitcher-361gj-clr"
+},
+{
+"cat": "chai",
+"name": "Скляний чайник",
+"price": 349,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/8/1/814GM-CLR-001-1-1022564_3.jpg",
+"url": "https://www.sinsay.com/ua/uk/chainyk-814gm-clr"
+},
+{
+"cat": "chai",
+"name": "Глечик - прозорий",
+"price": 249,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/7/9/790GM-CLR-001-1-1240295_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/hlechyk-790gm-clr"
+},
+{
+"cat": "chai",
+"name": "Чайник із заварником",
+"price": 279,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/4/1/410IZ-CLR-001-1-1288207_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/chainyk-iz-zavarnykom-410iz-clr"
+},
+{
+"cat": "chai",
+"name": "Рифлений чайник для заварювання із ситечком",
+"price": 499,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/9/3/932KT-CLR-003-1-1309242_1.jpg",
+"url": "https://www.sinsay.com/ua/uk/ryflenyi-chainyk-dlia-zavariuvannia-iz-sytechkom-932kt-clr"
+},
+{
+"cat": "chai",
+"name": "Чашка з блюдцем у смужку - чорна",
+"price": 349,
+"image": "https://static.sinsay.com/media/catalog/product/cache/300/a4e40ebdc3e371adff845072e1c73f37/1/4/141HZ-99P-001-1-1257447.jpg",
+"url": "https://www.sinsay.com/ua/uk/chashka-z-bliudtsem-u-smuzhku-141hz-99p"
+}
+]
+}

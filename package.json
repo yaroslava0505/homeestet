@@ -14,6 +14,8 @@
     "lint": "tsc --noEmit && tsc -p functions/tsconfig.json",
     "test": "vitest run",
     "images": "node scripts/optimize-images.mjs",
+    "shop": "node scripts/build-shop-catalog.mjs",
+    "shop:fetch": "node scripts/fetch-epicentr.mjs",
     "dev:cf": "npm run build && wrangler pages dev dist"
   },
   "dependencies": {

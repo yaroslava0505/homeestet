@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import type { AnalyzeParams, PhotoPlan, ProductItem } from '../types.ts';
+import type { AnalyzeParams, PhotoPlan, PhotoPlanShopping, ProductItem } from '../types.ts';
 import { BUDGET_TIERS, STYLES, ZONES } from '../data/homeestetData.ts';
+import { SHOP_CATEGORIES, SHOP_CATEGORY_IDS, defaultShoppingFor, isShopCategoryId } from '../data/shopCategories.ts';
 
 /**
  * Shared between the Cloudflare Pages Function (functions/api/analyze.ts) and the unit tests:
@@ -11,6 +12,8 @@ import { BUDGET_TIERS, STYLES, ZONES } from '../data/homeestetData.ts';
  */
 
 export const MAX_PLAN_PRODUCTS = 4;
+/** Store categories the model may suggest; the client shows several real products for each. */
+export const MAX_SHOPPING_CATEGORIES = 4;
 
 /** Cheapest model that handles a photo plus structured JSON well; switch via ANALYSIS_MODEL. */
 export const DEFAULT_ANALYSIS_MODEL = 'claude-haiku-4-5';
@@ -75,6 +78,14 @@ export const ModelPlanSchema = z.object({
       })
     )
     .max(MAX_PLAN_PRODUCTS),
+  shopping: z
+    .array(
+      z.object({
+        category: z.enum(SHOP_CATEGORY_IDS),
+        why: z.string(),
+      })
+    )
+    .max(MAX_SHOPPING_CATEGORIES),
   budget_min: z.number().int().min(0),
   budget_max: z.number().int().min(0),
   summary: z.string(),
@@ -139,6 +150,7 @@ export function buildOpenModelGuide(): string {
     '- remove: 2–4 пункти, що прибрати з виду. rearrange: 2–4 пункти, що переставити і куди. use_owned: 2–4 пункти, як використати те, що вже є на фото.',
     '- steps: рівно 5 кроків. title: дія з конкретним предметом, 4–8 слів. description: 1–2 речення, що саме зробити і де. impact: що зміниться. Перші кроки безкоштовні, покупки в кінці.',
     '- products: 0–4 id з каталогу в межах бюджету; reason: що цей товар змінить саме на цьому фото.',
+    '- shopping: 2–4 об’єкти {category, why}. category лише з переліку категорій магазинів (наприклад "organizers", "throws", "wall-art"), why: одне речення українською.',
     '- summary: 2 речення, перше про головне враження, друге про найважливіший крок.',
     '',
     'ПРИКЛАД РІВНЯ КОНКРЕТНОСТІ:',
@@ -165,6 +177,7 @@ export function catalogForPrompt(products: ProductItem[]): string {
 export function buildSystemPrompt(products: ProductItem[]): string {
   const zones = ZONES.map((z) => `${z.id} = ${z.name}`).join('; ');
   const styles = STYLES.map((s) => `${s.id} = ${s.name} (${s.uaName})`).join('; ');
+  const shopCategories = SHOP_CATEGORIES.map((c) => `${c.id} = ${c.name}: ${c.hint}`).join('; ');
 
   return [
     'Ти стиліст інтер’єру сервісу HomeEstet. Користувач надсилає фото кута або кімнати свого дому, а ти складаєш чесний, конкретний і доброзичливий план змін, який спирається на те, що реально видно на фото.',
@@ -183,12 +196,14 @@ export function buildSystemPrompt(products: ProductItem[]): string {
     '- noise_level: 0 означає ідеально спокійний простір, 100 означає суцільний візуальний хаос.',
     '- palette: 3–5 кольорів у форматі #RRGGBB, які справді є на фото.',
     '- products: лише id з каталогу нижче; лише товари, що підходять цій зоні, запропонованому стилю і бюджету; не пропонуй те, що на фото вже є (лампа, плед, ваза тощо). Для кожного товару reason пояснює, що саме він змінить на цьому фото. Сума цін не більша за ліміт бюджету.',
+    '- shopping: 2–4 категорії речей з переліку нижче, які справді допоможуть саме цьому куту (наприклад органайзери, щоб сховати дрібниці; плед; одна велика картина). Користувач побачить кілька реальних товарів різної ціни для кожної категорії, тож обирай категорію, а не конкретну річ. why: одне речення, що зміниться саме тут. Не пропонуй категорію, якщо такої речі на фото вже достатньо.',
     '- budget_min і budget_max: реалістична вилка в гривнях для втілення всього плану (0, якщо купувати нічого не треба).',
     '- summary: 2 речення про головне враження і головний крок.',
     '- Якщо на фото не інтер’єр або кімнати не видно: is_interior = false, zone_id = "other", у summary коротко поясни, що потрібно сфотографувати, решту полів заповни порожніми списками або нейтральними значеннями.',
     '',
     `Зони (zone_id): ${zones}.`,
     `Стилі (suggested_style_id): ${styles}.`,
+    `Категорії магазинів (shopping.category): ${shopCategories}.`,
     '',
     'Каталог товарів (id | назва | категорія | ціна | зони | стилі):',
     catalogForPrompt(products),
@@ -244,6 +259,15 @@ export function normalizePlan(raw: ModelPlan, params: AnalyzeParams, catalog: Pr
   const budgetMin = Math.max(0, Math.min(raw.budget_min, raw.budget_max));
   const budgetMax = Math.max(raw.budget_min, raw.budget_max);
 
+  const shopping: PhotoPlanShopping[] = [];
+  for (const entry of raw.shopping) {
+    if (!isShopCategoryId(entry.category) || shopping.some((s) => s.category === entry.category)) continue;
+    shopping.push({ category: entry.category, why: entry.why.trim() });
+    if (shopping.length >= MAX_SHOPPING_CATEGORIES) break;
+  }
+  // Interiors always get a shopping block: when the model named nothing, fall back to what helps this zone.
+  if (shopping.length === 0 && raw.is_interior) shopping.push(...defaultShoppingFor(zoneId));
+
   return {
     isInterior: raw.is_interior,
     zoneId,
@@ -265,6 +289,7 @@ export function normalizePlan(raw: ModelPlan, params: AnalyzeParams, catalog: Pr
       .slice(0, 5),
     products,
     estimatedCost,
+    shopping,
     budgetLimit,
     budgetMin: Math.min(budgetMin, budgetLimit),
     budgetMax: Math.min(budgetMax, budgetLimit),
@@ -303,6 +328,11 @@ export const MOCK_MODEL_PLAN: ModelPlan = {
   products: [
     { id: 'prod-ceramic-lamp', reason: 'На фото лише верхнє світло; лампа на столику створить теплий вечірній острівець.' },
     { id: 'prod-wooden-tray', reason: 'Згрупує свічку, чашку й дрібниці зі столика в одну композицію.' },
+  ],
+  shopping: [
+    { category: 'trays', why: 'Одна таця збере пульти, свічку й чашку зі столика в одну групу.' },
+    { category: 'table-lamps', why: 'Лампа на тумбі дасть тепле вечірнє світло замість плаского верхнього.' },
+    { category: 'throws', why: 'Плед однієї з кольорів палітри пом’якшить диван і зв’яже подушки між собою.' },
   ],
   budget_min: 900,
   budget_max: 1400,
