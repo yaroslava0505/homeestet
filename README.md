@@ -90,7 +90,7 @@ src/
 | `/style`                     | Тест стилю                                    |
 | `/small-spaces`, `/rented`   | Маленький дім, орендована квартира            |
 | `/plan`                      | План на 30 днів                               |
-| `/inspiration`, `/inspiration/:articleId` | Журнал                           |
+| `/lifehacks`, `/lifehacks/:articleId` | Лайфхаки простору (стара адреса `/inspiration` працює) |
 | `/saved`                     | Мій HomeEstet (стиль, збережене, товари)      |
 
 Це SPA: хостинг має віддавати `index.html` для всіх шляхів (SPA fallback / rewrite на `/index.html`).

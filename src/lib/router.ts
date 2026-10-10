@@ -10,7 +10,7 @@ import type { PageView, SolutionParams } from '../types.ts';
  *  /zones/:zoneId             zone wizard for a zone (optional ?style=)
  *  /zones/:zoneId/result?…    generated solution (style, mood, budget, have)
  *  /style                     style quiz
- *  /small-spaces, /rented, /plan, /inspiration, /inspiration/:articleId, /saved
+ *  /small-spaces, /rented, /plan, /lifehacks, /lifehacks/:articleId (alias /inspiration), /saved
  */
 
 export function viewToPath(view: PageView): string {
@@ -45,7 +45,7 @@ export function viewToPath(view: PageView): string {
     case 'personal-plan':
       return '/plan';
     case 'inspiration':
-      return view.articleId ? `/inspiration/${encodeURIComponent(view.articleId)}` : '/inspiration';
+      return view.articleId ? `/lifehacks/${encodeURIComponent(view.articleId)}` : '/lifehacks';
     case 'my-homeestet':
       return '/saved';
   }
@@ -93,7 +93,8 @@ export function pathToView(pathname: string, search: string): PageView {
       return { type: 'rented-home' };
     case 'plan':
       return { type: 'personal-plan' };
-    case 'inspiration':
+    case 'lifehacks':
+    case 'inspiration': // old address, kept so shared links keep working
       return { type: 'inspiration', articleId: second };
     case 'saved':
       return { type: 'my-homeestet' };

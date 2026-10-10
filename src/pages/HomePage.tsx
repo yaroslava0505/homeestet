@@ -124,10 +124,10 @@ export function HomePage({ onNavigate }: HomePageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">Практичний журнал</span>
-              <h2 className="font-serif text-3xl sm:text-4xl text-[#2C2C2C] font-normal tracking-tight">Натхнення: ідеї, які можна повторити</h2>
+              <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">Лайфхаки простору</span>
+              <h2 className="font-serif text-3xl sm:text-4xl text-[#2C2C2C] font-normal tracking-tight">Прийоми, які працюють уже сьогодні</h2>
               <p className="text-stone-600 text-xs sm:text-sm mt-1 max-w-xl">
-                Кожен матеріал має конкретні кроки та веде до створення вашого власного простору.
+                Короткі практичні матеріали: що зробити за вечір, що з наявного, що докупити.
               </p>
             </div>
 
@@ -136,7 +136,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
               onClick={() => onNavigate({ type: 'inspiration' })}
               className="text-xs sm:text-sm font-semibold text-[#2C2C2C] hover:text-[#967259] transition-colors flex items-center gap-1"
             >
-              <span>Всі статті</span>
+              <span>Всі лайфхаки</span>
               <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </button>
           </div>

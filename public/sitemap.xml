@@ -15,9 +15,12 @@
   <url><loc>https://homeestet.com/small-spaces</loc><priority>0.7</priority></url>
   <url><loc>https://homeestet.com/rented</loc><priority>0.7</priority></url>
   <url><loc>https://homeestet.com/plan</loc><priority>0.7</priority></url>
-  <url><loc>https://homeestet.com/inspiration</loc><priority>0.7</priority></url>
-  <url><loc>https://homeestet.com/inspiration/12-spice-organization-ideas</loc><priority>0.6</priority></url>
-  <url><loc>https://homeestet.com/inspiration/capsule-wardrobe-organizing</loc><priority>0.6</priority></url>
-  <url><loc>https://homeestet.com/inspiration/small-kitchen-storage-hacks</loc><priority>0.6</priority></url>
-  <url><loc>https://homeestet.com/inspiration/rental-apartment-makeover</loc><priority>0.6</priority></url>
+  <url><loc>https://homeestet.com/lifehacks</loc><priority>0.8</priority></url>
+  <url><loc>https://homeestet.com/lifehacks/warm-light-in-15-minutes</loc><priority>0.7</priority></url>
+  <url><loc>https://homeestet.com/lifehacks/one-tray-rule</loc><priority>0.7</priority></url>
+  <url><loc>https://homeestet.com/lifehacks/hallway-drop-zone</loc><priority>0.7</priority></url>
+  <url><loc>https://homeestet.com/lifehacks/12-spice-organization-ideas</loc><priority>0.6</priority></url>
+  <url><loc>https://homeestet.com/lifehacks/capsule-wardrobe-organizing</loc><priority>0.6</priority></url>
+  <url><loc>https://homeestet.com/lifehacks/small-kitchen-storage-hacks</loc><priority>0.6</priority></url>
+  <url><loc>https://homeestet.com/lifehacks/rental-apartment-makeover</loc><priority>0.6</priority></url>
 </urlset>

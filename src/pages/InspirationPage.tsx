@@ -21,7 +21,7 @@ export function InspirationPage({ articleId, onNavigate, onOpenProduct }: Inspir
         <h1 className="font-serif text-3xl text-[#2C2C2C]">Статтю не знайдено</h1>
         <p className="text-sm text-stone-600 mt-2">Можливо, посилання застаріло або містить помилку.</p>
         <button type="button" onClick={backToList} className="mt-6 px-5 py-2.5 bg-[#2C2C2C] text-white text-xs font-semibold rounded-lg">
-          До всіх публікацій
+          До всіх лайфхаків
         </button>
       </div>
     );
@@ -37,7 +37,7 @@ export function InspirationPage({ articleId, onNavigate, onOpenProduct }: Inspir
               onClick={backToList}
               className="text-xs text-stone-500 hover:text-stone-900 flex items-center gap-1 font-medium"
             >
-              <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" /> Повернутися до всіх публікацій
+              <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" /> До всіх лайфхаків
             </button>
 
             <header className="space-y-3">
@@ -63,7 +63,7 @@ export function InspirationPage({ articleId, onNavigate, onOpenProduct }: Inspir
             <div className="space-y-10 pt-4">
               {article.sections.map((section) => (
                 <section key={section.step} className="space-y-3">
-                  <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block">Ідея №{section.step}</span>
+                  <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block">Лайфхак №{section.step}</span>
                   <h2 className="font-serif text-2xl text-stone-900 font-medium">{section.title}</h2>
                   <p className="text-sm text-stone-700 leading-relaxed">{section.description}</p>
                   <div className="rounded-xl overflow-hidden aspect-[16/10] border border-stone-200 bg-stone-100">
@@ -134,9 +134,11 @@ export function InspirationPage({ articleId, onNavigate, onOpenProduct }: Inspir
         ) : (
           <div className="space-y-10">
             <div>
-              <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">Каталог практичних ідей</span>
-              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#2C2C2C] font-normal tracking-tight">💡 Натхнення: реальні перетворення</h1>
-              <p className="text-stone-600 text-xs sm:text-base mt-2 max-w-xl">Кожна стаття веде до практичного результату та налаштування персональної зони.</p>
+              <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">Практичний журнал HomeEstet</span>
+              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#2C2C2C] font-normal tracking-tight">💡 Лайфхаки простору</h1>
+              <p className="text-stone-600 text-xs sm:text-base mt-2 max-w-xl">
+                Короткі прийоми, які можна повторити за вечір: що зробити з наявного, що переставити і що докупити, якщо дуже треба.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">

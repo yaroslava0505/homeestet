@@ -15,7 +15,7 @@ const NAV_ITEMS: { label: string; view: PageView }[] = [
   { label: '🏠 Маленький дім', view: { type: 'small-spaces' } },
   { label: '🏡 Орендована квартира', view: { type: 'rented-home' } },
   { label: '📋 Мій план', view: { type: 'personal-plan' } },
-  { label: '💡 Натхнення', view: { type: 'inspiration' } },
+  { label: '💡 Лайфхаки', view: { type: 'inspiration' } },
 ];
 
 export function Header({ onNavigate, currentView, onOpenSurprise, savedCount }: HeaderProps) {
