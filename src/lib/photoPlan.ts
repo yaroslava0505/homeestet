@@ -14,6 +14,8 @@ import { SHOP_CATEGORIES, SHOP_CATEGORY_IDS, defaultShoppingFor, isShopCategoryI
 export const MAX_PLAN_PRODUCTS = 4;
 /** Store categories the model may suggest; the client shows several real products for each. */
 export const MAX_SHOPPING_CATEGORIES = 4;
+/** Open models often name a single category; the block is topped up with zone defaults to this many. */
+export const MIN_SHOPPING_CATEGORIES = 3;
 
 /** Cheapest model that handles a photo plus structured JSON well; switch via ANALYSIS_MODEL. */
 export const DEFAULT_ANALYSIS_MODEL = 'claude-haiku-4-5';
@@ -265,8 +267,13 @@ export function normalizePlan(raw: ModelPlan, params: AnalyzeParams, catalog: Pr
     shopping.push({ category: entry.category, why: entry.why.trim() });
     if (shopping.length >= MAX_SHOPPING_CATEGORIES) break;
   }
-  // Interiors always get a shopping block: when the model named nothing, fall back to what helps this zone.
-  if (shopping.length === 0 && raw.is_interior) shopping.push(...defaultShoppingFor(zoneId));
+  // Interiors always get a few categories: the model's own first, then what usually helps this zone.
+  if (raw.is_interior) {
+    for (const fallback of defaultShoppingFor(zoneId)) {
+      if (shopping.length >= MIN_SHOPPING_CATEGORIES) break;
+      if (!shopping.some((s) => s.category === fallback.category)) shopping.push(fallback);
+    }
+  }
 
   return {
     isInterior: raw.is_interior,

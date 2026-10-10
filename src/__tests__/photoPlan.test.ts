@@ -139,8 +139,19 @@ describe('normalizePlan', () => {
 
   it('fills the shopping block with zone defaults when the model names nothing', () => {
     const plan = normalizePlan({ ...MOCK_MODEL_PLAN, zone_id: 'kitchen', shopping: [] }, { budgetId: 'under-1000', rental: false }, PRODUCTS_CATALOG);
-    expect(plan.shopping!.map((s) => s.category)).toEqual(ZONE_SHOP_DEFAULTS.kitchen);
+    expect(plan.shopping!.map((s) => s.category)).toEqual(ZONE_SHOP_DEFAULTS.kitchen.slice(0, 3));
     for (const s of plan.shopping!) expect(s.why.length).toBeGreaterThan(5);
+  });
+
+  it('tops up a short model list with zone defaults, keeping the model choice first and without duplicates', () => {
+    const plan = normalizePlan(
+      { ...MOCK_MODEL_PLAN, zone_id: 'sofa', shopping: [{ category: 'pillows', why: 'подушки' }] },
+      { budgetId: 'under-1000', rental: false },
+      PRODUCTS_CATALOG
+    );
+    // sofa defaults: throws, pillows, table-lamps, wall-art → pillows already there, so throws + table-lamps follow
+    expect(plan.shopping!.map((s) => s.category)).toEqual(['pillows', 'throws', 'table-lamps']);
+    expect(plan.shopping![0].why).toBe('подушки');
   });
 
   it('non-interior photos come through with an empty shopping list', () => {
