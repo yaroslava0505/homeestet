@@ -9,6 +9,7 @@ import {
   MOCK_MODEL_PLAN,
   ModelPlanSchema,
   type ModelPlan,
+  buildOpenModelGuide,
   buildSystemPrompt,
   buildUserPrompt,
   extractJsonObject,
@@ -69,6 +70,7 @@ const DEFAULT_DAILY_LIMIT = 100;
 const DEFAULT_IP_DAILY_LIMIT = 5;
 
 const SYSTEM_PROMPT = buildSystemPrompt(PRODUCTS_CATALOG);
+const OPEN_MODEL_SYSTEM_PROMPT = `${SYSTEM_PROMPT}\n\n${buildOpenModelGuide()}`;
 const JSON_SCHEMA = modelPlanJsonSchema();
 
 interface AnalyzeBody {
@@ -272,7 +274,7 @@ async function runWorkersAi(env: Env, body: AnalyzeBody, params: AnalyzeParams):
     try {
       return await ai.run(model, {
         messages: [
-          { role: 'system', content: `${SYSTEM_PROMPT}\n\n${WORKERS_AI_JSON_REMINDER}${extraInstruction}` },
+          { role: 'system', content: `${OPEN_MODEL_SYSTEM_PROMPT}\n\n${WORKERS_AI_JSON_REMINDER}${extraInstruction}` },
           {
             role: 'user',
             content: [
@@ -301,7 +303,9 @@ async function runWorkersAi(env: Env, body: AnalyzeBody, params: AnalyzeParams):
   let parsed = ModelPlanSchema.safeParse(workersAiText(result));
   if (!parsed.success) {
     // One retry with a stricter instruction: open models occasionally wrap or truncate the JSON.
-    result = await ask(' Усі поля обов’язкові. Масиви можуть бути порожніми, але мають бути присутні.');
+    result = await ask(
+      ' Усі поля обов’язкові. steps має містити рівно 5 кроків; problems, remove, rearrange, use_owned не менше 2 пунктів кожен.'
+    );
     parsed = ModelPlanSchema.safeParse(workersAiText(result));
   }
   if (!parsed.success) {

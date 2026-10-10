@@ -47,6 +47,14 @@ function planEntryId(id: string): string {
   return `plan-photo-${id}`;
 }
 
+/** "5 кроків", "3 кроки", "1 крок" */
+function stepsHeading(count: number): string {
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  const word = mod10 === 1 && mod100 !== 11 ? 'крок' : mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20) ? 'кроки' : 'кроків';
+  return `${count} ${word} для цього кута`;
+}
+
 export function AnalyzePage({
   planId,
   savedPlans,
@@ -530,7 +538,7 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
       {plan.problems.length > 0 && (
         <section className="bg-white p-5 sm:p-6 rounded-2xl border border-stone-200 space-y-3">
           <h2 className="text-xs uppercase tracking-widest text-[#967259] font-semibold">Що заважає простору</h2>
-          <p className="text-xs text-stone-500">{plan.noiseComment}</p>
+          {plan.noiseComment && <p className="text-xs text-stone-500">{plan.noiseComment}</p>}
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-stone-700">
             {plan.problems.map((item, idx) => (
               <li key={item} className="flex items-start gap-2.5 p-3 rounded-lg bg-[#FAF8F5] border border-stone-200/80">
@@ -546,7 +554,7 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
       <section className="bg-white p-5 sm:p-8 rounded-2xl border border-stone-200 space-y-5">
         <div>
           <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">Покроковий план</span>
-          <h2 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C]">5 кроків для цього кута</h2>
+          <h2 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C]">{stepsHeading(plan.steps.length)}</h2>
         </div>
         <ol className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {plan.steps.map((step, idx) => (

@@ -65,6 +65,7 @@ export const ModelPlanSchema = z.object({
         impact: z.string(),
       })
     )
+    .min(3)
     .max(5),
   products: z
     .array(
@@ -120,6 +121,31 @@ function tryParse(text: string): unknown {
 
 /** Default Cloudflare Workers AI model: multimodal, free daily allocation, no card required. */
 export const DEFAULT_WORKERS_AI_MODEL = '@cf/meta/llama-4-scout-17b-16e-instruct';
+
+/**
+ * Extra, very explicit field-by-field rules for open models (Workers AI). Claude follows the main prompt
+ * on its own; smaller models need the format spelled out and an example of what "concrete" means.
+ */
+export function buildOpenModelGuide(): string {
+  return [
+    'ФОРМАТ ВІДПОВІДІ (обов’язково для кожного поля):',
+    '- zone_label: назва кімнати або кута українською, 2–5 слів, наприклад «Диванна зона у вітальні».',
+    '- current_style: 2–5 слів українською про те, як виглядає простір зараз, наприклад «Сучасний із випадковим декором». Не пиши id стилю.',
+    '- suggested_style_id: лише один id зі списку стилів.',
+    '- palette: 3–5 кольорів #RRGGBB, які видно на фото.',
+    '- materials: 2–5 назв матеріалів словами (дерево, льон, метал, кераміка). Не кольори.',
+    '- noise_level: число 0–100. noise_comment: одне речення про те, що саме створює шум, обов’язково не порожнє.',
+    '- problems: 3–5 конкретних речей з фото, кожна з назвою предмета і місцем («три пульти на журнальному столику»).',
+    '- remove: 2–4 пункти, що прибрати з виду. rearrange: 2–4 пункти, що переставити і куди. use_owned: 2–4 пункти, як використати те, що вже є на фото.',
+    '- steps: рівно 5 кроків. title: дія з конкретним предметом, 4–8 слів. description: 1–2 речення, що саме зробити і де. impact: що зміниться. Перші кроки безкоштовні, покупки в кінці.',
+    '- products: 0–4 id з каталогу в межах бюджету; reason: що цей товар змінить саме на цьому фото.',
+    '- summary: 2 речення, перше про головне враження, друге про найважливіший крок.',
+    '',
+    'ПРИКЛАД РІВНЯ КОНКРЕТНОСТІ:',
+    'Погано: title «Додати освітлення», description «Додати додаткове освітлення».',
+    'Добре: title «Постав лампу на тумбу ліворуч від дивана», description «Увечері вимкни люстру і залиш лампу на рівні очей, щоб світло падало на зону читання, а не на стелю.»',
+  ].join('\n');
+}
 
 export function budgetLimitFor(budgetId: string): number {
   return (BUDGET_TIERS.find((b) => b.id === budgetId) ?? BUDGET_TIERS[1]).limit;
@@ -225,7 +251,8 @@ export function normalizePlan(raw: ModelPlan, params: AnalyzeParams, catalog: Pr
     currentStyle: raw.current_style.trim(),
     suggestedStyleId,
     palette: raw.palette.map((c) => c.trim()).filter((c) => HEX_RE.test(c)).slice(0, 5),
-    materials: clean(raw.materials, 5),
+    // Open models sometimes echo colours here; materials are words, so drop anything hex-like.
+    materials: clean(raw.materials, 5).filter((m) => !HEX_RE.test(m)),
     noiseLevel: Math.round(Math.min(100, Math.max(0, raw.noise_level))),
     noiseComment: raw.noise_comment.trim(),
     problems: clean(raw.problems, 5),
