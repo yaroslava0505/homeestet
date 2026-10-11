@@ -256,8 +256,24 @@ async function runAnthropic(env: Env, body: AnalyzeBody, params: AnalyzeParams):
 
 // ---- Provider: Cloudflare Workers AI ----
 
-const WORKERS_AI_JSON_REMINDER =
-  'Відповідай лише одним JSON-об’єктом за схемою, без пояснень і без тексту до чи після нього.';
+const WORKERS_AI_JSON_REMINDER = {
+  uk: 'Відповідай лише одним JSON-об’єктом за схемою, без пояснень і без тексту до чи після нього.',
+  ru: 'Отвечай только одним JSON-объектом по схеме, без пояснений и без текста до или после него. Весь текст внутри JSON только по-русски.',
+} as const;
+
+const WORKERS_AI_RETRY = {
+  uk: ' Усі поля обов’язкові. steps має містити рівно 5 кроків; problems, remove, rearrange, use_owned не менше 2 пунктів кожен; shopping 2–4 категорії з переліку.',
+  ru: ' Все поля обязательны. steps должен содержать ровно 5 шагов; problems, remove, rearrange, use_owned не меньше 2 пунктов каждый; shopping 2–4 категории из перечня.',
+} as const;
+
+const WORKERS_AI_LANGUAGE_RETRY =
+  ' ВАЖНО: предыдущий ответ был на украинском. Все текстовые поля (zone_label, current_style, noise_comment, problems, remove, rearrange, use_owned, steps, shopping.why, summary) должны быть на русском языке. Переведи и ответь по-русски.';
+
+/** Ukrainian-only letters anywhere in the plan text mean the open model slipped back into Ukrainian. */
+function hasUkrainianText(plan: ModelPlan): boolean {
+  const text = JSON.stringify([plan.zone_label, plan.current_style, plan.noise_comment, plan.problems, plan.remove, plan.rearrange, plan.use_owned, plan.steps, plan.shopping, plan.summary]);
+  return /[іїєґІЇЄҐ]/.test(text);
+}
 
 function workersAiText(result: unknown): unknown {
   if (!result || typeof result !== 'object') return null;
@@ -286,12 +302,13 @@ async function runWorkersAi(env: Env, body: AnalyzeBody, params: AnalyzeParams):
   if (!ai) throw new AnalysisFailure(503, 'not_configured', 'Аналіз фото ще не підключено на сервері.');
   const model = env.WORKERS_AI_MODEL || DEFAULT_WORKERS_AI_MODEL;
   const imageUrl = `data:${body.image.mediaType};base64,${body.image.data}`;
+  const locale = promptLocale(params);
 
   const ask = async (extraInstruction: string) => {
     try {
       return await ai.run(model, {
         messages: [
-          { role: 'system', content: `${OPEN_MODEL_SYSTEM_PROMPTS[promptLocale(params)]}\n\n${WORKERS_AI_JSON_REMINDER}${extraInstruction}` },
+          { role: 'system', content: `${OPEN_MODEL_SYSTEM_PROMPTS[locale]}\n\n${WORKERS_AI_JSON_REMINDER[locale]}${extraInstruction}` },
           {
             role: 'user',
             content: [
@@ -320,13 +337,17 @@ async function runWorkersAi(env: Env, body: AnalyzeBody, params: AnalyzeParams):
   let parsed = ModelPlanSchema.safeParse(workersAiText(result));
   if (!parsed.success) {
     // One retry with a stricter instruction: open models occasionally wrap or truncate the JSON.
-    result = await ask(
-      ' Усі поля обов’язкові. steps має містити рівно 5 кроків; problems, remove, rearrange, use_owned не менше 2 пунктів кожен; shopping 2–4 категорії з переліку.'
-    );
+    result = await ask(WORKERS_AI_RETRY[locale]);
     parsed = ModelPlanSchema.safeParse(workersAiText(result));
   }
   if (!parsed.success) {
     throw new AnalysisFailure(502, 'bad_model_output', 'Не вдалося отримати структурований план. Спробуйте ще раз.');
+  }
+  if (locale === 'ru' && hasUkrainianText(parsed.data)) {
+    // The open model tends to answer in Ukrainian regardless of the prompt language; one explicit retry fixes most cases.
+    const retry = await ask(WORKERS_AI_LANGUAGE_RETRY);
+    const reparsed = ModelPlanSchema.safeParse(workersAiText(retry));
+    if (reparsed.success && !hasUkrainianText(reparsed.data)) return { raw: reparsed.data, model, usage: workersAiUsage(retry) };
   }
   return { raw: parsed.data, model, usage: workersAiUsage(result) };
 }
@@ -377,7 +398,14 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
   }
 };
 
-export const onRequest: PagesFunction<Env> = async ({ request }) => {
+export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
   if (request.method === 'POST') return new Response(null, { status: 404 });
-  return new Response(null, { status: 405, headers: { allow: 'POST' } });
+  if (request.method === 'GET') {
+    // Which build is serving: Cloudflare injects the commit of the deployment into the function env.
+    const commit = (env as Env & { CF_PAGES_COMMIT_SHA?: string }).CF_PAGES_COMMIT_SHA ?? 'local';
+    return new Response(JSON.stringify({ ok: true, commit: commit.slice(0, 7) }), {
+      headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+    });
+  }
+  return new Response(null, { status: 405, headers: { allow: 'GET, POST' } });
 };
