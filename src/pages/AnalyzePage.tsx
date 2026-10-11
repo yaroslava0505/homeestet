@@ -22,7 +22,7 @@ import {
   Recycle,
   Info,
 } from 'lucide-react';
-import { plural, t } from '../i18n/index.ts';
+import { getLocale, plural, t } from '../i18n/index.ts';
 
 interface AnalyzePageProps {
   /** When set, shows a saved analysis from localStorage instead of the upload form. */
@@ -112,7 +112,7 @@ export function AnalyzePage({
       setError({ code: 'daily_limit', message: t('На сьогодні {n} аналізи використано. Повертайся завтра або відкрий збережені плани.', { n: quota.limit }) });
       return;
     }
-    const params: AnalyzeParams = { budgetId, rental, note: note.trim() || undefined };
+    const params: AnalyzeParams = { budgetId, rental, note: note.trim() || undefined, locale: getLocale() };
     setError(null);
     setStage('loading');
     // The button sits at the bottom of a tall form; bring the progress card into view so the wait is visible.
@@ -182,7 +182,7 @@ export function AnalyzePage({
 
   // ---- Result of a fresh analysis ----
   if (stage === 'result' && plan && image && resultId) {
-    const params: AnalyzeParams = { budgetId, rental, note: note.trim() || undefined };
+    const params: AnalyzeParams = { budgetId, rental, note: note.trim() || undefined, locale: getLocale() };
     const isSaved = savedPlans.some((p) => p.id === resultId);
     return (
       <div className="bg-[#FAF8F5] min-h-[85vh] py-8 sm:py-12">
