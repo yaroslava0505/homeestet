@@ -1,0 +1,127 @@
+{
+"store": "bi",
+"collected": "2026-10-11",
+"note": "Будинок іграшок (bi.ua), зібрано вручну з DOM сторінок категорій у Chrome (сайт рендериться скриптами). Партнерське посилання Admitad додається в src/lib/shop.ts.",
+"items": [
+{
+"cat": "palatki",
+"name": "Намет Five stars Micasa Робот (403-18)",
+"price": 899,
+"image": "https://bi.ua/assets/thumbnails/ec/eca1bffd9cabe67032eb0506910b67d0.jpg.webp",
+"url": "https://bi.ua/ukr/product/palatka-five-stars-micasa-robot-403-18.html",
+"reviews": 9
+},
+{
+"cat": "palatki",
+"name": "Намет Five stars Micasa Єдиноріг (401-18)",
+"price": 899,
+"image": "https://bi.ua/assets/thumbnails/ac/ac824efe6a3f888ec6e4f281830de294.jpg.webp",
+"url": "https://bi.ua/ukr/product/palatka-five-stars-micasa-edinorog-novinka-401-18.html",
+"reviews": 7
+},
+{
+"cat": "palatki",
+"name": "Намет Micasa Будиночок мрій (416-19)",
+"price": 899,
+"image": "https://bi.ua/assets/thumbnails/34/3423788aa7b7171ad4f0af6afc90d5cb.jpg.webp",
+"url": "https://bi.ua/ukr/product/palatka-micasa-domik-mechty-416-19.html",
+"reviews": 5
+},
+{
+"cat": "palatki",
+"name": "Намет Five stars Micasa Єдиноріг з тунелем (402-18)",
+"price": 1199,
+"image": "https://bi.ua/assets/thumbnails/08/08a26ebb2446b47bebba960ec743f89c.jpg.webp",
+"url": "https://bi.ua/ukr/product/palatka-five-stars-micasa-edinorog-s-tunelem-novinka-402-18.html",
+"reviews": 6
+},
+{
+"cat": "palatki",
+"name": "Намет Micasa Індіанці (445-16)",
+"price": 899,
+"image": "https://bi.ua/assets/thumbnails/58/58cfb7e52d7d877c279b1149db74d3fe.jpg.webp",
+"url": "https://bi.ua/ukr/product/palatka-micasa-indeycy-445-16.html",
+"reviews": 2
+},
+{
+"cat": "palatki",
+"name": "Намет Five stars Micasa Робот з тунелем (404-18)",
+"price": 1199,
+"image": "https://bi.ua/assets/thumbnails/f9/f94d7c3222677f43d34dd031ff306a36.jpg",
+"url": "https://bi.ua/ukr/product/palatka-five-stars-micasa-robot-s-tunelem-404-18.html",
+"reviews": 9
+},
+{
+"cat": "palatki",
+"name": "Ігровий намет Beaba Breezy пісочний (930372)",
+"price": 2160,
+"image": "https://bi.ua/assets/thumbnails/43/438e2b5fe0e8e75c835cc32977076b05.jpg",
+"url": "https://bi.ua/ukr/product/groviy-namet-beaba-breezy-psochniy-930372.html",
+"reviews": null
+},
+{
+"cat": "myaki-ihrashky-podushky",
+"name": "Подушка Inkatoys Тюлень 55 см",
+"price": 749,
+"image": "https://bi.ua/assets/thumbnails/b1/b17a807a293f6c23319582080a7480d1.jpg.webp",
+"url": "https://bi.ua/ukr/product/myagkaya-igrushka-inkatoys-tyulen-55-sm-tln2_su.html",
+"reviews": 1
+},
+{
+"cat": "myaki-ihrashky-podushky",
+"name": "Подушка Копиця Жабокиць Кусь 36 см",
+"price": 229,
+"image": "https://bi.ua/assets/thumbnails/34/34fdc46678b62e8b5ad19a466bc63bd1.jpg.webp",
+"url": "https://bi.ua/ukr/product/podushka-kopicya-zhabokyc-kus-2-36-sm-00279-55.html",
+"reviews": null
+},
+{
+"cat": "myaki-ihrashky-podushky",
+"name": "Подушка Strateg Ритм душі",
+"price": 309,
+"image": "https://bi.ua/assets/thumbnails/32/32a4075ab6426a04a729bb9346a6cf42.jpg.webp",
+"url": "https://bi.ua/ukr/product/podushka-strateg-ritm-dushi-60652.html",
+"reviews": null
+},
+{
+"cat": "myaki-ihrashky-podushky",
+"name": "Подушка Копиця Рисеня 34 см",
+"price": 209,
+"image": "https://bi.ua/assets/thumbnails/86/866d76207701fd51b443433d5f7e6db3.jpg.webp",
+"url": "https://bi.ua/ukr/product/podushka-kopicya-risenok-34-sm-00279-52.html",
+"reviews": null
+},
+{
+"cat": "myaki-ihrashky-podushky",
+"name": "Подушка Strateg Кіцуне",
+"price": 289,
+"image": "https://bi.ua/assets/thumbnails/29/297e800969ee3fb3851cc85354954495.jpg.webp",
+"url": "https://bi.ua/ukr/product/podushka-strateg-kicune-60677.html",
+"reviews": null
+},
+{
+"cat": "myaki-ihrashky-podushky",
+"name": "Подушка Squishmallows Морквинка Кароліна 13 см",
+"price": 199,
+"image": "https://bi.ua/assets/thumbnails/df/df609abbba1916178d47149215fbb0a6.jpg",
+"url": "https://bi.ua/ukr/product/myagkaya-igrushka-squishmallows-morkovka-karolina-13-sm-sqer00909.html",
+"reviews": null
+},
+{
+"cat": "myaki-ihrashky-podushky",
+"name": "Подушка WP Merchandise пес Патрон",
+"price": 459,
+"image": "https://bi.ua/assets/thumbnails/c8/c816555c08e0d408984f95fcc4c3e3eb.jpg",
+"url": "https://bi.ua/ukr/product/podushka-wp-merchandise-pes-patron-fwpatronpi22wtbn2.html",
+"reviews": null
+},
+{
+"cat": "myaki-ihrashky-podushky",
+"name": "Подушка MeriToys Квадратний кіт Котокуб 20 см",
+"price": 299,
+"image": "https://bi.ua/assets/thumbnails/8d/8da6c7cda914ffbd050a7035aac21ec0.jpg",
+"url": "https://bi.ua/ukr/product/podushka-meritoys-kvadratnyy-kot-kotokub-20-sm-2050000325373.html",
+"reviews": null
+}
+]
+}

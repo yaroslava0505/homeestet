@@ -19,6 +19,7 @@ const ZONE_LINKS: { label: string; zoneId: string }[] = [
   { label: '🛏️ Спальня', zoneId: 'bedroom' },
   { label: '🍽️ Кухня', zoneId: 'kitchen' },
   { label: '🖥️ Робоче місце', zoneId: 'workspace' },
+  { label: '🧸 Дитячий куточок', zoneId: 'kids' },
 ];
 
 export function Footer({ onNavigate }: FooterProps) {
@@ -69,7 +70,7 @@ export function Footer({ onNavigate }: FooterProps) {
           <div>
             <h4 className="text-xs uppercase tracking-widest text-[#D4B28C] font-semibold mb-4">Прозорість</h4>
             <p className="text-[11px] text-stone-400 leading-relaxed mb-3">
-              Ми рекомендуємо лише предмети, перевірені за пропорціями та матеріалами. Партнерські посилання на магазини з’являться після запуску каталогу й будуть позначені.
+              Ми рекомендуємо речі, перевірені за пропорціями та матеріалами. Частина посилань на магазини партнерські: якщо ви купуєте за ними, HomeEstet отримує невелику комісію, а ціна для вас не змінюється.
             </p>
             <button
               type="button"

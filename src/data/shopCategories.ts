@@ -30,6 +30,8 @@ export const SHOP_CATEGORIES = [
   { id: 'trays', name: 'Таці', hint: 'таця, що збирає дрібниці на столику в одну групу' },
   { id: 'kitchen-jars', name: 'Банки для кухні', hint: 'однакові банки для круп і спецій' },
   { id: 'rails', name: 'Рейлінги для кухні', hint: 'рейлінг, щоб звільнити стільницю' },
+  { id: 'play-tents', name: 'Ігрові намети та вігвами', hint: 'намет-вігвам як місце для гри в дитячому кутку' },
+  { id: 'toy-pillows', name: 'Іграшки-подушки', hint: 'м’які іграшки-подушки як декор дитячого ліжка' },
 ] as const;
 
 export type ShopCategoryId = (typeof SHOP_CATEGORIES)[number]['id'];
@@ -54,6 +56,7 @@ export const ZONE_SHOP_DEFAULTS: Record<string, ShopCategoryId[]> = {
   hallway: ['hooks', 'shoe-storage', 'mirrors', 'baskets'],
   workspace: ['organizers', 'table-lamps', 'shelves', 'wall-art'],
   balcony: ['throws', 'garlands', 'plants', 'pillows'],
+  kids: ['baskets', 'organizers', 'shelves', 'play-tents'],
 };
 
 /** Zone unknown: only things that make sense in any room (no textiles for a desk, no lamps for a hallway). */

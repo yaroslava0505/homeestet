@@ -3,6 +3,8 @@ import { SHOP_CATALOG } from '../data/shopCatalog.ts';
 import { DEFAULT_SHOP_CATEGORIES, SHOP_CATEGORIES, SHOP_CATEGORY_IDS, ZONE_SHOP_DEFAULTS, defaultShoppingFor } from '../data/shopCategories.ts';
 import { shoppingFor, storeLink, variantsFor } from '../lib/shop.ts';
 import { ZONES } from '../data/homeestetData.ts';
+import { ARTICLES_CATALOG } from '../data/articles.ts';
+import { STORE_NAMES } from '../lib/shop.ts';
 
 const STORE_HOSTS: Record<string, RegExp> = {
   sinsay: /^https:\/\/www\.sinsay\.com\/ua\/uk\//,
@@ -40,6 +42,25 @@ describe('partner-store catalogue', () => {
     }
     expect(defaultShoppingFor('kitchen').map((s) => s.category)).toEqual(ZONE_SHOP_DEFAULTS.kitchen);
     expect(defaultShoppingFor(null).map((s) => s.category)).toEqual(DEFAULT_SHOP_CATEGORIES);
+  });
+});
+
+describe('articles use the store catalogue', () => {
+  it('every article step points to a category with products, and partner links to a known store', () => {
+    for (const article of ARTICLES_CATALOG) {
+      for (const section of article.sections) {
+        if (section.shopCategory) {
+          expect(SHOP_CATEGORY_IDS, `${article.id} step ${section.step}`).toContain(section.shopCategory);
+          expect(SHOP_CATALOG.some((p) => p.category === section.shopCategory), `${article.id} step ${section.step}`).toBe(true);
+        }
+        if (section.partnerLink) {
+          expect(Object.keys(STORE_NAMES)).toContain(section.partnerLink.store);
+          expect(section.partnerLink.url).toMatch(/^https:\/\//);
+        }
+        expect(section.products ?? []).toHaveLength(0); // the illustrative catalogue is no longer used in articles
+      }
+      expect(ZONES.some((z) => z.id === article.zoneId), article.id).toBe(true);
+    }
   });
 });
 

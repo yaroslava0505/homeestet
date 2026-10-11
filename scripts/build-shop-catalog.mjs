@@ -7,11 +7,11 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const SOURCES = ['sinsay', 'epicentr'];
+const SOURCES = ['sinsay', 'epicentr', 'bi'];
 const OUT = path.join(ROOT, 'src/data/shopCatalog.ts');
 
 const TARGET_PER_CATEGORY = 14;
-const MAX_PER_STORE_PER_CATEGORY = { sinsay: 7, epicentr: 14 };
+const MAX_PER_STORE_PER_CATEGORY = { sinsay: 7, epicentr: 14, bi: 14 };
 const MIN_PRICE = 40;
 const PRICE_BANDS = [250, 600, 1200, Infinity];
 
@@ -20,7 +20,7 @@ const CATEGORY_IDS = [
   'organizers', 'baskets', 'shelves', 'hooks', 'shoe-storage', 'racks',
   'throws', 'bedspreads', 'pillows', 'wall-art', 'frames', 'mirrors', 'clocks', 'boxes',
   'table-lamps', 'floor-lamps', 'garlands', 'candles', 'candle-holders', 'vases', 'plants', 'trays',
-  'kitchen-jars', 'rails',
+  'kitchen-jars', 'rails', 'play-tents', 'toy-pillows',
 ];
 
 /** Source category → our category. A function may look at the product name. */
@@ -68,11 +68,18 @@ const MAP = {
     dzerkala: 'mirrors',
     spetsii: 'kitchen-jars',
   },
+  bi: {
+    palatki: (name) => (/намет|вігвам|будиночок/i.test(name) ? 'play-tents' : null),
+    'myaki-ihrashky-podushky': (name) => (/подушка/i.test(name) ? 'toy-pillows' : null),
+  },
 };
 
 /** Seasonal, children's and off-topic items never make good "variants". */
 const EXCLUDE =
   /дитяч|новорічн|різдвян|геловін|хелоу|хеллоу|hello kitty|kuromi|disney|mickey|minecraft|автомобіл|худі|hoodie|шкарпетк|великодн|пасхал|сніговик|ялинк|гном|олен|пряник|омел|гарбуз|для собак|для кот|кліт|гараж|складськ|архівн|плечик|тремпел|наручн|пляшк|для води|спортивн|для макіяж|косметичн|кишеньков|єдиноріг|динозавр|астронавт|bambinelli|харчов|уцінк|б\/у/i;
+
+/** Toy-store items that do not belong in a calm kids' corner (anime, memes, novelty hearts). */
+const BI_EXCLUDE = /аніме|anime|rick|morty|кохання|серце|сюрприз|маск|брелок|наліпок/i;
 
 const sha = (s) => createHash('sha1').update(s).digest('hex').slice(0, 8);
 
@@ -89,7 +96,8 @@ for (const store of SOURCES) {
     const price = Math.round(Number(raw.price));
     if (!name || !Number.isFinite(price) || price < MIN_PRICE) continue;
     if (!/^https:\/\//.test(raw.url) || !/^https:\/\//.test(raw.image)) continue;
-    if (EXCLUDE.test(name)) continue;
+    // The toy store is children's by definition: only its own off-topic items are filtered.
+    if (store === 'bi' ? BI_EXCLUDE.test(name) : EXCLUDE.test(name)) continue;
     const item = { id: `shop-${store}-${sha(raw.url)}`, name, category, price, store, url: raw.url, image: raw.image };
     if (raw.rating) item.rating = Number(raw.rating);
     if (raw.reviews) item.reviews = Number(raw.reviews);
@@ -109,7 +117,7 @@ const unique = candidates.filter((p) => {
 });
 
 const bandOf = (price) => PRICE_BANDS.findIndex((limit) => price < limit);
-const storeRank = { sinsay: 0, epicentr: 1 };
+const storeRank = { sinsay: 0, epicentr: 1, bi: 2 };
 const byPreference = (a, b) =>
   storeRank[a.store] - storeRank[b.store] || (b.reviews ?? 0) - (a.reviews ?? 0) || a.price - b.price;
 
@@ -120,7 +128,7 @@ for (const category of CATEGORY_IDS) {
   const bands = PRICE_BANDS.map(() => []);
   for (const p of pool) bands[bandOf(p.price)].push(p);
   const picked = [];
-  const perStore = { sinsay: 0, epicentr: 0 };
+  const perStore = { sinsay: 0, epicentr: 0, bi: 0 };
   // Round-robin across price bands so the cheap and the upper range are both represented.
   while (picked.length < TARGET_PER_CATEGORY && bands.some((b) => b.length)) {
     for (const band of bands) {
@@ -136,7 +144,7 @@ for (const category of CATEGORY_IDS) {
   }
   picked.sort((a, b) => a.price - b.price);
   selected.push(...picked);
-  report.push(`${category.padEnd(15)} ${String(picked.length).padStart(2)} items  ${picked[0]?.price ?? '-'}–${picked.at(-1)?.price ?? '-'} ₴  sinsay ${perStore.sinsay}, epicentr ${perStore.epicentr}`);
+  report.push(`${category.padEnd(15)} ${String(picked.length).padStart(2)} items  ${picked[0]?.price ?? '-'}–${picked.at(-1)?.price ?? '-'} ₴  sinsay ${perStore.sinsay}, epicentr ${perStore.epicentr}, bi ${perStore.bi}`);
 }
 
 const header = [

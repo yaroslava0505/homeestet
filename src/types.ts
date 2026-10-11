@@ -195,7 +195,12 @@ export interface ArticleIdeaSection {
   description: string;
   image: ImageAsset;
   imageAlt?: string;
-  products: ProductItem[];
+  /** Real store products for this step, from the partner-store catalogue (three shown, cheapest first). */
+  shopCategory?: ShopCategoryId;
+  /** Contextual partner link when the thing is sold by a store that is not in the catalogue. */
+  partnerLink?: { store: ShopStore; url: string; label: string };
+  /** Legacy illustrative picks; kept for articles not yet switched to the store catalogue. */
+  products?: ProductItem[];
 }
 
 export interface BeforeAfterData {
@@ -377,7 +382,7 @@ export interface SavedPhotoPlan {
   plan: PhotoPlan;
 }
 
-export type ShopStore = 'sinsay' | 'epicentr';
+export type ShopStore = 'sinsay' | 'epicentr' | 'bi';
 
 /** A real product from a partner store (generated catalogue in src/data/shopCatalog.ts). */
 export interface ShopProduct {

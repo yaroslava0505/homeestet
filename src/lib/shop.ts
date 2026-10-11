@@ -7,17 +7,24 @@ import { defaultShoppingFor } from '../data/shopCategories.ts';
  * is loaded on demand by the component, so these functions take it as an argument and stay pure.
  */
 
-export const STORE_NAMES: Record<ShopStore, string> = { sinsay: 'Sinsay', epicentr: 'Епіцентр' };
+export const STORE_NAMES: Record<ShopStore, string> = { sinsay: 'Sinsay', epicentr: 'Епіцентр', bi: 'Будинок іграшок' };
 
 /**
  * Affiliate deeplink prefix per store. Empty until the partner-network account (Admitad) is approved;
  * then set e.g. `https://ad.admitad.com/g/<code>/?ulp=` and every store link becomes a tracked one.
  */
-const AFFILIATE_PREFIX: Partial<Record<ShopStore, string>> = {};
+const AFFILIATE_PREFIX: Partial<Record<ShopStore, string>> = {
+  bi: 'https://gndrz.com/g/1xuxd52d9o28fa5118602165fe5e9d/?ulp=',
+};
+
+/** Store URL wrapped into the partner-network deeplink when the store has one. */
+export function affiliateLink(store: ShopStore, url: string): string {
+  const prefix = AFFILIATE_PREFIX[store];
+  return prefix ? `${prefix}${encodeURIComponent(url)}` : url;
+}
 
 export function storeLink(product: ShopProduct): string {
-  const prefix = AFFILIATE_PREFIX[product.store];
-  return prefix ? `${prefix}${encodeURIComponent(product.url)}` : product.url;
+  return affiliateLink(product.store, product.url);
 }
 
 /** At least this many variants are shown even when nothing fits the budget, so the block is never empty. */

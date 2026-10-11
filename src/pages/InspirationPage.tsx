@@ -1,9 +1,51 @@
+import { useEffect, useState } from 'react';
 import { ARTICLES_CATALOG, findArticle } from '../data/articles.ts';
-import type { PageView, ProductItem } from '../types.ts';
+import type { ArticleIdeaSection, PageView, ProductItem, ShopProduct } from '../types.ts';
 import { AppImage } from '../components/AppImage.tsx';
 import { ProductMiniCard } from '../components/ProductMiniCard.tsx';
+import { ShopProductCard } from '../components/ShopVariants.tsx';
 import { BeforeAfterSlider } from '../components/BeforeAfterSlider.tsx';
-import { ArrowRight, ArrowLeft, ShoppingBag } from 'lucide-react';
+import { STORE_NAMES, affiliateLink, loadShopCatalog, pickSpread, variantsFor } from '../lib/shop.ts';
+import { ArrowRight, ArrowLeft, ExternalLink, ShoppingBag } from 'lucide-react';
+
+const STEP_VARIANTS = 3;
+/** Articles show variants regardless of budget; this just keeps the list to realistic everyday prices. */
+const ARTICLE_PRICE_CAP = 3000;
+
+/** Real store products for an article step: a few variants spread across prices, plus an optional partner link. */
+function StepShopping({ section, catalog }: { section: ArticleIdeaSection; catalog: ShopProduct[] | null }) {
+  const items = section.shopCategory && catalog ? pickSpread(variantsFor(catalog, section.shopCategory, ARTICLE_PRICE_CAP), STEP_VARIANTS) : [];
+  if (items.length === 0 && !section.partnerLink) return null;
+  return (
+    <div className="bg-white border border-[#E6E0D6] rounded-xl p-4 sm:p-5 space-y-3">
+      <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-stone-700 font-semibold">
+        <ShoppingBag className="w-4 h-4 text-[#967259]" aria-hidden="true" />
+        <span>Варіанти з магазинів</span>
+      </div>
+      {items.length > 0 && (
+        <ul className="grid grid-cols-3 gap-3 list-none p-0 m-0">
+          {items.map((product) => (
+            <li key={product.id}>
+              <ShopProductCard product={product} />
+            </li>
+          ))}
+        </ul>
+      )}
+      {section.partnerLink && (
+        <a
+          href={affiliateLink(section.partnerLink.store, section.partnerLink.url)}
+          target="_blank"
+          rel="noopener noreferrer nofollow sponsored"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#967259] hover:underline"
+        >
+          {section.partnerLink.label}
+          <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+          <span className="text-stone-400 font-normal">· {STORE_NAMES[section.partnerLink.store]}</span>
+        </a>
+      )}
+    </div>
+  );
+}
 
 interface InspirationPageProps {
   articleId?: string;
@@ -14,6 +56,18 @@ interface InspirationPageProps {
 export function InspirationPage({ articleId, onNavigate, onOpenProduct }: InspirationPageProps) {
   const article = articleId ? findArticle(articleId) : undefined;
   const backToList = () => onNavigate({ type: 'inspiration' });
+  const needsCatalog = Boolean(article?.sections.some((s) => s.shopCategory));
+  const [catalog, setCatalog] = useState<ShopProduct[] | null>(null);
+  useEffect(() => {
+    if (!needsCatalog) return;
+    let alive = true;
+    loadShopCatalog().then((items) => {
+      if (alive) setCatalog(items);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [needsCatalog]);
 
   if (articleId && !article) {
     return (
@@ -70,7 +124,8 @@ export function InspirationPage({ articleId, onNavigate, onOpenProduct }: Inspir
                     <AppImage image={section.image} alt={section.imageAlt ?? section.title} sizes="(min-width: 768px) 768px, 100vw" className="w-full h-full object-cover" />
                   </div>
 
-                  {section.products.length > 0 && (
+                  <StepShopping section={section} catalog={catalog} />
+                  {section.products && section.products.length > 0 && (
                     <div className="bg-white border border-[#E6E0D6] rounded-xl p-4 sm:p-5">
                       <div className="flex items-center gap-2 mb-3.5 text-xs uppercase tracking-wider text-stone-700 font-semibold">
                         <ShoppingBag className="w-4 h-4 text-[#967259]" aria-hidden="true" />
