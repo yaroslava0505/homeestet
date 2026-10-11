@@ -2,18 +2,20 @@ import { useEffect, useState } from 'react';
 import { ExternalLink, ShoppingBag } from 'lucide-react';
 import type { PhotoPlanShopping, ShopProduct } from '../types.ts';
 import { shopCategoryName } from '../data/shopCategories.ts';
-import { STORE_NAMES, loadShopCatalog, storeLink, variantsFor } from '../lib/shop.ts';
-import { formatUAH } from '../utils/format.ts';
+import { STORE_NAMES, loadShopCatalog, pickSpread, storeLink, variantsFor } from '../lib/shop.ts';
+import { formatUAH, formatUAHRange } from '../utils/format.ts';
 
 const INITIAL_VISIBLE = 6;
 
 interface ShopVariantsProps {
   shopping: PhotoPlanShopping[];
   budgetLimit: number;
+  budgetMin: number;
+  budgetMax: number;
 }
 
-/** "What to add" block of the photo plan: several real store products per suggested category. */
-export function ShopVariants({ shopping, budgetLimit }: ShopVariantsProps) {
+/** "What to buy" block of the photo plan: for each suggested category, several real store products in different prices. */
+export function ShopVariants({ shopping, budgetLimit, budgetMin, budgetMax }: ShopVariantsProps) {
   const [catalog, setCatalog] = useState<ShopProduct[] | null>(null);
   useEffect(() => {
     let alive = true;
@@ -25,40 +27,63 @@ export function ShopVariants({ shopping, budgetLimit }: ShopVariantsProps) {
     };
   }, []);
 
-  if (shopping.length === 0) return null;
+  const rows = catalog ? shopping.map((entry) => ({ entry, items: variantsFor(catalog, entry.category, budgetLimit) })).filter((r) => r.items.length > 0) : [];
+  const minimalKit = rows.reduce((sum, r) => sum + r.items[0].price, 0);
+
   return (
     <section className="bg-white p-5 sm:p-8 rounded-2xl border border-stone-200 space-y-7">
-      <div>
-        <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">Варіанти з магазинів</span>
-        <h2 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C]">Що можна додати в цей кут</h2>
-        <p className="text-sm text-stone-600 mt-2 leading-relaxed">
-          Кілька варіантів у різних цінах із Sinsay та Епіцентру в межах {formatUAH(budgetLimit)}. Ціни на момент
-          збору каталогу, остаточна в магазині.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">Розумний шопінг</span>
+          <h2 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C]">{shopping.length > 0 ? 'Що варто докупити' : 'Купувати нічого не треба'}</h2>
+          {shopping.length > 0 && (
+            <p className="text-sm text-stone-600 mt-2 leading-relaxed">
+              Для кожної речі кілька реальних варіантів у різних цінах із Sinsay та Епіцентру в межах {formatUAH(budgetLimit)}. Ціни на
+              момент збору каталогу, остаточна в магазині.
+            </p>
+          )}
+        </div>
+        {shopping.length > 0 && (
+          <div className="text-left sm:text-right text-xs text-stone-600 shrink-0">
+            <span className="block">
+              Орієнтовно на весь план: <strong>{budgetMax > 0 ? formatUAHRange(budgetMin, budgetMax) : '0 ₴'}</strong>
+            </span>
+            {minimalKit > 0 && (
+              <span className="block">
+                Найдешевший набір: <strong>від {formatUAH(minimalKit)}</strong>
+              </span>
+            )}
+          </div>
+        )}
       </div>
-      {catalog ? (
-        shopping.map((entry) => <VariantRow key={entry.category} entry={entry} catalog={catalog} budgetLimit={budgetLimit} />)
-      ) : (
+
+      {shopping.length === 0 ? (
+        <p className="text-sm text-stone-600">Усе, що потрібно для цього кута, у тебе вже є. План вище повністю безкоштовний.</p>
+      ) : !catalog ? (
         <p className="text-sm text-stone-500" aria-live="polite">
           Завантажуємо каталог…
         </p>
+      ) : (
+        rows.map(({ entry, items }) => <VariantRow key={entry.category} entry={entry} items={items} />)
       )}
     </section>
   );
 }
 
-function VariantRow({ entry, catalog, budgetLimit }: { entry: PhotoPlanShopping; catalog: ShopProduct[]; budgetLimit: number }) {
+function VariantRow({ entry, items }: { entry: PhotoPlanShopping; items: ShopProduct[] }) {
   const [expanded, setExpanded] = useState(false);
-  const items = variantsFor(catalog, entry.category, budgetLimit);
-  if (items.length === 0) return null;
-  const visible = expanded ? items : items.slice(0, INITIAL_VISIBLE);
-  const hidden = items.length - INITIAL_VISIBLE;
+  const visible = expanded ? items : pickSpread(items, INITIAL_VISIBLE);
+  const hidden = items.length - visible.length;
 
   return (
     <div className="space-y-3">
       <div>
         <h3 className="font-serif text-lg text-stone-900">{shopCategoryName(entry.category)}</h3>
-        {entry.why && <p className="text-xs text-stone-600 mt-0.5">{entry.why}</p>}
+        {entry.why && (
+          <p className="text-xs text-stone-700 mt-0.5">
+            <strong className="text-stone-900">Чому:</strong> {entry.why}
+          </p>
+        )}
       </div>
       <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 list-none p-0 m-0">
         {visible.map((product) => (
@@ -67,7 +92,7 @@ function VariantRow({ entry, catalog, budgetLimit }: { entry: PhotoPlanShopping;
           </li>
         ))}
       </ul>
-      {hidden > 0 && (
+      {(hidden > 0 || expanded) && (
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}

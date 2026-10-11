@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { SHOP_CATALOG } from '../data/shopCatalog.ts';
-import { SHOP_CATEGORIES, SHOP_CATEGORY_IDS, ZONE_SHOP_DEFAULTS, defaultShoppingFor } from '../data/shopCategories.ts';
+import { DEFAULT_SHOP_CATEGORIES, SHOP_CATEGORIES, SHOP_CATEGORY_IDS, ZONE_SHOP_DEFAULTS, defaultShoppingFor } from '../data/shopCategories.ts';
 import { shoppingFor, storeLink, variantsFor } from '../lib/shop.ts';
 import { ZONES } from '../data/homeestetData.ts';
 
@@ -39,7 +39,7 @@ describe('partner-store catalogue', () => {
       expect(new Set(categories).size).toBe(categories.length);
     }
     expect(defaultShoppingFor('kitchen').map((s) => s.category)).toEqual(ZONE_SHOP_DEFAULTS.kitchen);
-    expect(defaultShoppingFor(null)).toHaveLength(4);
+    expect(defaultShoppingFor(null).map((s) => s.category)).toEqual(DEFAULT_SHOP_CATEGORIES);
   });
 });
 

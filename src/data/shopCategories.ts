@@ -56,7 +56,8 @@ export const ZONE_SHOP_DEFAULTS: Record<string, ShopCategoryId[]> = {
   balcony: ['throws', 'garlands', 'plants', 'pillows'],
 };
 
-export const DEFAULT_SHOP_CATEGORIES: ShopCategoryId[] = ['organizers', 'throws', 'wall-art', 'candles'];
+/** Zone unknown: only things that make sense in any room (no textiles for a desk, no lamps for a hallway). */
+export const DEFAULT_SHOP_CATEGORIES: ShopCategoryId[] = ['organizers', 'wall-art', 'baskets'];
 
 /** Default shopping block for a zone (used when the model returns none and for analyses saved before this feature). */
 export function defaultShoppingFor(zoneId: string | null): PhotoPlanShopping[] {

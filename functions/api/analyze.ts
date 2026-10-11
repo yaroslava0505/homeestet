@@ -1,7 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import type { AnalyzeParams, AnalyzeResponse } from '../../src/types.ts';
-import { PRODUCTS_CATALOG } from '../../src/data/products.ts';
 import { BUDGET_TIERS } from '../../src/data/homeestetData.ts';
 import { isShopCategoryId } from '../../src/data/shopCategories.ts';
 import {
@@ -70,7 +69,7 @@ const MAX_NOTE_LENGTH = 300;
 const DEFAULT_DAILY_LIMIT = 100;
 const DEFAULT_IP_DAILY_LIMIT = 5;
 
-const SYSTEM_PROMPT = buildSystemPrompt(PRODUCTS_CATALOG);
+const SYSTEM_PROMPT = buildSystemPrompt();
 const OPEN_MODEL_SYSTEM_PROMPT = `${SYSTEM_PROMPT}\n\n${buildOpenModelGuide()}`;
 const JSON_SCHEMA = modelPlanJsonSchema();
 
@@ -340,7 +339,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
   const params: AnalyzeParams = { budgetId: body.budgetId, rental: body.rental, note: body.note };
 
   if (env.ANALYSIS_MOCK === '1') {
-    const plan = normalizePlan(MOCK_MODEL_PLAN, params, PRODUCTS_CATALOG);
+    const plan = normalizePlan(MOCK_MODEL_PLAN, params);
     const reply: AnalyzeResponse = { plan, model: 'mock', usage: { inputTokens: 0, outputTokens: 0 } };
     return json(reply);
   }
@@ -361,7 +360,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
   try {
     const result = provider === 'anthropic' ? await runAnthropic(env, body, params) : await runWorkersAi(env, body, params);
     if (quota) waitUntil(consumeQuota(env, quota));
-    const plan = normalizePlan(result.raw, params, PRODUCTS_CATALOG);
+    const plan = normalizePlan(result.raw, params);
     const reply: AnalyzeResponse = { plan, model: result.model, usage: result.usage };
     return json(reply);
   } catch (error) {

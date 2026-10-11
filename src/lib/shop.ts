@@ -30,6 +30,18 @@ export function variantsFor(catalog: ShopProduct[], category: ShopCategoryId, bu
   return within.length >= MIN_VARIANTS ? within : all.slice(0, MIN_VARIANTS);
 }
 
+/** Up to `count` items spread evenly over a price-sorted list, so cheap, mid and upper prices all show up front. */
+export function pickSpread<T>(items: T[], count: number): T[] {
+  if (items.length <= count) return items;
+  const picked: T[] = [];
+  for (let i = 0; i < count; i++) {
+    const index = Math.round((i * (items.length - 1)) / (count - 1));
+    const candidate = items[index];
+    if (!picked.includes(candidate)) picked.push(candidate);
+  }
+  return picked;
+}
+
 /** Categories to show for a plan: the model's choice, or zone defaults for analyses saved before this feature. */
 export function shoppingFor(plan: Pick<PhotoPlan, 'shopping' | 'zoneId' | 'isInterior'>): PhotoPlanShopping[] {
   if (plan.shopping && plan.shopping.length > 0) return plan.shopping;

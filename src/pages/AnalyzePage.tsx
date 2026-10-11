@@ -1,10 +1,9 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import type { AnalyzeParams, PageView, PhotoPlan, PlanEntry, ProductItem, SavedPhotoPlan } from '../types.ts';
-import { BUDGET_TIERS, PRODUCTS_CATALOG, STYLES, ZONES, findProduct } from '../data/homeestetData.ts';
+import type { AnalyzeParams, PageView, PhotoPlan, PlanEntry, SavedPhotoPlan } from '../types.ts';
+import { BUDGET_TIERS, STYLES, ZONES } from '../data/homeestetData.ts';
 import { AnalyzeError, prepareImage, requestAnalysis, type PreparedImage } from '../lib/analyzeClient.ts';
 import { consumeAnalysisQuota, getAnalysisQuota, type AnalysisQuota } from '../lib/storage.ts';
-import { formatUAH, formatUAHRange, hashString } from '../utils/format.ts';
-import { ProductMiniCard } from '../components/ProductMiniCard.tsx';
+import { hashString } from '../utils/format.ts';
 import { ShopVariants } from '../components/ShopVariants.tsx';
 import { shoppingFor } from '../lib/shop.ts';
 import {
@@ -33,7 +32,6 @@ interface AnalyzePageProps {
   onAddToPlan: (entry: PlanEntry) => void;
   isInPlan: (entryId: string) => boolean;
   onNavigate: (view: PageView) => void;
-  onOpenProduct: (product: ProductItem) => void;
 }
 
 type Stage = 'form' | 'loading' | 'result';
@@ -47,13 +45,6 @@ const LOADING_STEPS = [
 
 function planEntryId(id: string): string {
   return `plan-photo-${id}`;
-}
-
-/** Up to three other catalogue items of the same kind for this zone, so the user can compare, not just accept. */
-function alternativesFor(product: ProductItem, zoneId: string | null): ProductItem[] {
-  return PRODUCTS_CATALOG.filter(
-    (p) => p.id !== product.id && p.category === product.category && (!zoneId || p.zones.includes(zoneId))
-  ).slice(0, 3);
 }
 
 /** "5 кроків", "3 кроки", "1 крок" */
@@ -72,7 +63,6 @@ export function AnalyzePage({
   onAddToPlan,
   isInPlan,
   onNavigate,
-  onOpenProduct,
 }: AnalyzePageProps) {
   const saved = planId ? savedPlans.find((p) => p.id === planId) : undefined;
 
@@ -185,7 +175,6 @@ export function AnalyzePage({
             onAddToPlan={() => onAddToPlan(buildPlanEntry(saved.id, saved.plan))}
             onReset={reset}
             onNavigate={onNavigate}
-            onOpenProduct={onOpenProduct}
           />
         </div>
       </div>
@@ -211,7 +200,6 @@ export function AnalyzePage({
             onAddToPlan={() => onAddToPlan(buildPlanEntry(resultId, plan))}
             onReset={reset}
             onNavigate={onNavigate}
-            onOpenProduct={onOpenProduct}
           />
         </div>
       </div>
@@ -406,8 +394,8 @@ function buildPlanEntry(id: string, plan: PhotoPlan): PlanEntry {
     zoneId: zone?.id ?? 'sofa',
     zoneName: zone?.name ?? plan.zoneLabel,
     tasks: plan.steps.map((step, idx) => ({ id: String(idx + 1).padStart(2, '0'), title: step.title, description: step.description })),
-    productIds: plan.products.map((p) => p.id),
-    budget: plan.estimatedCost,
+    productIds: [],
+    budget: plan.budgetMin,
     status: 'active',
     addedAt: new Date().toISOString(),
   };
@@ -424,15 +412,11 @@ interface PlanResultProps {
   onAddToPlan: () => void;
   onReset: () => void;
   onNavigate: (view: PageView) => void;
-  onOpenProduct: (product: ProductItem) => void;
 }
 
-function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove, onAddToPlan, onReset, onNavigate, onOpenProduct }: PlanResultProps) {
+function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove, onAddToPlan, onReset, onNavigate }: PlanResultProps) {
   const style = STYLES.find((s) => s.id === plan.suggestedStyleId) ?? STYLES[0];
   const budgetTier = BUDGET_TIERS.find((b) => b.id === params.budgetId) ?? BUDGET_TIERS[1];
-  const products = plan.products
-    .map((item) => ({ item, product: findProduct(item.id) }))
-    .filter((x): x is { item: PhotoPlan['products'][number]; product: ProductItem } => Boolean(x.product));
   const noiseTone = plan.noiseLevel >= 60 ? 'bg-red-600/90' : plan.noiseLevel >= 35 ? 'bg-amber-600/90' : 'bg-emerald-600/90';
   const noiseLabel = plan.noiseLevel >= 60 ? 'високий' : plan.noiseLevel >= 35 ? 'середній' : 'низький';
 
@@ -591,61 +575,8 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
         <ActionList icon={<Recycle className="w-4 h-4 text-emerald-700" aria-hidden="true" />} title="Використати з наявного" items={plan.useOwned} />
       </div>
 
-      {/* Products */}
-      <section className="bg-white p-5 sm:p-8 rounded-2xl border border-stone-200 space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-          <div>
-            <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">Розумний шопінг</span>
-            <h2 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C]">{products.length > 0 ? 'Що варто докупити' : 'Купувати нічого не треба'}</h2>
-          </div>
-          <div className="text-left sm:text-right text-xs text-stone-600">
-            <span className="block">Орієнтовно на весь план: <strong>{plan.budgetMax > 0 ? formatUAHRange(plan.budgetMin, plan.budgetMax) : '0 ₴'}</strong></span>
-            <span className="block">Ліміт: {formatUAH(plan.budgetLimit)}</span>
-          </div>
-        </div>
-
-        {products.length > 0 ? (
-          <div className="space-y-3">
-            {products.map(({ item, product }) => {
-              const alternatives = alternativesFor(product, plan.zoneId);
-              return (
-                <div key={product.id} className="p-3 rounded-xl border border-stone-200/80 bg-[#FAF8F5] space-y-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <ProductMiniCard product={product} onOpen={onOpenProduct} className="sm:w-80 shrink-0" />
-                    <p className="text-xs text-stone-700 leading-relaxed sm:pl-2">
-                      <strong className="text-stone-900">Чому:</strong> {item.reason}
-                    </p>
-                  </div>
-                  {alternatives.length > 0 && (
-                    <div className="pt-3 border-t border-stone-200/70">
-                      <span className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold block mb-2">
-                        Інші варіанти: {product.category.toLowerCase()}
-                      </span>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        {alternatives.map((alt) => (
-                          <ProductMiniCard key={alt.id} product={alt} onOpen={onOpenProduct} caption={alt.merchant} />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-            <div className="flex items-center justify-between pt-3 border-t border-stone-100 text-sm">
-              <span className="text-stone-600">Разом за покупки</span>
-              <span className="font-serif text-xl font-bold text-stone-900 tabular-nums">{formatUAH(plan.estimatedCost)}</span>
-            </div>
-          </div>
-        ) : (
-          <p className="text-sm text-stone-600 flex items-start gap-2">
-            <Check className="w-4 h-4 text-[#8A9A86] shrink-0 mt-0.5" aria-hidden="true" />
-            Усе, що потрібно для цього кута, у тебе вже є. План вище повністю безкоштовний.
-          </p>
-        )}
-      </section>
-
-      {/* Real store variants for the categories the analysis suggested */}
-      <ShopVariants shopping={shoppingFor(plan)} budgetLimit={plan.budgetLimit} />
+      {/* Shopping: real store products for the categories the analysis suggested */}
+      <ShopVariants shopping={shoppingFor(plan)} budgetLimit={plan.budgetLimit} budgetMin={plan.budgetMin} budgetMax={plan.budgetMax} />
 
       {/* Actions */}
       <div className="p-5 sm:p-6 bg-[#FAF2EB] rounded-2xl border border-[#E6D4C2] flex flex-col sm:flex-row sm:items-center justify-between gap-4">

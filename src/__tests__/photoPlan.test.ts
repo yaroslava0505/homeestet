@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_ANALYSIS_MODEL,
-  MAX_PLAN_PRODUCTS,
   MOCK_MODEL_PLAN,
   ModelPlanSchema,
   buildSystemPrompt,
@@ -11,23 +10,22 @@ import {
   modelRequestOptions,
   normalizePlan,
 } from '../lib/photoPlan.ts';
-import { PRODUCTS_CATALOG } from '../data/products.ts';
-import { SHOP_CATEGORIES, ZONE_SHOP_DEFAULTS } from '../data/shopCategories.ts';
-import { BUDGET_TIERS, ZONES } from '../data/homeestetData.ts';
+import { DEFAULT_SHOP_CATEGORIES, SHOP_CATEGORIES, ZONE_SHOP_DEFAULTS } from '../data/shopCategories.ts';
+import { ZONES } from '../data/homeestetData.ts';
 
-const limit = (id: string) => BUDGET_TIERS.find((b) => b.id === id)!.limit;
 
 describe('photo plan schema and prompt', () => {
   it('the mock plan satisfies the schema the model must follow', () => {
     expect(() => ModelPlanSchema.parse(MOCK_MODEL_PLAN)).not.toThrow();
   });
 
-  it('system prompt lists every product id, zone id and style id', () => {
-    const prompt = buildSystemPrompt(PRODUCTS_CATALOG);
-    for (const p of PRODUCTS_CATALOG) expect(prompt).toContain(p.id);
-    for (const z of ZONES) expect(prompt).toContain(z.id);
+  it('system prompt lists every zone, style and store category, plus the typical categories per zone', () => {
+    const prompt = buildSystemPrompt();
+    for (const z of ZONES) expect(prompt).toContain(`${z.id} = ${z.name}`);
     for (const c of SHOP_CATEGORIES) expect(prompt).toContain(`${c.id} = ${c.name}`);
+    for (const [zoneId, ids] of Object.entries(ZONE_SHOP_DEFAULTS)) expect(prompt).toContain(`${zoneId}: ${ids.join(', ')}`);
     expect(prompt).toContain('warm-minimalism');
+    expect(prompt).not.toMatch(/prod-[a-z-]+/); // the illustrative catalogue is no longer sent to the model
   });
 
   it('request options follow the model family (effort and fallbacks only where supported)', () => {
@@ -40,7 +38,8 @@ describe('photo plan schema and prompt', () => {
   it('JSON schema for open models lists every required field', () => {
     const schema = modelPlanJsonSchema() as { type: string; required?: string[]; properties: Record<string, unknown> };
     expect(schema.type).toBe('object');
-    for (const key of ['is_interior', 'zone_id', 'steps', 'products', 'shopping', 'summary', 'confidence']) {
+    for (const key of ['is_interior', 'zone_id', 'steps', 'shopping', 'summary', 'confidence']) {
+      expect(schema.properties).not.toHaveProperty('products');
       expect(schema.properties).toHaveProperty(key);
       expect(schema.required).toContain(key);
     }
@@ -65,39 +64,10 @@ describe('photo plan schema and prompt', () => {
 });
 
 describe('normalizePlan', () => {
-  it('never exceeds the budget and drops unknown products', () => {
-    const raw = {
-      ...MOCK_MODEL_PLAN,
-      products: [
-        { id: 'prod-standing-mirror', reason: 'дзеркало' }, // 1850 ₴, over a 1000 limit
-        { id: 'prod-does-not-exist', reason: 'вигадка' },
-        { id: 'prod-ceramic-lamp', reason: 'лампа' }, // 890
-        { id: 'prod-fluted-vase', reason: 'ваза' }, // 450, would push over 1000
-        { id: 'prod-ceramic-lamp', reason: 'дубль' },
-      ],
-    };
-    const plan = normalizePlan(raw, { budgetId: 'under-1000', rental: false }, PRODUCTS_CATALOG);
-    expect(plan.products.map((p) => p.id)).toEqual(['prod-ceramic-lamp']);
-    expect(plan.estimatedCost).toBe(890);
-    expect(plan.estimatedCost).toBeLessThanOrEqual(limit('under-1000'));
-    expect(plan.budgetLimit).toBe(1000);
-  });
-
-  it('caps the product list and keeps the model order', () => {
-    const raw = {
-      ...MOCK_MODEL_PLAN,
-      products: PRODUCTS_CATALOG.slice(0, 6).map((p) => ({ id: p.id, reason: p.name })),
-    };
-    const plan = normalizePlan(raw, { budgetId: '10000-plus', rental: false }, PRODUCTS_CATALOG);
-    expect(plan.products.length).toBeLessThanOrEqual(MAX_PLAN_PRODUCTS);
-    expect(plan.products[0].id).toBe(PRODUCTS_CATALOG[0].id);
-  });
-
   it('maps "other" zones to null and unknown styles to the default', () => {
     const plan = normalizePlan(
       { ...MOCK_MODEL_PLAN, zone_id: 'other', zone_label: '', suggested_style_id: 'japandi' },
-      { budgetId: '1000-3000', rental: true },
-      PRODUCTS_CATALOG
+      { budgetId: '1000-3000', rental: true }
     );
     expect(plan.zoneId).toBeNull();
     expect(plan.zoneLabel).toBe('Простір');
@@ -107,8 +77,7 @@ describe('normalizePlan', () => {
   it('cleans palette, clamps noise and orders the budget range', () => {
     const plan = normalizePlan(
       { ...MOCK_MODEL_PLAN, palette: ['#ABCDEF', 'beige', ' #123456 '], noise_level: 140, budget_min: 900, budget_max: 300 },
-      { budgetId: 'under-1000', rental: false },
-      PRODUCTS_CATALOG
+      { budgetId: 'under-1000', rental: false }
     );
     expect(plan.palette).toEqual(['#ABCDEF', '#123456']);
     expect(plan.noiseLevel).toBe(100);
@@ -130,15 +99,14 @@ describe('normalizePlan', () => {
           { category: 'trays', why: 'зайва п’ята' },
         ],
       },
-      { budgetId: '1000-3000', rental: false },
-      PRODUCTS_CATALOG
+      { budgetId: '1000-3000', rental: false }
     );
     expect(plan.shopping!.map((s) => s.category)).toEqual(['throws', 'vases', 'mirrors', 'candles']);
     expect(plan.shopping![0].why).toBe('плед');
   });
 
   it('fills the shopping block with zone defaults when the model names nothing', () => {
-    const plan = normalizePlan({ ...MOCK_MODEL_PLAN, zone_id: 'kitchen', shopping: [] }, { budgetId: 'under-1000', rental: false }, PRODUCTS_CATALOG);
+    const plan = normalizePlan({ ...MOCK_MODEL_PLAN, zone_id: 'kitchen', shopping: [] }, { budgetId: 'under-1000', rental: false });
     expect(plan.shopping!.map((s) => s.category)).toEqual(ZONE_SHOP_DEFAULTS.kitchen.slice(0, 3));
     for (const s of plan.shopping!) expect(s.why.length).toBeGreaterThan(5);
   });
@@ -146,23 +114,32 @@ describe('normalizePlan', () => {
   it('tops up a short model list with zone defaults, keeping the model choice first and without duplicates', () => {
     const plan = normalizePlan(
       { ...MOCK_MODEL_PLAN, zone_id: 'sofa', shopping: [{ category: 'pillows', why: 'подушки' }] },
-      { budgetId: 'under-1000', rental: false },
-      PRODUCTS_CATALOG
+      { budgetId: 'under-1000', rental: false }
     );
     // sofa defaults: throws, pillows, table-lamps, wall-art → pillows already there, so throws + table-lamps follow
     expect(plan.shopping!.map((s) => s.category)).toEqual(['pillows', 'throws', 'table-lamps']);
     expect(plan.shopping![0].why).toBe('подушки');
   });
 
+  it('never adds textiles when the zone is unknown: only room-neutral categories top up the list', () => {
+    const plan = normalizePlan(
+      { ...MOCK_MODEL_PLAN, zone_id: 'other', shopping: [{ category: 'table-lamps', why: 'лампа' }] },
+      { budgetId: '1000-3000', rental: false }
+    );
+    const ids = plan.shopping!.map((s) => s.category);
+    expect(ids[0]).toBe('table-lamps');
+    expect(ids).toHaveLength(3);
+    for (const id of ids.slice(1)) expect(DEFAULT_SHOP_CATEGORIES).toContain(id);
+    expect(ids).not.toContain('throws');
+    expect(ids).not.toContain('pillows');
+  });
+
   it('non-interior photos come through with an empty shopping list', () => {
     const plan = normalizePlan(
-      { ...MOCK_MODEL_PLAN, is_interior: false, products: [], shopping: [], steps: [] },
-      { budgetId: '1000-3000', rental: false },
-      PRODUCTS_CATALOG
+      { ...MOCK_MODEL_PLAN, is_interior: false, shopping: [], steps: [] },
+      { budgetId: '1000-3000', rental: false }
     );
     expect(plan.isInterior).toBe(false);
-    expect(plan.products).toHaveLength(0);
     expect(plan.shopping).toEqual([]);
-    expect(plan.estimatedCost).toBe(0);
   });
 });

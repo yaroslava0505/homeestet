@@ -120,7 +120,6 @@ export default function App() {
             onAddToPlan={handleAddToPlan}
             isInPlan={isInPlan}
             onNavigate={navigate}
-            onOpenProduct={setActiveProduct}
           />
         );
       case 'zone-builder':

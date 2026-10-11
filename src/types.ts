@@ -349,9 +349,9 @@ export interface PhotoPlan {
   rearrange: string[];
   useOwned: string[];
   steps: PhotoPlanStep[];
-  /** Products from the catalogue that fit the budget, at most 4. */
+  /** Legacy: picks from the illustrative catalogue in analyses saved before October 2026. Always empty now. */
   products: PhotoPlanProduct[];
-  /** Sum of the selected products' prices. */
+  /** Legacy: sum of those picks. Always 0 now; the shopping block prices itself from the store catalogue. */
   estimatedCost: number;
   /** 2–4 store categories to show variants for. Absent in analyses saved before October 2026. */
   shopping?: PhotoPlanShopping[];
