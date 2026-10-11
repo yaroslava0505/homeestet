@@ -1,4 +1,5 @@
 import type { AnalyzeParams, AnalyzeResponse } from '../types.ts';
+import { t } from '../i18n/index.ts';
 
 /** Longest side the photo is downscaled to before upload: enough detail for the model, fewer image tokens. */
 const MAX_SIDE = 1024;
@@ -40,7 +41,7 @@ function loadImage(file: File): Promise<HTMLImageElement> {
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      reject(new AnalyzeError('decode', 'Не вдалося відкрити це зображення. Спробуйте JPEG або PNG.'));
+      reject(new AnalyzeError('decode', t('Не вдалося відкрити це зображення. Спробуйте JPEG або PNG.')));
     };
     img.src = url;
   });
@@ -52,7 +53,7 @@ function drawScaled(img: HTMLImageElement, maxSide: number): HTMLCanvasElement {
   canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
   canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
   const ctx = canvas.getContext('2d');
-  if (!ctx) throw new AnalyzeError('canvas', 'Браузер не підтримує обробку зображень.');
+  if (!ctx) throw new AnalyzeError('canvas', t('Браузер не підтримує обробку зображень.'));
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
   return canvas;
 }
@@ -60,8 +61,8 @@ function drawScaled(img: HTMLImageElement, maxSide: number): HTMLCanvasElement {
 /** Validates, downsizes and re-encodes the chosen file as JPEG. Everything happens in the browser. */
 export async function prepareImage(file: File): Promise<PreparedImage> {
   const typeOk = ACCEPTED_TYPES.includes(file.type) || /\.(jpe?g|png|webp|heic|heif)$/i.test(file.name);
-  if (!typeOk) throw new AnalyzeError('type', 'Підтримуються JPG, PNG, WebP або HEIC.');
-  if (file.size > MAX_FILE_BYTES) throw new AnalyzeError('size', 'Файл завеликий: максимум 12 МБ.');
+  if (!typeOk) throw new AnalyzeError('type', t('Підтримуються JPG, PNG, WebP або HEIC.'));
+  if (file.size > MAX_FILE_BYTES) throw new AnalyzeError('size', t('Файл завеликий: максимум 12 МБ.'));
 
   const img = await loadImage(file);
   const main = drawScaled(img, MAX_SIDE);
@@ -90,10 +91,11 @@ export async function requestAnalysis(image: PreparedImage, params: AnalyzeParam
         budgetId: params.budgetId,
         rental: params.rental,
         note: params.note,
+        locale: params.locale,
       }),
     });
   } catch {
-    throw new AnalyzeError('network', 'Немає з’єднання. Перевірте інтернет і спробуйте ще раз.');
+    throw new AnalyzeError('network', t('Немає з’єднання. Перевірте інтернет і спробуйте ще раз.'));
   }
 
   let payload: unknown = null;
@@ -109,8 +111,8 @@ export async function requestAnalysis(image: PreparedImage, params: AnalyzeParam
     const message =
       err.message ??
       (response.status === 404
-        ? 'Аналіз фото ще не підключено на цьому сервері.'
-        : `Сервіс аналізу відповів помилкою ${response.status}.`);
+        ? t('Аналіз фото ще не підключено на цьому сервері.')
+        : t('Сервіс аналізу відповів помилкою {status}.', { status: response.status }));
     throw new AnalyzeError(code, message);
   }
 

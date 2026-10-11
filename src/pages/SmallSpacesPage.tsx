@@ -5,6 +5,7 @@ import { AppImage } from '../components/AppImage.tsx';
 import { ProductMiniCard } from '../components/ProductMiniCard.tsx';
 import { formatUAH } from '../utils/format.ts';
 import { AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
+import { t } from '../i18n/index.ts';
 
 interface SmallSpacesPageProps {
   onNavigate: (view: PageView) => void;
@@ -12,11 +13,11 @@ interface SmallSpacesPageProps {
 }
 
 const SUBCATEGORIES = [
-  { id: 'all', label: 'Всі площі' },
-  { id: '20 м²', label: '20 м²' },
-  { id: 'маленька кухня', label: 'Маленька кухня' },
-  { id: 'маленька спальня', label: 'Маленька спальня' },
-  { id: 'маленьке робоче місце', label: 'Робочий куточок' },
+  { id: 'all', label: t('Всі площі') },
+  { id: '20 м²', label: t('20 м²') },
+  { id: 'маленька кухня', label: t('Маленька кухня') },
+  { id: 'маленька спальня', label: t('Маленька спальня') },
+  { id: 'маленьке робоче місце', label: t('Робочий куточок') },
 ];
 
 const ZONE_FOR_SUBCATEGORY: Record<string, string> = {
@@ -36,13 +37,13 @@ export function SmallSpacesPage({ onNavigate, onOpenProduct }: SmallSpacesPagePr
     <div className="bg-[#FAF8F5] min-h-[85vh] py-10 sm:py-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         <div className="max-w-3xl">
-          <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-2">Розумна ергономіка</span>
-          <h1 className="font-serif text-3xl sm:text-5xl text-[#2C2C2C] font-normal tracking-tight">🏠 Маленький дім: простір, повітря та порядок</h1>
+          <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-2">{t('Розумна ергономіка')}</span>
+          <h1 className="font-serif text-3xl sm:text-5xl text-[#2C2C2C] font-normal tracking-tight">{t('🏠 Маленький дім: простір, повітря та порядок')}</h1>
           <p className="text-stone-600 text-sm sm:text-base mt-2 leading-relaxed">
-            Як перетворити смарт-квартиру 20–40 м² чи компактну кімнату на візуально просторий, естетичний простір без капітального перепланування.
+            {t('Як перетворити смарт-квартиру 20–40 м² чи компактну кімнату на візуально просторий, естетичний простір без капітального перепланування.')}
           </p>
 
-          <div className="flex flex-wrap items-center gap-2 mt-6" role="group" aria-label="Фільтр за площею">
+          <div className="flex flex-wrap items-center gap-2 mt-6" role="group" aria-label={t('Фільтр за площею')}>
             {SUBCATEGORIES.map((sub) => (
               <button
                 type="button"
@@ -70,7 +71,7 @@ export function SmallSpacesPage({ onNavigate, onOpenProduct }: SmallSpacesPagePr
                   <h2 className="font-serif text-2xl sm:text-3xl text-stone-900 font-normal mt-0.5">{item.title}</h2>
                 </div>
                 <div className="text-left sm:text-right shrink-0">
-                  <span className="text-xs text-stone-500 block">Бюджет трансформації:</span>
+                  <span className="text-xs text-stone-500 block">{t('Бюджет трансформації:')}</span>
                   <span className="font-serif text-xl font-bold text-stone-900 tabular-nums">{formatUAH(item.budget)}</span>
                 </div>
               </div>
@@ -79,14 +80,14 @@ export function SmallSpacesPage({ onNavigate, onOpenProduct }: SmallSpacesPagePr
                 <div className="p-4 bg-red-50/60 rounded-xl border border-red-200/60 text-stone-800">
                   <span className="flex items-center gap-1.5 font-semibold text-red-800 text-xs uppercase tracking-wider mb-1">
                     <AlertCircle className="w-3.5 h-3.5 text-red-600" aria-hidden="true" />
-                    Типова проблема:
+                    {t('Типова проблема:')}
                   </span>
                   <p className="leading-relaxed text-stone-700">{item.problem}</p>
                 </div>
                 <div className="p-4 bg-emerald-50/60 rounded-xl border border-emerald-200/60 text-stone-800">
                   <span className="flex items-center gap-1.5 font-semibold text-emerald-800 text-xs uppercase tracking-wider mb-1">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" />
-                    Рішення HomeEstet:
+                    {t('Рішення HomeEstet:')}
                   </span>
                   <p className="leading-relaxed text-stone-700">{item.solution}</p>
                 </div>
@@ -98,11 +99,11 @@ export function SmallSpacesPage({ onNavigate, onOpenProduct }: SmallSpacesPagePr
                 </div>
 
                 <div className="bg-[#FAF8F5] p-5 rounded-xl border border-stone-200 space-y-4">
-                  <span className="text-xs uppercase tracking-wider text-emerald-800 font-semibold block">♻️ Альтернатива без покупки (0 ₴)</span>
+                  <span className="text-xs uppercase tracking-wider text-emerald-800 font-semibold block">{t('♻️ Альтернатива без покупки (0 ₴)')}</span>
                   <p className="text-xs text-stone-600 leading-relaxed">{item.freeAlternative}</p>
 
                   <div className="pt-3 border-t border-stone-200">
-                    <span className="text-[11px] font-semibold text-stone-800 block mb-1">Золоте правило простору:</span>
+                    <span className="text-[11px] font-semibold text-stone-800 block mb-1">{t('Золоте правило простору:')}</span>
                     <p className="text-xs italic text-stone-600">«{item.keyTakeaway}»</p>
                   </div>
 
@@ -111,14 +112,14 @@ export function SmallSpacesPage({ onNavigate, onOpenProduct }: SmallSpacesPagePr
                     onClick={() => onNavigate({ type: 'zone-builder', zoneId: ZONE_FOR_SUBCATEGORY[item.subcategory] })}
                     className="w-full py-2.5 bg-[#2C2C2C] hover:bg-[#444] text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5"
                   >
-                    <span>Зробити мою маленьку зону</span>
+                    <span>{t('Зробити мою маленьку зону')}</span>
                     <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                   </button>
                 </div>
               </div>
 
               <div className="pt-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-stone-500 block mb-3">Рекомендовані товари для вирішення:</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-stone-500 block mb-3">{t('Рекомендовані товари для вирішення:')}</span>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {item.products.map((product) => (
                     <ProductMiniCard key={product.id} product={product} onOpen={onOpenProduct} className="bg-[#FAF8F5]" />

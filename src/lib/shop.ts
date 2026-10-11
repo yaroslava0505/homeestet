@@ -1,13 +1,14 @@
 import type { PhotoPlan, PhotoPlanShopping, ShopProduct, ShopStore } from '../types.ts';
 import type { ShopCategoryId } from '../data/shopCategories.ts';
 import { defaultShoppingFor } from '../data/shopCategories.ts';
+import { t } from '../i18n/index.ts';
 
 /**
  * Helpers for the "variants from stores" block. The catalogue itself (`src/data/shopCatalog.ts`, ~120 KB)
  * is loaded on demand by the component, so these functions take it as an argument and stay pure.
  */
 
-export const STORE_NAMES: Record<ShopStore, string> = { sinsay: 'Sinsay', epicentr: 'Епіцентр', bi: 'Будинок іграшок' };
+export const STORE_NAMES: Record<ShopStore, string> = { sinsay: 'Sinsay', epicentr: t('Епіцентр'), bi: 'Будинок іграшок' };
 
 /**
  * Affiliate deeplink prefix per store. Empty until the partner-network account (Admitad) is approved;

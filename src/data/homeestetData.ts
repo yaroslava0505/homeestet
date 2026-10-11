@@ -10,11 +10,12 @@ import type {
   Zone,
 } from '../types.ts';
 import { IMAGES } from './images.ts';
+import { localizeData } from '../i18n/index.ts';
 import { getProduct } from './products.ts';
 
 export { PRODUCTS_CATALOG, getProduct, findProduct } from './products.ts';
 
-export const ZONES: Zone[] = [
+const ZONES_UK: Zone[] = [
   {
     id: 'sofa',
     name: 'Диванна зона',
@@ -176,7 +177,7 @@ export const ZONES: Zone[] = [
   },
 ];
 
-export const STYLES: InteriorStyle[] = [
+const STYLES_UK: InteriorStyle[] = [
   {
     id: 'warm-minimalism',
     name: 'Warm Minimalism',
@@ -267,7 +268,7 @@ export const STYLES: InteriorStyle[] = [
   },
 ];
 
-export const MOODS: Mood[] = [
+const MOODS_UK: Mood[] = [
   { id: 'calm', label: 'Спокійний', icon: '🤍', desc: 'Нейтральний, умиротворений, вільний від шуму' },
   { id: 'natural', label: 'Природний', icon: '🌿', desc: 'Рослини, тактильне дерево, дихаючі волокна' },
   { id: 'cozy', label: 'Затишний', icon: '🕯️', desc: 'Багатошаровий текстиль, м’яке світло, тепло' },
@@ -277,7 +278,7 @@ export const MOODS: Mood[] = [
   { id: 'warm', label: 'Теплий', icon: '🌙', desc: 'Оксамитові та бурштинові переливи вечірнього затишку' },
 ];
 
-export const BUDGET_TIERS: BudgetTier[] = [
+const BUDGET_TIERS_UK: BudgetTier[] = [
   { id: 'under-1000', label: 'До 1 000 ₴', limit: 1000, desc: 'Швидкий точковий затишок: текстиль, свічки, наведення порядку' },
   { id: '1000-3000', label: '1 000 – 3 000 ₴', limit: 3000, desc: 'Оптимальний баланс: ключовий акцент + лампа + декор' },
   { id: '3000-5000', label: '3 000 – 5 000 ₴', limit: 5000, desc: 'Помітне оновлення: столик або органайзери + освітлення + текстиль' },
@@ -285,7 +286,7 @@ export const BUDGET_TIERS: BudgetTier[] = [
   { id: '10000-plus', label: '10 000+ ₴', limit: 99999, desc: 'Преміальні матеріали: масив дуба, дизайнерське світло, натуральний льон' },
 ];
 
-export const SMALL_SPACES_DATA: SmallSpaceSolution[] = [
+const SMALL_SPACES_DATA_UK: SmallSpaceSolution[] = [
   {
     id: 'small-20m-studio',
     subcategory: '20 м²',
@@ -340,7 +341,7 @@ export const SMALL_SPACES_DATA: SmallSpaceSolution[] = [
   },
 ];
 
-export const RENTED_HOME_DATA: RentedHomeSolution[] = [
+const RENTED_HOME_DATA_UK: RentedHomeSolution[] = [
   {
     id: 'rent-no-drilling',
     title: 'Не можна свердлити стіни: вертикальний декор без єдиного цвяха',
@@ -394,7 +395,7 @@ export const RENTED_HOME_DATA: RentedHomeSolution[] = [
   },
 ];
 
-export const PLAN_TASKS: PlanTask[] = [
+const PLAN_TASKS_UK: PlanTask[] = [
   {
     id: 'task-w1-1',
     week: 1,
@@ -517,7 +518,7 @@ export const PLAN_TASKS: PlanTask[] = [
   },
 ];
 
-export const SURPRISE_IDEAS: SurpriseIdea[] = [
+const SURPRISE_IDEAS_UK: SurpriseIdea[] = [
   {
     id: 'idea-1',
     title: 'Правило «1 + 2 + 3» для журнального столика',
@@ -600,7 +601,7 @@ export const SURPRISE_IDEAS: SurpriseIdea[] = [
 ];
 
 /** Before/after case shown on the home page. Both photos are the same pantry scene. */
-export const HOME_BEFORE_AFTER: BeforeAfterData = {
+const HOME_BEFORE_AFTER_UK: BeforeAfterData = {
   title: 'ДО → ПІСЛЯ: Перетворення комори без ремонту',
   subtitle: 'Потягніть бігунок, щоб побачити різницю між хаосом та вивіреним спокоєм.',
   beforeImg: IMAGES.pantryBefore,
@@ -618,3 +619,14 @@ export const HOME_BEFORE_AFTER: BeforeAfterData = {
   budgetFrom: 1100,
   notes: 'Час виконання: 2 години. Використано: 12 скляних банок, 2 плетені кошики та бамбуковий лоток.',
 };
+
+// Localized views of the data above (Russian when the page runs under /ru, otherwise the originals).
+export const ZONES = localizeData(ZONES_UK);
+export const STYLES = localizeData(STYLES_UK);
+export const MOODS = localizeData(MOODS_UK);
+export const BUDGET_TIERS = localizeData(BUDGET_TIERS_UK);
+export const SMALL_SPACES_DATA = localizeData(SMALL_SPACES_DATA_UK);
+export const RENTED_HOME_DATA = localizeData(RENTED_HOME_DATA_UK);
+export const PLAN_TASKS = localizeData(PLAN_TASKS_UK);
+export const SURPRISE_IDEAS = localizeData(SURPRISE_IDEAS_UK);
+export const HOME_BEFORE_AFTER = localizeData(HOME_BEFORE_AFTER_UK);

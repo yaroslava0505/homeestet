@@ -1,5 +1,6 @@
 import type { ProductItem } from '../types.ts';
 import { IMAGES } from './images.ts';
+import { localizeData } from '../i18n/index.ts';
 
 /**
  * Single product catalogue used by the zone wizard, articles, small-space and rental pages.
@@ -11,7 +12,7 @@ import { IMAGES } from './images.ts';
  *
  * affiliateUrl is intentionally absent until the partner catalogue is launched.
  */
-export const PRODUCTS_CATALOG: ProductItem[] = [
+const PRODUCTS_UK: ProductItem[] = [
   {
     id: 'prod-waffle-throw',
     name: 'Фактурний вафельний плед із бавовни та льону (140×200 см)',
@@ -533,6 +534,8 @@ export const PRODUCTS_CATALOG: ProductItem[] = [
     canTakeWhenMoving: true,
   },
 ];
+
+export const PRODUCTS_CATALOG: ProductItem[] = localizeData(PRODUCTS_UK);
 
 const PRODUCTS_BY_ID = new Map(PRODUCTS_CATALOG.map((p) => [p.id, p]));
 

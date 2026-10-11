@@ -78,6 +78,7 @@ interface AnalyzeBody {
   budgetId: string;
   rental: boolean;
   note?: string;
+  locale: 'uk' | 'ru';
 }
 
 interface ModelResult {
@@ -123,12 +124,14 @@ function parseBody(input: unknown): AnalyzeBody | string {
   if (!BUDGET_TIERS.some((b) => b.id === budgetId)) return 'Невідомий бюджет.';
 
   const note = typeof body.note === 'string' ? body.note.trim().slice(0, MAX_NOTE_LENGTH) : undefined;
+  const locale = body.locale === 'ru' ? 'ru' : 'uk';
 
   return {
     image: { data: image.data.replace(/\s+/g, ''), mediaType: image.mediaType as MediaType },
     budgetId,
     rental: body.rental === true,
     note: note || undefined,
+    locale,
   };
 }
 
@@ -336,7 +339,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
   const body = parseBody(parsedBody);
   if (typeof body === 'string') return fail(400, 'bad_request', body);
 
-  const params: AnalyzeParams = { budgetId: body.budgetId, rental: body.rental, note: body.note };
+  const params: AnalyzeParams = { budgetId: body.budgetId, rental: body.rental, note: body.note, locale: body.locale };
 
   if (env.ANALYSIS_MOCK === '1') {
     const plan = normalizePlan(MOCK_MODEL_PLAN, params);

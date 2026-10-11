@@ -1,7 +1,8 @@
 import type { Article } from '../types.ts';
 import { IMAGES } from './images.ts';
+import { localizeData } from '../i18n/index.ts';
 
-export const ARTICLES_CATALOG: Article[] = [
+const ARTICLES_UK: Article[] = [
   {
     id: 'kids-corner-toys',
     slug: 'dytiachyi-kutochok-bez-khaosu',
@@ -326,6 +327,8 @@ export const ARTICLES_CATALOG: Article[] = [
     relatedArticleIds: ['capsule-wardrobe-organizing', '12-spice-organization-ideas'],
   },
 ];
+
+export const ARTICLES_CATALOG: Article[] = localizeData(ARTICLES_UK);
 
 export function findArticle(id: string): Article | undefined {
   return ARTICLES_CATALOG.find((a) => a.id === id);

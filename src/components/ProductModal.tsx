@@ -4,6 +4,7 @@ import { X, ExternalLink, ShieldCheck, Check, Star, Bookmark, Share2 } from 'luc
 import { Modal } from './Modal.tsx';
 import { AppImage } from './AppImage.tsx';
 import { formatUAH, shareOrCopy, type ShareStatus } from '../utils/format.ts';
+import { t } from '../i18n/index.ts';
 
 interface ProductModalProps {
   product: ProductItem | null;
@@ -39,7 +40,7 @@ export function ProductModal({ product, onClose, isSaved, onToggleSave }: Produc
         type="button"
         onClick={onClose}
         className="absolute top-4 right-4 z-20 p-2 bg-white/80 hover:bg-white text-stone-700 rounded-full transition-colors shadow-2xs"
-        aria-label="Закрити"
+        aria-label={t('Закрити')}
       >
         <X className="w-4 h-4" aria-hidden="true" />
       </button>
@@ -53,7 +54,7 @@ export function ProductModal({ product, onClose, isSaved, onToggleSave }: Produc
         />
         {discount > 0 && (
           <div className="absolute top-4 left-4 bg-[#967259] text-white text-xs font-semibold px-2.5 py-1 rounded">
-            Знижка {discount}%
+            {t('Знижка {n}%', { n: discount })}
           </div>
         )}
       </div>
@@ -66,7 +67,7 @@ export function ProductModal({ product, onClose, isSaved, onToggleSave }: Produc
               <span className="flex items-center gap-1 text-amber-700 font-medium">
                 <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" aria-hidden="true" />
                 <span>
-                  {product.rating} ({product.reviewsCount} відгуків)
+                  {product.rating} ({t('{n} відгуків', { n: product.reviewsCount ?? 0 })})
                 </span>
               </span>
             )}
@@ -82,24 +83,24 @@ export function ProductModal({ product, onClose, isSaved, onToggleSave }: Produc
           </div>
 
           <p className="text-stone-600 text-xs sm:text-sm leading-relaxed mb-4">
-            {product.description ?? product.reason ?? 'Натуральні матеріали та продумана ергономіка для щоденного комфорту.'}
+            {product.description ?? product.reason ?? t('Натуральні матеріали та продумана ергономіка для щоденного комфорту.')}
           </p>
 
           <div className="space-y-1.5 text-xs text-stone-600 border-t border-stone-200/80 pt-3">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-[#8A9A86]" aria-hidden="true" />
-              <span>Підібрано стилістами HomeEstet</span>
+              <span>{t('Підібрано стилістами HomeEstet')}</span>
             </div>
             {product.inStock !== undefined && (
               <div className="flex items-center gap-2">
                 <Check className={`w-4 h-4 ${product.inStock ? 'text-[#8A9A86]' : 'text-stone-400'}`} aria-hidden="true" />
-                <span>{product.inStock ? 'В наявності у партнера' : 'Тимчасово немає в наявності'}</span>
+                <span>{product.inStock ? t('В наявності у партнера') : t('Тимчасово немає в наявності')}</span>
               </div>
             )}
             {product.canTakeWhenMoving && (
               <div className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-[#8A9A86]" aria-hidden="true" />
-                <span>Можна забрати із собою при переїзді</span>
+                <span>{t('Можна забрати із собою при переїзді')}</span>
               </div>
             )}
           </div>
@@ -113,7 +114,7 @@ export function ProductModal({ product, onClose, isSaved, onToggleSave }: Produc
               rel="noopener noreferrer sponsored"
               className="w-full py-3 bg-[#2C2C2C] hover:bg-[#444444] text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm"
             >
-              <span>Переглянути в магазині</span>
+              <span>{t('Переглянути в магазині')}</span>
               <ExternalLink className="w-4 h-4 text-stone-300" aria-hidden="true" />
             </a>
           ) : (
@@ -121,7 +122,7 @@ export function ProductModal({ product, onClose, isSaved, onToggleSave }: Produc
               role="status"
               className="w-full py-3 px-3 bg-[#EAE6DF] text-stone-700 text-xs text-center rounded-lg leading-relaxed"
             >
-              Посилання на магазин буде додано після запуску каталогу партнерів.
+              {t('Посилання на магазин буде додано після запуску каталогу партнерів.')}
             </div>
           )}
 
@@ -137,7 +138,7 @@ export function ProductModal({ product, onClose, isSaved, onToggleSave }: Produc
               }`}
             >
               <Bookmark className="w-3.5 h-3.5" fill={isSaved ? 'currentColor' : 'none'} aria-hidden="true" />
-              <span>{isSaved ? 'Збережено ✓' : 'Зберегти товар'}</span>
+              <span>{isSaved ? t('Збережено ✓') : t('Зберегти товар')}</span>
             </button>
             <button
               type="button"
@@ -147,12 +148,12 @@ export function ProductModal({ product, onClose, isSaved, onToggleSave }: Produc
               <Share2 className="w-3.5 h-3.5" aria-hidden="true" />
               <span>
                 {shareStatus === 'copied'
-                  ? 'Посилання скопійовано ✓'
+                  ? t('Посилання скопійовано ✓')
                   : shareStatus === 'shared'
-                    ? 'Надіслано ✓'
+                    ? t('Надіслано ✓')
                     : shareStatus === 'failed'
-                      ? 'Скопіюйте адресу з рядка браузера'
-                      : 'Поділитися'}
+                      ? t('Скопіюйте адресу з рядка браузера')
+                      : t('Поділитися')}
               </span>
             </button>
           </div>

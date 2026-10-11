@@ -203,6 +203,11 @@ export function buildUserPrompt(params: AnalyzeParams): string {
   ];
   const note = (params.note ?? '').trim().slice(0, 300);
   if (note) lines.push(`Коментар користувача: «${note}».`);
+  if (params.locale === 'ru') {
+    lines.push(
+      'Мова відповіді: російська. Усі текстові поля (zone_label, current_style, noise_comment, problems, remove, rearrange, use_owned, steps, shopping.why, summary) пиши російською, звертайся на «ты». Ідентифікатори (zone_id, suggested_style_id, shopping.category) лишаються як у схемі.'
+    );
+  }
   lines.push('Проаналізуй фото і склади план за схемою.');
   return lines.join('\n');
 }

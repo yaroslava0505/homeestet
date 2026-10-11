@@ -310,6 +310,8 @@ export interface QuizResult {
 /** What the user sends together with the photo. */
 export interface AnalyzeParams {
   budgetId: string;
+  /** Language of the plan text ('uk' by default). */
+  locale?: 'uk' | 'ru';
   /** Rented home: no drilling, painting or replacing the landlord's furniture. */
   rental: boolean;
   /** Optional free-text note from the user (what bothers them, constraints). */

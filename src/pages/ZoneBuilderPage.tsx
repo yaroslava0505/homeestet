@@ -18,6 +18,7 @@ import {
   Info,
   SlidersHorizontal,
 } from 'lucide-react';
+import { t } from '../i18n/index.ts';
 
 interface ZoneBuilderPageProps {
   zoneId?: string;
@@ -32,14 +33,14 @@ interface ZoneBuilderPageProps {
   onOpenProduct: (product: ProductItem) => void;
 }
 
-const STEP_LABELS = ['Простір', 'Стиль', 'Настрій', 'Бюджет', 'Що вже є'];
+const STEP_LABELS = [t('Простір'), t('Стиль'), t('Настрій'), t('Бюджет'), t('Що вже є')];
 
 type PriceMode = 'standard' | 'budget' | 'free';
 
 const PRICE_MODES: { id: PriceMode; label: string; activeClass: string }[] = [
-  { id: 'standard', label: '✨ Оптимальний', activeClass: 'text-stone-900' },
-  { id: 'budget', label: '💰 Дешевше', activeClass: 'text-stone-900' },
-  { id: 'free', label: '♻️ Без покупки (0 ₴)', activeClass: 'text-emerald-900' },
+  { id: 'standard', label: t('✨ Оптимальний'), activeClass: 'text-stone-900' },
+  { id: 'budget', label: t('💰 Дешевше'), activeClass: 'text-stone-900' },
+  { id: 'free', label: t('♻️ Без покупки (0 ₴)'), activeClass: 'text-emerald-900' },
 ];
 
 function planEntryId(solution: ZoneSolution): string {
@@ -110,7 +111,7 @@ export function ZoneBuilderPage({
 
   const handleShare = async (sol: ZoneSolution) => {
     const { status, url } = await shareOrCopy({
-      title: `HomeEstet: ${sol.zoneName} у стилі ${sol.styleName}`,
+      title: t('HomeEstet: {zone} у стилі {style}', { zone: sol.zoneName, style: sol.styleName }),
       text: sol.tagline,
       url: absoluteUrl({ type: 'zone-builder', zoneId: sol.zoneId, params: sol.params }),
     });
@@ -153,7 +154,7 @@ export function ZoneBuilderPage({
       onClick={() => setCurrentStep(step)}
       className="px-4 py-2.5 text-xs font-semibold text-stone-600 hover:text-black flex items-center gap-1"
     >
-      <ArrowLeft className="w-4 h-4" aria-hidden="true" /> Назад
+      <ArrowLeft className="w-4 h-4" aria-hidden="true" /> {t('Назад')}
     </button>
   );
 
@@ -162,13 +163,13 @@ export function ZoneBuilderPage({
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {!solution && (
           <div className="mb-10 text-center max-w-2xl mx-auto">
-            <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold mb-2 block">Головна функція HomeEstet</span>
-            <h1 className="font-serif text-3xl sm:text-4xl text-[#2C2C2C] font-normal tracking-tight">✨ Зроби цю зону</h1>
+            <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold mb-2 block">{t('Головна функція HomeEstet')}</span>
+            <h1 className="font-serif text-3xl sm:text-4xl text-[#2C2C2C] font-normal tracking-tight">{t('✨ Зроби цю зону')}</h1>
             <p className="text-stone-600 text-xs sm:text-sm mt-1">
-              Обери простір, який хочеш змінити, і отримай готове рішення під свій стиль та бюджет без зайвих покупок.
+              {t('Обери простір, який хочеш змінити, і отримай готове рішення під свій стиль та бюджет без зайвих покупок.')}
             </p>
 
-            <ol className="flex items-center justify-center gap-1.5 mt-6" aria-label="Кроки майстра">
+            <ol className="flex items-center justify-center gap-1.5 mt-6" aria-label={t('Кроки майстра')}>
               {STEP_LABELS.map((stepLabel, idx) => (
                 <li key={stepLabel} className="flex items-center gap-1.5" aria-current={idx === currentStep ? 'step' : undefined}>
                   <span className="sr-only">{stepLabel}</span>
@@ -187,7 +188,7 @@ export function ZoneBuilderPage({
               ))}
             </ol>
             <div className="text-[11px] text-stone-600 mt-2 font-medium">
-              Крок {currentStep + 1} з {STEP_LABELS.length}: {STEP_LABELS[currentStep]}
+              {t('Крок {n} з {total}: {label}', { n: currentStep + 1, total: STEP_LABELS.length, label: STEP_LABELS[currentStep] })}
             </div>
           </div>
         )}
@@ -195,7 +196,7 @@ export function ZoneBuilderPage({
         {/* STEP 0: zone */}
         {!solution && currentStep === 0 && (
           <div className="space-y-6 animate-in">
-            <h2 className="font-serif text-2xl text-[#2C2C2C] text-center font-normal">Який куточок дому ви хочете оновити?</h2>
+            <h2 className="font-serif text-2xl text-[#2C2C2C] text-center font-normal">{t('Який куточок дому ви хочете оновити?')}</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
               {ZONES.map((zone) => {
                 const isSelected = selectedZoneId === zone.id;
@@ -231,13 +232,13 @@ export function ZoneBuilderPage({
         {!solution && currentStep === 1 && (
           <div className="space-y-6 animate-in">
             <div className="text-center">
-              <h2 className="font-serif text-2xl text-[#2C2C2C] font-normal">Крок 1. Оберіть стиль інтер’єру</h2>
+              <h2 className="font-serif text-2xl text-[#2C2C2C] font-normal">{t('Крок 1. Оберіть стиль інтер’єру')}</h2>
               <p className="text-xs text-stone-600 mt-1">
-                Для зони: <strong>{selectedZone.name}</strong>
+                {t('Для зони:')} <strong>{selectedZone.name}</strong>
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" role="radiogroup" aria-label="Стиль інтер’єру">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" role="radiogroup" aria-label={t('Стиль інтер’єру')}>
               {STYLES.map((style) => {
                 const isSelected = selectedStyleId === style.id;
                 return (
@@ -282,7 +283,7 @@ export function ZoneBuilderPage({
 
             <div className="flex items-center justify-between pt-4">
               {backButton(0)}
-              {nextButton('Далі: Настрій', 2)}
+              {nextButton(t('Далі: Настрій'), 2)}
             </div>
           </div>
         )}
@@ -291,11 +292,11 @@ export function ZoneBuilderPage({
         {!solution && currentStep === 2 && (
           <div className="space-y-6 max-w-2xl mx-auto animate-in">
             <div className="text-center">
-              <h2 className="font-serif text-2xl text-[#2C2C2C] font-normal">Крок 2. Оберіть бажаний настрій простору</h2>
-              <p className="text-xs text-stone-600 mt-1">Яке відчуття має дарувати цей куточок щодня?</p>
+              <h2 className="font-serif text-2xl text-[#2C2C2C] font-normal">{t('Крок 2. Оберіть бажаний настрій простору')}</h2>
+              <p className="text-xs text-stone-600 mt-1">{t('Яке відчуття має дарувати цей куточок щодня?')}</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="Настрій простору">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label={t('Настрій простору')}>
               {MOODS.map((mood) => {
                 const isSelected = selectedMoodId === mood.id;
                 return (
@@ -324,7 +325,7 @@ export function ZoneBuilderPage({
 
             <div className="flex items-center justify-between pt-4">
               {backButton(1)}
-              {nextButton('Далі: Бюджет', 3)}
+              {nextButton(t('Далі: Бюджет'), 3)}
             </div>
           </div>
         )}
@@ -333,11 +334,11 @@ export function ZoneBuilderPage({
         {!solution && currentStep === 3 && (
           <div className="space-y-6 max-w-2xl mx-auto animate-in">
             <div className="text-center">
-              <h2 className="font-serif text-2xl text-[#2C2C2C] font-normal">Крок 3. Оберіть комфортний бюджет</h2>
-              <p className="text-xs text-stone-600 mt-1">Жодна рекомендована покупка не вийде за цю суму.</p>
+              <h2 className="font-serif text-2xl text-[#2C2C2C] font-normal">{t('Крок 3. Оберіть комфортний бюджет')}</h2>
+              <p className="text-xs text-stone-600 mt-1">{t('Жодна рекомендована покупка не вийде за цю суму.')}</p>
             </div>
 
-            <div className="space-y-2.5" role="radiogroup" aria-label="Бюджет">
+            <div className="space-y-2.5" role="radiogroup" aria-label={t('Бюджет')}>
               {BUDGET_TIERS.map((tier) => {
                 const isSelected = selectedBudgetId === tier.id;
                 return (
@@ -367,7 +368,7 @@ export function ZoneBuilderPage({
 
             <div className="flex items-center justify-between pt-4">
               {backButton(2)}
-              {nextButton('Далі: Що вже є?', 4)}
+              {nextButton(t('Далі: Що вже є?'), 4)}
             </div>
           </div>
         )}
@@ -376,16 +377,16 @@ export function ZoneBuilderPage({
         {!solution && currentStep === 4 && (
           <div className="space-y-6 max-w-2xl mx-auto animate-in">
             <div className="text-center">
-              <span className="text-xs uppercase tracking-widest text-[#8A9A86] font-semibold mb-1 block">Філософія HomeEstet</span>
-              <h2 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C] font-normal">Крок 4. Що у вас вже є в цій зоні?</h2>
+              <span className="text-xs uppercase tracking-widest text-[#8A9A86] font-semibold mb-1 block">{t('Філософія HomeEstet')}</span>
+              <h2 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C] font-normal">{t('Крок 4. Що у вас вже є в цій зоні?')}</h2>
               <p className="text-xs sm:text-sm text-stone-600 mt-1 max-w-md mx-auto">
-                Відмітьте предмети, які вже стоять удома. <strong>HomeEstet не пропонуватиме купувати те, що у вас вже є.</strong>
+                {t('Відмітьте предмети, які вже стоять удома.')} <strong>{t('HomeEstet не пропонуватиме купувати те, що у вас вже є.')}</strong>
               </p>
             </div>
 
             <fieldset className="bg-white p-5 rounded-2xl border border-stone-200 shadow-2xs space-y-2">
               <legend className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3 px-1">
-                Предмети для зони «{selectedZone.name}»:
+                {t('Предмети для зони «{zone}»:', { zone: selectedZone.name })}
               </legend>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -416,7 +417,7 @@ export function ZoneBuilderPage({
             <div className="p-3.5 bg-emerald-50 text-emerald-900 rounded-xl border border-emerald-200 text-xs flex items-start gap-2">
               <Sparkles className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" aria-hidden="true" />
               <span>
-                Відмічено: {existingItems.length}. Ми спочатку використаємо ваш наявний потенціал, а запропонуємо лише точкові речі, які дійсно змінять простір і вкладуться в бюджет.
+                {t('Відмічено: {n}. Ми спочатку використаємо ваш наявний потенціал, а запропонуємо лише точкові речі, які дійсно змінять простір і вкладуться в бюджет.', { n: existingItems.length })}
               </span>
             </div>
 
@@ -428,7 +429,7 @@ export function ZoneBuilderPage({
                 className="px-8 py-3 bg-[#967259] hover:bg-[#7e5f49] text-white text-xs sm:text-sm font-semibold rounded-lg flex items-center gap-2 shadow-sm transition-all hover:scale-102"
               >
                 <Sparkles className="w-4 h-4" aria-hidden="true" />
-                <span>Отримати готове рішення</span>
+                <span>{t('Отримати готове рішення')}</span>
               </button>
             </div>
           </div>
@@ -497,12 +498,12 @@ function ResultView({
   const hasProducts = solution.products.length > 0;
   const shareLabel =
     shareStatus === 'copied'
-      ? 'Посилання скопійовано ✓'
+      ? t('Посилання скопійовано ✓')
       : shareStatus === 'shared'
-        ? 'Надіслано ✓'
+        ? t('Надіслано ✓')
         : shareStatus === 'failed'
-          ? 'Скопіюйте посилання нижче'
-          : 'Поділитися';
+          ? t('Скопіюйте посилання нижче')
+          : t('Поділитися');
 
   return (
     <div className="space-y-10 animate-in">
@@ -510,7 +511,7 @@ function ResultView({
         <div>
           <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-[#967259] font-semibold mb-1">
             <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
-            <span>Персональне готове рішення HomeEstet</span>
+            <span>{t('Персональне готове рішення HomeEstet')}</span>
           </div>
           <h1 className="font-serif text-3xl sm:text-4xl text-[#2C2C2C] font-normal leading-tight">
             {solution.zoneIcon} {solution.zoneName}
@@ -518,19 +519,19 @@ function ResultView({
 
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-stone-600 mt-2 font-sans">
             <span>
-              <strong>Стиль:</strong> {solution.styleName}
+              <strong>{t('Стиль:')}</strong> {solution.styleName}
             </span>
             <span aria-hidden="true">·</span>
             <span>
-              <strong>Настрій:</strong> {solution.moodName}
+              <strong>{t('Настрій:')}</strong> {solution.moodName}
             </span>
             <span aria-hidden="true">·</span>
             <span>
-              <strong>Бюджет:</strong> {solution.budgetName}
+              <strong>{t('Бюджет:')}</strong> {solution.budgetName}
             </span>
             <span aria-hidden="true">·</span>
             <span>
-              <strong>Вже є:</strong> {solution.existingItems.join(', ') || 'з нуля'}
+              <strong>{t('Вже є:')}</strong> {solution.existingItems.join(', ') || 'з нуля'}
             </span>
           </div>
         </div>
@@ -545,7 +546,7 @@ function ResultView({
             }`}
           >
             <Bookmark className="w-3.5 h-3.5" fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
-            <span>{saved ? 'Збережено ✓' : 'Зберегти'}</span>
+            <span>{saved ? t('Збережено ✓') : t('Зберегти')}</span>
           </button>
 
           <button
@@ -563,15 +564,15 @@ function ResultView({
             className="px-3 py-2 bg-white text-stone-700 border border-stone-300 hover:bg-stone-50 rounded-lg text-xs flex items-center gap-1.5"
           >
             <SlidersHorizontal className="w-3.5 h-3.5" aria-hidden="true" />
-            <span>Змінити параметри</span>
+            <span>{t('Змінити параметри')}</span>
           </button>
 
           <button
             type="button"
             onClick={onReset}
             className="p-2 bg-white text-stone-700 border border-stone-300 hover:bg-stone-50 rounded-lg text-xs"
-            title="Створити нову зону"
-            aria-label="Створити нову зону"
+            title={t('Створити нову зону')}
+            aria-label={t('Створити нову зону')}
           >
             <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
           </button>
@@ -580,13 +581,13 @@ function ResultView({
 
       {shareUrl && (
         <div className="p-3 bg-white border border-stone-200 rounded-xl text-xs text-stone-600 space-y-1.5" role="status">
-          <span className="block">Автоматично скопіювати не вдалося. Посилання на це рішення:</span>
+          <span className="block">{t('Автоматично скопіювати не вдалося. Посилання на це рішення:')}</span>
           <input
             type="text"
             readOnly
             value={shareUrl}
             onFocus={(event) => event.currentTarget.select()}
-            aria-label="Посилання на рішення"
+            aria-label={t('Посилання на рішення')}
             className="w-full px-3 py-2 bg-[#FAF8F5] border border-stone-200 rounded-lg text-stone-800 font-mono text-[11px]"
           />
         </div>
@@ -595,13 +596,13 @@ function ResultView({
       <div className="relative rounded-2xl overflow-hidden aspect-[16/9] sm:aspect-[21/9] bg-stone-100 border border-stone-200 shadow-sm">
         <AppImage
           image={solution.conceptImage}
-          alt={`Візуальний концепт: ${solution.zoneName}`}
+          alt={t('Візуальний концепт: {zone}', { zone: solution.zoneName })}
           priority
           sizes="(min-width: 1024px) 960px, 100vw"
           className="w-full h-full object-cover object-center absolute inset-0"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent flex flex-col justify-end p-6 sm:p-8 text-white">
-          <span className="text-xs uppercase tracking-widest text-amber-200/90 font-medium mb-1">Візуальний концепт</span>
+          <span className="text-xs uppercase tracking-widest text-amber-200/90 font-medium mb-1">{t('Візуальний концепт')}</span>
           <p className="font-serif text-xl sm:text-2xl font-light max-w-2xl leading-snug">{solution.tagline}</p>
         </div>
       </div>
@@ -613,28 +614,28 @@ function ResultView({
             <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
             <div>
               <h2 className="font-serif text-2xl text-[#2C2C2C] font-normal">
-                Ми не знайшли рішення, яке одночасно відповідає всім параметрам.
+                {t('Ми не знайшли рішення, яке одночасно відповідає всім параметрам.')}
               </h2>
               <p className="text-xs sm:text-sm text-stone-600 mt-1 leading-relaxed">
                 {solution.skippedOwned.length > 0
-                  ? `У вас уже є все, що ми зазвичай радимо для цієї зони (${solution.skippedOwned.map((p) => p.category.toLowerCase()).filter((v, i, a) => a.indexOf(v) === i).join(', ')}). `
+                  ? t('У вас уже є все, що ми зазвичай радимо для цієї зони ({items}). ', { items: solution.skippedOwned.map((p) => p.category.toLowerCase()).filter((v, i, a) => a.indexOf(v) === i).join(', ') })
                   : ''}
-                Спробуйте змінити один із параметрів або скористайтеся варіантом без покупок нижче.
+                {t('Спробуйте змінити один із параметрів або скористайтеся варіантом без покупок нижче.')}
               </p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
             <button type="button" onClick={() => onEdit(3)} className="px-4 py-2 bg-[#2C2C2C] hover:bg-[#444] text-white text-xs font-semibold rounded-lg">
-              Збільшити бюджет
+              {t('Збільшити бюджет')}
             </button>
             <button type="button" onClick={() => onEdit(1)} className="px-4 py-2 bg-white border border-stone-300 hover:bg-stone-50 text-stone-800 text-xs font-semibold rounded-lg">
-              Змінити стиль
+              {t('Змінити стиль')}
             </button>
             <button type="button" onClick={() => onEdit(4)} className="px-4 py-2 bg-white border border-stone-300 hover:bg-stone-50 text-stone-800 text-xs font-semibold rounded-lg">
-              Прибрати один із наявних предметів
+              {t('Прибрати один із наявних предметів')}
             </button>
             <a href="#free-tips" className="px-4 py-2 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 text-emerald-900 text-xs font-semibold rounded-lg">
-              Варіант без покупок
+              {t('Варіант без покупок')}
             </a>
           </div>
         </section>
@@ -645,12 +646,12 @@ function ResultView({
           <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
           <div className="space-y-2">
             <p>
-              <strong>У бюджеті «{solution.budgetName}» повністю змінити зону не вийде</strong>, але ось що можна зробити зараз за{' '}
-              <strong>{formatUAH(solution.estimatedCost)}</strong>. Усі рекомендації нижче вкладаються в ліміт {formatUAH(solution.budgetLimit)}.
+              <strong>{t('У бюджеті «{budget}» повністю змінити зону не вийде', { budget: solution.budgetName })}</strong>{t(', але ось що можна зробити зараз за')}{' '}
+              <strong>{formatUAH(solution.estimatedCost)}</strong>. {t('Усі рекомендації нижче вкладаються в ліміт {limit}.', { limit: formatUAH(solution.budgetLimit) })}
             </p>
             {solution.overBudget.length > 0 && (
               <p className="text-amber-800/90">
-                Не вмістилися в бюджет:{' '}
+                {t('Не вмістилися в бюджет:')}{' '}
                 {solution.overBudget
                   .slice(0, 3)
                   .map((p) => `${p.name} (${formatUAH(p.price)})`)
@@ -659,7 +660,7 @@ function ResultView({
               </p>
             )}
             <button type="button" onClick={() => onEdit(3)} className="underline font-semibold hover:text-amber-950">
-              Збільшити бюджет
+              {t('Збільшити бюджет')}
             </button>
           </div>
         </div>
@@ -671,7 +672,7 @@ function ResultView({
             <p className="flex items-start gap-2">
               <Info className="w-4 h-4 shrink-0 mt-0.5 text-stone-500" aria-hidden="true" />
               <span>
-                Для стилю «{solution.styleName}» у каталозі поки мало товарів для цієї зони, тому ми додали універсальні речі, які поєднуються з ним.
+                {t('Для стилю «{style}» у каталозі поки мало товарів для цієї зони, тому ми додали універсальні речі, які поєднуються з ним.', { style: solution.styleName })}
               </span>
             </p>
           )}
@@ -679,7 +680,7 @@ function ResultView({
             <p className="flex items-start gap-2">
               <Check className="w-4 h-4 shrink-0 mt-0.5 text-[#8A9A86]" aria-hidden="true" />
               <span>
-                Не пропонуємо купувати, бо у вас уже є схоже: {solution.skippedOwned.map((p) => p.name.toLowerCase()).join('; ')}.
+                {t('Не пропонуємо купувати, бо у вас уже є схоже: {items}.', { items: solution.skippedOwned.map((p) => p.name.toLowerCase()).join('; ') })}
               </span>
             </p>
           )}
@@ -689,8 +690,8 @@ function ResultView({
       {/* Steps */}
       <section className="bg-white p-6 sm:p-8 rounded-2xl border border-stone-200/90 space-y-6">
         <div>
-          <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">Покроковий алгоритм дій</span>
-          <h2 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C] font-normal">Що саме потрібно змінити</h2>
+          <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">{t('Покроковий алгоритм дій')}</span>
+          <h2 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C] font-normal">{t('Що саме потрібно змінити')}</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -712,12 +713,12 @@ function ResultView({
         <section className="bg-white p-6 sm:p-8 rounded-2xl border border-stone-200/90 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">Розумний шопінг без зайвого</span>
-              <h2 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C] font-normal">Що купити (з урахуванням наявного)</h2>
-              <p className="text-xs text-stone-600 mt-1">Ми не пропонуємо речі, які ви вже відмітили як наявні.</p>
+              <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">{t('Розумний шопінг без зайвого')}</span>
+              <h2 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C] font-normal">{t('Що купити (з урахуванням наявного)')}</h2>
+              <p className="text-xs text-stone-600 mt-1">{t('Ми не пропонуємо речі, які ви вже відмітили як наявні.')}</p>
             </div>
 
-            <div className="flex items-center gap-1 p-1 bg-stone-100 rounded-lg text-xs font-medium self-start sm:self-auto" role="tablist" aria-label="Варіант ціни">
+            <div className="flex items-center gap-1 p-1 bg-stone-100 rounded-lg text-xs font-medium self-start sm:self-auto" role="tablist" aria-label={t('Варіант ціни')}>
               {PRICE_MODES.map((mode) => (
                 <button
                   type="button"
@@ -757,7 +758,7 @@ function ResultView({
                     <h3 className="font-serif text-base font-medium text-stone-900 leading-snug">{prod.name}</h3>
                     {prod.reason && (
                       <p className="text-xs text-stone-600 mt-0.5">
-                        <strong>Чому:</strong> {prod.reason}
+                        <strong>{t('Чому:')}</strong> {prod.reason}
                       </p>
                     )}
                   </div>
@@ -775,7 +776,7 @@ function ResultView({
 
                   {priceMode === 'budget' && (
                     <div className="text-right">
-                      <span className="text-[10px] text-stone-500 block">Бюджетна версія:</span>
+                      <span className="text-[10px] text-stone-500 block">{t('Бюджетна версія:')}</span>
                       <span className="font-semibold text-base text-stone-900 tabular-nums">
                         {formatUAH(prod.budgetAlternativePrice ?? Math.round(prod.price * 0.5))}
                       </span>
@@ -787,9 +788,9 @@ function ResultView({
 
                   {priceMode === 'free' && (
                     <div className="text-left md:text-right max-w-sm">
-                      <span className="text-[11px] font-semibold text-emerald-800 block">♻️ Порада без витрат:</span>
+                      <span className="text-[11px] font-semibold text-emerald-800 block">{t('♻️ Порада без витрат:')}</span>
                       <p className="text-xs text-stone-600 leading-snug">
-                        {prod.freeAlternativeTip ?? 'Використайте схожий предмет іншого призначення з шафи.'}
+                        {prod.freeAlternativeTip ?? t('Використайте схожий предмет іншого призначення з шафи.')}
                       </p>
                     </div>
                   )}
@@ -799,7 +800,7 @@ function ResultView({
                     onClick={() => onOpenProduct(prod)}
                     className="px-3.5 py-1.5 bg-[#2C2C2C] hover:bg-[#444] text-white text-xs font-semibold rounded-lg transition-colors shrink-0"
                   >
-                    Детальніше
+                    {t('Детальніше')}
                   </button>
                 </div>
               </div>
@@ -808,12 +809,12 @@ function ResultView({
 
           <div className="p-5 bg-[#FAF8F5] rounded-xl border border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <span className="text-xs text-stone-500 uppercase tracking-wider block font-medium">Загальний бюджет цього оновлення:</span>
+              <span className="text-xs text-stone-500 uppercase tracking-wider block font-medium">{t('Загальний бюджет цього оновлення:')}</span>
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mt-1">
                 <span className="font-serif text-2xl font-bold text-stone-900 tabular-nums">{formatUAH(solution.estimatedCost)}</span>
-                <span className="text-xs font-medium text-[#8A9A86]">з ліміту {formatUAH(solution.budgetLimit)}</span>
+                <span className="text-xs font-medium text-[#8A9A86]">{t('з ліміту {limit}', { limit: formatUAH(solution.budgetLimit) })}</span>
                 {solution.cheaperCost < solution.estimatedCost && (
-                  <span className="text-xs font-medium text-stone-500">· бюджетна версія: {formatUAH(solution.cheaperCost)}</span>
+                  <span className="text-xs font-medium text-stone-500">· {t('бюджетна версія: {sum}', { sum: formatUAH(solution.cheaperCost) })}</span>
                 )}
               </div>
             </div>
@@ -827,11 +828,11 @@ function ResultView({
                 }`}
               >
                 <Calendar className="w-4 h-4" aria-hidden="true" />
-                <span>{inPlan ? 'Додано до плану ✓ · Відкрити план' : 'Перенести в План на 30 днів'}</span>
+                <span>{inPlan ? t('Додано до плану ✓ · Відкрити план') : t('Перенести в План на 30 днів')}</span>
               </button>
               {planFeedback && (
                 <span className="text-xs text-emerald-800" role="status">
-                  Додано до плану ✓
+                  {t('Додано до плану ✓')}
                 </span>
               )}
             </div>
@@ -842,8 +843,8 @@ function ResultView({
       {/* Free tips */}
       <section id="free-tips" className="bg-emerald-50/60 p-6 sm:p-8 rounded-2xl border border-emerald-200 space-y-4 scroll-mt-24">
         <div>
-          <span className="text-xs uppercase tracking-widest text-emerald-800 font-semibold block mb-1">Варіант без покупок</span>
-          <h2 className="font-serif text-2xl text-[#2C2C2C] font-normal">Що можна зробити за 0 ₴ вже сьогодні</h2>
+          <span className="text-xs uppercase tracking-widest text-emerald-800 font-semibold block mb-1">{t('Варіант без покупок')}</span>
+          <h2 className="font-serif text-2xl text-[#2C2C2C] font-normal">{t('Що можна зробити за 0 ₴ вже сьогодні')}</h2>
         </div>
         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-stone-700">
           {solution.freeTips.map((tip, idx) => (
@@ -862,7 +863,7 @@ function ResultView({
             className="px-5 py-2.5 bg-[#967259] hover:bg-[#7e5f49] text-white text-xs font-semibold rounded-lg transition-colors inline-flex items-center gap-2"
           >
             <Calendar className="w-4 h-4" aria-hidden="true" />
-            <span>{inPlan ? 'Додано до плану ✓' : 'Додати кроки в План на 30 днів'}</span>
+            <span>{inPlan ? t('Додано до плану ✓') : t('Додати кроки в План на 30 днів')}</span>
           </button>
         )}
       </section>

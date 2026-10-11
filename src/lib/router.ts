@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { PageView, SolutionParams } from '../types.ts';
+import { stripLocale, withLocale } from '../i18n/index.ts';
 
 /**
  * Minimal history-based router.
@@ -11,9 +12,16 @@ import type { PageView, SolutionParams } from '../types.ts';
  *  /zones/:zoneId/result?…    generated solution (style, mood, budget, have)
  *  /style                     style quiz
  *  /small-spaces, /rented, /plan, /lifehacks, /lifehacks/:articleId (alias /inspiration), /saved
+ *
+ * Every path may carry the `/ru` language prefix (see src/i18n): `viewToPath` adds it for the current
+ * locale and `pathToView` ignores it.
  */
 
 export function viewToPath(view: PageView): string {
+  return withLocale(bareViewPath(view));
+}
+
+function bareViewPath(view: PageView): string {
   switch (view.type) {
     case 'home':
       return '/';
@@ -52,7 +60,7 @@ export function viewToPath(view: PageView): string {
 }
 
 export function pathToView(pathname: string, search: string): PageView {
-  const parts = pathname
+  const parts = stripLocale(pathname)
     .replace(/\/+$/, '')
     .split('/')
     .filter(Boolean)

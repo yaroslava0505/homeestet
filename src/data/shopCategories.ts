@@ -1,4 +1,5 @@
 import type { PhotoPlanShopping } from '../types.ts';
+import { t } from '../i18n/index.ts';
 
 /**
  * Categories of the partner-store catalogue (`src/data/shopCatalog.ts`).
@@ -43,7 +44,8 @@ export function isShopCategoryId(value: string): value is ShopCategoryId {
 }
 
 export function shopCategoryName(id: ShopCategoryId): string {
-  return SHOP_CATEGORIES.find((c) => c.id === id)?.name ?? id;
+  const name = SHOP_CATEGORIES.find((c) => c.id === id)?.name;
+  return name ? t(name) : id;
 }
 
 /** What usually helps a zone when the model does not name categories itself. */
@@ -65,5 +67,5 @@ export const DEFAULT_SHOP_CATEGORIES: ShopCategoryId[] = ['organizers', 'wall-ar
 /** Default shopping block for a zone (used when the model returns none and for analyses saved before this feature). */
 export function defaultShoppingFor(zoneId: string | null): PhotoPlanShopping[] {
   const ids = (zoneId && ZONE_SHOP_DEFAULTS[zoneId]) || DEFAULT_SHOP_CATEGORIES;
-  return ids.map((category) => ({ category, why: SHOP_CATEGORIES.find((c) => c.id === category)!.hint }));
+  return ids.map((category) => ({ category, why: t(SHOP_CATEGORIES.find((c) => c.id === category)!.hint) }));
 }

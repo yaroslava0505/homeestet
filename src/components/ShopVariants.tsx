@@ -4,6 +4,7 @@ import type { PhotoPlanShopping, ShopProduct } from '../types.ts';
 import { shopCategoryName } from '../data/shopCategories.ts';
 import { STORE_NAMES, loadShopCatalog, pickSpread, storeLink, variantsFor } from '../lib/shop.ts';
 import { formatUAH, formatUAHRange } from '../utils/format.ts';
+import { t } from '../i18n/index.ts';
 
 const INITIAL_VISIBLE = 6;
 
@@ -34,23 +35,22 @@ export function ShopVariants({ shopping, budgetLimit, budgetMin, budgetMax }: Sh
     <section className="bg-white p-5 sm:p-8 rounded-2xl border border-stone-200 space-y-7">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
-          <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">Розумний шопінг</span>
-          <h2 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C]">{shopping.length > 0 ? 'Що варто докупити' : 'Купувати нічого не треба'}</h2>
+          <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">{t('Розумний шопінг')}</span>
+          <h2 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C]">{shopping.length > 0 ? t('Що варто докупити') : t('Купувати нічого не треба')}</h2>
           {shopping.length > 0 && (
             <p className="text-sm text-stone-600 mt-2 leading-relaxed">
-              Для кожної речі кілька реальних варіантів у різних цінах із Sinsay та Епіцентру в межах {formatUAH(budgetLimit)}. Ціни на
-              момент збору каталогу, остаточна в магазині.
+              {t('Для кожної речі кілька реальних варіантів у різних цінах із Sinsay та Епіцентру в межах {limit}. Ціни на момент збору каталогу, остаточна в магазині.', { limit: formatUAH(budgetLimit) })}
             </p>
           )}
         </div>
         {shopping.length > 0 && (
           <div className="text-left sm:text-right text-xs text-stone-600 shrink-0">
             <span className="block">
-              Орієнтовно на весь план: <strong>{budgetMax > 0 ? formatUAHRange(budgetMin, budgetMax) : '0 ₴'}</strong>
+              {t('Орієнтовно на весь план:')} <strong>{budgetMax > 0 ? formatUAHRange(budgetMin, budgetMax) : '0 ₴'}</strong>
             </span>
             {minimalKit > 0 && (
               <span className="block">
-                Найдешевший набір: <strong>від {formatUAH(minimalKit)}</strong>
+                {t('Найдешевший набір:')} <strong>від {formatUAH(minimalKit)}</strong>
               </span>
             )}
           </div>
@@ -58,10 +58,10 @@ export function ShopVariants({ shopping, budgetLimit, budgetMin, budgetMax }: Sh
       </div>
 
       {shopping.length === 0 ? (
-        <p className="text-sm text-stone-600">Усе, що потрібно для цього кута, у тебе вже є. План вище повністю безкоштовний.</p>
+        <p className="text-sm text-stone-600">{t('Усе, що потрібно для цього кута, у тебе вже є. План вище повністю безкоштовний.')}</p>
       ) : !catalog ? (
         <p className="text-sm text-stone-500" aria-live="polite">
-          Завантажуємо каталог…
+          {t('Завантажуємо каталог…')}
         </p>
       ) : (
         rows.map(({ entry, items }) => <VariantRow key={entry.category} entry={entry} items={items} />)
@@ -81,7 +81,7 @@ function VariantRow({ entry, items }: { entry: PhotoPlanShopping; items: ShopPro
         <h3 className="font-serif text-lg text-stone-900">{shopCategoryName(entry.category)}</h3>
         {entry.why && (
           <p className="text-xs text-stone-700 mt-0.5">
-            <strong className="text-stone-900">Чому:</strong> {entry.why}
+            <strong className="text-stone-900">{t('Чому:')}</strong> {entry.why}
           </p>
         )}
       </div>
@@ -98,7 +98,7 @@ function VariantRow({ entry, items }: { entry: PhotoPlanShopping; items: ShopPro
           onClick={() => setExpanded((v) => !v)}
           className="text-xs font-semibold text-[#967259] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8A9A86] rounded"
         >
-          {expanded ? 'Згорнути' : `Показати ще ${hidden}`}
+          {expanded ? t('Згорнути') : t('Показати ще {n}', { n: hidden })}
         </button>
       )}
     </div>

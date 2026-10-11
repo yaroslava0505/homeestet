@@ -3,6 +3,7 @@ import { SURPRISE_IDEAS } from '../data/homeestetData.ts';
 import type { SurpriseIdea } from '../types.ts';
 import { X, Dices, ArrowRight, Bookmark } from 'lucide-react';
 import { Modal } from './Modal.tsx';
+import { t } from '../i18n/index.ts';
 
 interface SurpriseModalProps {
   isOpen: boolean;
@@ -25,7 +26,7 @@ export function SurpriseModal({ isOpen, onClose, onSaveIdea, isIdeaSaved, onTryT
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} label="Здивуй мене: випадкова ідея" panelClassName="max-w-lg">
+    <Modal isOpen={isOpen} onClose={onClose} label={t('Здивуй мене: випадкова ідея')} panelClassName="max-w-lg">
       <div className="p-5 border-b border-[#ECE8E1] bg-white flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="p-2 rounded-lg bg-[#FAF2EB] text-[#967259]">
@@ -33,9 +34,9 @@ export function SurpriseModal({ isOpen, onClose, onSaveIdea, isIdeaSaved, onTryT
           </span>
           <div>
             <span className="text-[11px] font-semibold text-[#967259] uppercase tracking-wider block">
-              Генератор миттєвого затишку
+              {t('Генератор миттєвого затишку')}
             </span>
-            <h3 className="font-serif text-lg font-medium text-[#2C2C2C]">Здивуй мене: випадкова ідея</h3>
+            <h3 className="font-serif text-lg font-medium text-[#2C2C2C]">{t('Здивуй мене: випадкова ідея')}</h3>
           </div>
         </div>
 
@@ -43,7 +44,7 @@ export function SurpriseModal({ isOpen, onClose, onSaveIdea, isIdeaSaved, onTryT
           type="button"
           onClick={onClose}
           className="p-1.5 hover:bg-stone-100 rounded-full text-stone-500 transition-colors"
-          aria-label="Закрити"
+          aria-label={t('Закрити')}
         >
           <X className="w-4 h-4" aria-hidden="true" />
         </button>
@@ -66,14 +67,14 @@ export function SurpriseModal({ isOpen, onClose, onSaveIdea, isIdeaSaved, onTryT
         <div className="space-y-3 text-xs sm:text-sm">
           <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
             <span className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold block mb-1">
-              💡 Чому це працює:
+              {t('💡 Чому це працює:')}
             </span>
             <p className="text-stone-700 leading-relaxed">{currentIdea.whyItWorks}</p>
           </div>
 
           <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
             <span className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold block mb-1">
-              🛠️ Що потрібно:
+              {t('🛠️ Що потрібно:')}
             </span>
             <p className="text-stone-700 leading-relaxed">{currentIdea.whatYouNeed}</p>
           </div>
@@ -87,7 +88,7 @@ export function SurpriseModal({ isOpen, onClose, onSaveIdea, isIdeaSaved, onTryT
           className="w-full sm:w-auto px-4 py-2.5 bg-[#FAF2EB] hover:bg-[#F2E5D5] text-[#967259] font-semibold text-xs rounded-lg transition-colors flex items-center justify-center gap-2 border border-[#E8D4C0]"
         >
           <Dices className="w-3.5 h-3.5" aria-hidden="true" />
-          <span>Ще одна ідея</span>
+          <span>{t('Ще одна ідея')}</span>
         </button>
 
         <div className="w-full sm:w-auto flex items-center gap-2">
@@ -100,14 +101,14 @@ export function SurpriseModal({ isOpen, onClose, onSaveIdea, isIdeaSaved, onTryT
             }`}
           >
             <Bookmark className="w-3.5 h-3.5" fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
-            <span>{saved ? 'Ідею збережено ✓' : 'Зберегти ідею'}</span>
+            <span>{saved ? t('Ідею збережено ✓') : t('Зберегти ідею')}</span>
           </button>
           <button
             type="button"
             onClick={() => onTryToday(currentIdea)}
             className="flex-1 sm:flex-none px-4 py-2.5 bg-[#2C2C2C] hover:bg-[#444] text-white font-medium text-xs rounded-lg transition-colors flex items-center justify-center gap-1.5"
           >
-            <span>Спробувати сьогодні</span>
+            <span>{t('Спробувати сьогодні')}</span>
             <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
           </button>
         </div>

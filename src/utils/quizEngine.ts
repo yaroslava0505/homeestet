@@ -1,4 +1,5 @@
 import type { QuizResult } from '../types.ts';
+import { localizeData } from '../i18n/index.ts';
 import { STYLES } from '../data/homeestetData.ts';
 
 export type StyleWeights = Partial<Record<string, number>>;
@@ -25,7 +26,7 @@ export interface QuizQuestion {
  * No single question can decide the result on its own: the strongest option gives 3 points
  * and the other five questions together can give up to 13.
  */
-export const QUIZ_QUESTIONS: QuizQuestion[] = [
+const QUIZ_QUESTIONS_UK: QuizQuestion[] = [
   {
     id: 'colors',
     title: '1. Які кольори тобі найбільше подобаються в інтер’єрі?',
@@ -100,6 +101,8 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
 
 /** Styles whose score is within this distance of the winner are offered as a secondary style. */
 const SECONDARY_THRESHOLD = 2;
+
+export const QUIZ_QUESTIONS = localizeData(QUIZ_QUESTIONS_UK);
 
 export function scoreQuiz(answers: Record<string, string>): Omit<QuizResult, 'completedAt'> {
   const scores: Record<string, number> = Object.fromEntries(STYLES.map((s) => [s.id, 0]));

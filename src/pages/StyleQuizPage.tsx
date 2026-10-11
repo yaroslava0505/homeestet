@@ -4,6 +4,7 @@ import { QUIZ_QUESTIONS, scoreQuiz } from '../utils/quizEngine.ts';
 import type { PageView, QuizResult } from '../types.ts';
 import { AppImage } from '../components/AppImage.tsx';
 import { Sparkles, ArrowRight, ArrowLeft, Check, RotateCcw } from 'lucide-react';
+import { t } from '../i18n/index.ts';
 
 interface StyleQuizPageProps {
   onNavigate: (view: PageView) => void;
@@ -47,20 +48,20 @@ export function StyleQuizPage({ onNavigate, onComplete }: StyleQuizPageProps) {
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         {!result && (
           <div className="text-center mb-10">
-            <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">Тест-діагностика HomeEstet</span>
-            <h1 className="font-serif text-3xl sm:text-4xl text-[#2C2C2C] font-normal tracking-tight">«Який стиль підійде моєму дому?»</h1>
+            <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">{t('Тест-діагностика HomeEstet')}</span>
+            <h1 className="font-serif text-3xl sm:text-4xl text-[#2C2C2C] font-normal tracking-tight">{t('«Який стиль підійде моєму дому?»')}</h1>
             <p className="text-stone-600 text-xs sm:text-sm mt-1">
-              Дайте відповідь на {QUIZ_QUESTIONS.length} простих питань. Кожна відповідь додає бали кільком стилям, а результат визначає їх сума.
+              {t('Дайте відповідь на {n} простих питань. Кожна відповідь додає бали кільком стилям, а результат визначає їх сума.', { n: QUIZ_QUESTIONS.length })}
             </p>
 
-            <ol className="flex items-center justify-center gap-2 mt-5" aria-label="Прогрес тесту">
+            <ol className="flex items-center justify-center gap-2 mt-5" aria-label={t('Прогрес тесту')}>
               {QUIZ_QUESTIONS.map((q, idx) => (
                 <li
                   key={q.id}
                   aria-current={idx === step ? 'step' : undefined}
                   className={`h-1.5 rounded-full transition-all ${idx === step ? 'w-8 bg-[#967259]' : idx < step ? 'w-4 bg-[#8A9A86]' : 'w-4 bg-stone-200'}`}
                 >
-                  <span className="sr-only">Питання {idx + 1}</span>
+                  <span className="sr-only">{t('Питання {n}', { n: idx + 1 })}</span>
                 </li>
               ))}
             </ol>
@@ -133,7 +134,7 @@ export function StyleQuizPage({ onNavigate, onComplete }: StyleQuizPageProps) {
                   onClick={() => setStep((s) => s - 1)}
                   className="px-4 py-2.5 text-xs font-semibold text-stone-600 hover:text-black flex items-center gap-1"
                 >
-                  <ArrowLeft className="w-4 h-4" aria-hidden="true" /> Назад
+                  <ArrowLeft className="w-4 h-4" aria-hidden="true" /> {t('Назад')}
                 </button>
               ) : (
                 <span />
@@ -147,7 +148,7 @@ export function StyleQuizPage({ onNavigate, onComplete }: StyleQuizPageProps) {
                   className="px-8 py-3 bg-[#967259] hover:bg-[#7e5f49] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-semibold rounded-lg flex items-center gap-2 shadow-sm"
                 >
                   <Sparkles className="w-4 h-4" aria-hidden="true" />
-                  <span>Дізнатися мій стиль</span>
+                  <span>{t('Дізнатися мій стиль')}</span>
                 </button>
               ) : (
                 <button
@@ -156,7 +157,7 @@ export function StyleQuizPage({ onNavigate, onComplete }: StyleQuizPageProps) {
                   disabled={!answered}
                   className="px-6 py-2.5 bg-[#2C2C2C] hover:bg-[#444] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-semibold rounded-lg flex items-center gap-1.5"
                 >
-                  Далі <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                  {t('Далі')} <ArrowRight className="w-4 h-4" aria-hidden="true" />
                 </button>
               )}
             </div>
@@ -166,9 +167,9 @@ export function StyleQuizPage({ onNavigate, onComplete }: StyleQuizPageProps) {
         {result && primary && (
           <div className="bg-white p-6 sm:p-10 rounded-2xl border border-stone-200 shadow-sm space-y-8 animate-in">
             <div className="text-center">
-              <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">Результат діагностики HomeEstet</span>
+              <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">{t('Результат діагностики HomeEstet')}</span>
               <h1 className="font-serif text-3xl sm:text-4xl text-[#2C2C2C] font-normal">
-                Твій стиль: {primary.name}
+                {t('Твій стиль: {name}', { name: primary.name })}
                 <span className="block text-xl sm:text-2xl text-stone-500 mt-1">{primary.uaName}</span>
               </h1>
               <p className="text-sm text-stone-600 mt-2 max-w-xl mx-auto leading-relaxed">{primary.description}</p>
@@ -179,7 +180,7 @@ export function StyleQuizPage({ onNavigate, onComplete }: StyleQuizPageProps) {
             </div>
 
             <div className="bg-[#FAF8F5] p-6 rounded-xl border border-stone-200">
-              <h2 className="font-serif text-xl font-medium text-stone-900 mb-3">Тобі ідеально підійдуть:</h2>
+              <h2 className="font-serif text-xl font-medium text-stone-900 mb-3">{t('Тобі ідеально підійдуть:')}</h2>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs sm:text-sm text-stone-700">
                 {primary.keyFeatures.map((feature) => (
                   <li key={feature} className="flex items-center gap-2">
@@ -195,7 +196,7 @@ export function StyleQuizPage({ onNavigate, onComplete }: StyleQuizPageProps) {
               <div className="p-4 rounded-xl border border-dashed border-stone-300 flex items-center gap-4">
                 <AppImage image={secondary.image} alt="" sizes="64px" className="w-16 h-16 rounded-lg object-cover shrink-0" />
                 <div>
-                  <span className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold block">Також вам може підійти</span>
+                  <span className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold block">{t('Також вам може підійти')}</span>
                   <span className="font-serif text-lg text-stone-900 block">
                     {secondary.name} <span className="text-stone-500 text-sm">({secondary.uaName})</span>
                   </span>
@@ -210,17 +211,17 @@ export function StyleQuizPage({ onNavigate, onComplete }: StyleQuizPageProps) {
                 onClick={() => onNavigate({ type: 'zone-builder', zoneId: 'sofa', prefilledStyle: primary.id })}
                 className="w-full sm:w-auto px-8 py-3.5 bg-[#2C2C2C] hover:bg-[#444] text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors inline-flex items-center justify-center gap-2 shadow-sm"
               >
-                <span>Показати рішення для мого стилю</span>
+                <span>{t('Показати рішення для мого стилю')}</span>
                 <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </button>
-              <p className="text-xs text-stone-500">Стиль збережено у вашому кабінеті «Мій HomeEstet» і він буде підставлятися в майстер «Зроби цю зону».</p>
+              <p className="text-xs text-stone-500">{t('Стиль збережено у вашому кабінеті «Мій HomeEstet» і він буде підставлятися в майстер «Зроби цю зону».')}</p>
               <button
                 type="button"
                 onClick={restart}
                 className="text-xs text-stone-600 hover:text-stone-900 font-medium inline-flex items-center gap-1"
               >
                 <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>Пройти тест ще раз</span>
+                <span>{t('Пройти тест ще раз')}</span>
               </button>
             </div>
           </div>

@@ -3,6 +3,7 @@ import { PLAN_TASKS } from '../data/homeestetData.ts';
 import type { PageView, PlanState } from '../types.ts';
 import { formatUAH } from '../utils/format.ts';
 import { Printer, Clock, ArrowRight, Trash2, ExternalLink } from 'lucide-react';
+import { t } from '../i18n/index.ts';
 
 interface PersonalPlanPageProps {
   plan: PlanState;
@@ -12,11 +13,11 @@ interface PersonalPlanPageProps {
 }
 
 const WEEKS: { num: number | 'all'; title: string }[] = [
-  { num: 'all', title: 'Весь план на 30 днів' },
-  { num: 1, title: 'Тиждень 1: Порядок' },
-  { num: 2, title: 'Тиждень 2: Текстиль' },
-  { num: 3, title: 'Тиждень 3: Освітлення' },
-  { num: 4, title: 'Тиждень 4: Декор' },
+  { num: 'all', title: t('Весь план на 30 днів') },
+  { num: 1, title: t('Тиждень 1: Порядок') },
+  { num: 2, title: t('Тиждень 2: Текстиль') },
+  { num: 3, title: t('Тиждень 3: Освітлення') },
+  { num: 4, title: t('Тиждень 4: Декор') },
 ];
 
 export function PersonalPlanPage({ plan, onToggleTask, onRemoveEntry, onNavigate }: PersonalPlanPageProps) {
@@ -37,10 +38,10 @@ export function PersonalPlanPage({ plan, onToggleTask, onRemoveEntry, onNavigate
       <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-10">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">Персональний ритм</span>
-            <h1 className="font-serif text-3xl sm:text-4xl text-[#2C2C2C] font-normal tracking-tight">📋 Твій план оновлення дому на 30 днів</h1>
+            <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">{t('Персональний ритм')}</span>
+            <h1 className="font-serif text-3xl sm:text-4xl text-[#2C2C2C] font-normal tracking-tight">{t('📋 Твій план оновлення дому на 30 днів')}</h1>
             <p className="text-stone-600 text-xs sm:text-sm mt-1 max-w-xl">
-              Покроковий план трансформації без вигорання та стресу: від розхламлення та теплого світла до фінального затишку. Прогрес зберігається у вашому браузері.
+              {t('Покроковий план трансформації без вигорання та стресу: від розхламлення та теплого світла до фінального затишку. Прогрес зберігається у вашому браузері.')}
             </p>
           </div>
 
@@ -50,15 +51,15 @@ export function PersonalPlanPage({ plan, onToggleTask, onRemoveEntry, onNavigate
             className="px-4 py-2 bg-white hover:bg-stone-50 border border-stone-300 text-stone-700 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 self-start sm:self-auto shadow-2xs"
           >
             <Printer className="w-4 h-4" aria-hidden="true" />
-            <span>Друк плану</span>
+            <span>{t('Друк плану')}</span>
           </button>
         </div>
 
         <div className="bg-white p-6 rounded-2xl border border-stone-200/90 shadow-2xs space-y-3">
           <div className="flex items-center justify-between text-xs sm:text-sm">
-            <span className="font-medium text-stone-800">Ваш прогрес оновлення простору:</span>
+            <span className="font-medium text-stone-800">{t('Ваш прогрес оновлення простору:')}</span>
             <span className="font-mono font-bold text-[#967259]">
-              {completedCount} з {totalTasks} завдань ({progressPercent}%)
+              {t('{done} з {total} завдань ({percent}%)', { done: completedCount, total: totalTasks, percent: progressPercent })}
             </span>
           </div>
           <div
@@ -67,20 +68,20 @@ export function PersonalPlanPage({ plan, onToggleTask, onRemoveEntry, onNavigate
             aria-valuemin={0}
             aria-valuemax={100}
             aria-valuenow={progressPercent}
-            aria-label="Прогрес плану"
+            aria-label={t('Прогрес плану')}
           >
             <div className="h-full bg-[#8A9A86] transition-all duration-500 rounded-full" style={{ width: `${progressPercent}%` }} />
           </div>
           <p className="text-[11px] text-stone-500">
             {progressPercent === 100
-              ? '🎉 Вітаємо! Ваш дім повністю перетворено за методикою HomeEstet!'
-              : 'Виконуйте по 1 кроку щотижня, відмічаючи чекбокси.'}
+              ? t('🎉 Вітаємо! Ваш дім повністю перетворено за методикою HomeEstet!')
+              : t('Виконуйте по 1 кроку щотижня, відмічаючи чекбокси.')}
           </p>
         </div>
 
         {plan.entries.length > 0 && (
           <section className="space-y-4">
-            <h2 className="font-serif text-2xl text-[#2C2C2C] font-normal">Мої рішення в плані ({plan.entries.length})</h2>
+            <h2 className="font-serif text-2xl text-[#2C2C2C] font-normal">{t('Мої рішення в плані ({n})', { n: plan.entries.length })}</h2>
             {plan.entries.map((entry) => (
               <div key={entry.id} className="bg-white p-5 sm:p-6 rounded-2xl border border-[#E6D4C2] shadow-2xs space-y-4">
                 <div className="flex items-start justify-between gap-3">
@@ -88,7 +89,7 @@ export function PersonalPlanPage({ plan, onToggleTask, onRemoveEntry, onNavigate
                     <span className="text-xs text-[#967259] font-medium block">{entry.zoneName}</span>
                     <h3 className="font-serif text-xl font-medium text-stone-900 mt-0.5">{entry.title}</h3>
                     <span className="text-xs text-stone-500 block mt-1">
-                      Бюджет: <strong>{formatUAH(entry.budget)}</strong> · додано {new Date(entry.addedAt).toLocaleDateString('uk-UA')}
+                      {t('Бюджет:')} <strong>{formatUAH(entry.budget)}</strong> · додано {new Date(entry.addedAt).toLocaleDateString('uk-UA')}
                     </span>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
@@ -97,8 +98,8 @@ export function PersonalPlanPage({ plan, onToggleTask, onRemoveEntry, onNavigate
                         type="button"
                         onClick={() => onNavigate({ type: 'zone-builder', zoneId: entry.zoneId, params: entry.params })}
                         className="p-2 text-stone-500 hover:text-stone-900 transition-colors"
-                        title="Відкрити рішення"
-                        aria-label="Відкрити рішення"
+                        title={t('Відкрити рішення')}
+                        aria-label={t('Відкрити рішення')}
                       >
                         <ExternalLink className="w-4 h-4" aria-hidden="true" />
                       </button>
@@ -107,8 +108,8 @@ export function PersonalPlanPage({ plan, onToggleTask, onRemoveEntry, onNavigate
                       type="button"
                       onClick={() => onRemoveEntry(entry.id)}
                       className="p-2 text-stone-400 hover:text-red-500 transition-colors"
-                      title="Прибрати з плану"
-                      aria-label="Прибрати з плану"
+                      title={t('Прибрати з плану')}
+                      aria-label={t('Прибрати з плану')}
                     >
                       <Trash2 className="w-4 h-4" aria-hidden="true" />
                     </button>
@@ -143,7 +144,7 @@ export function PersonalPlanPage({ plan, onToggleTask, onRemoveEntry, onNavigate
           </section>
         )}
 
-        <div className="flex flex-wrap items-center gap-1.5 p-1 bg-stone-100 rounded-xl w-fit" role="group" aria-label="Фільтр за тижнем">
+        <div className="flex flex-wrap items-center gap-1.5 p-1 bg-stone-100 rounded-xl w-fit" role="group" aria-label={t('Фільтр за тижнем')}>
           {WEEKS.map((week) => (
             <button
               type="button"
@@ -184,9 +185,9 @@ export function PersonalPlanPage({ plan, onToggleTask, onRemoveEntry, onNavigate
                       <span className="flex items-center gap-3 text-[11px] text-stone-500">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3 text-stone-400" aria-hidden="true" />
-                          {task.estimatedMinutes} хв
+                          {t('{n} хв', { n: task.estimatedMinutes })}
                         </span>
-                        <span className="font-medium text-stone-700">{task.costEstimate === 0 ? '0 ₴ (безкоштовно)' : `~${formatUAH(task.costEstimate)}`}</span>
+                        <span className="font-medium text-stone-700">{task.costEstimate === 0 ? t('0 ₴ (безкоштовно)') : `~${formatUAH(task.costEstimate)}`}</span>
                       </span>
                     </span>
 
@@ -203,9 +204,9 @@ export function PersonalPlanPage({ plan, onToggleTask, onRemoveEntry, onNavigate
 
         <div className="p-6 bg-[#FAF2EB] rounded-2xl border border-[#E6D4C2] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <div>
-            <h4 className="font-serif text-lg font-medium text-stone-900">Потрібна конкретна допомога з однією кімнатою?</h4>
+            <h4 className="font-serif text-lg font-medium text-stone-900">{t('Потрібна конкретна допомога з однією кімнатою?')}</h4>
             <p className="text-xs text-stone-600 mt-0.5">
-              Скористайтеся функцією «Зроби цю зону», щоб отримати персоналізовані товари та розрахунок бюджету, і додайте результат у цей план.
+              {t('Скористайтеся функцією «Зроби цю зону», щоб отримати персоналізовані товари та розрахунок бюджету, і додайте результат у цей план.')}
             </p>
           </div>
           <button
@@ -213,7 +214,7 @@ export function PersonalPlanPage({ plan, onToggleTask, onRemoveEntry, onNavigate
             onClick={() => onNavigate({ type: 'zone-builder' })}
             className="px-5 py-2.5 bg-[#2C2C2C] hover:bg-[#444] text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-2 shrink-0"
           >
-            <span>Зробити мою зону</span>
+            <span>{t('Зробити мою зону')}</span>
             <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
           </button>
         </div>

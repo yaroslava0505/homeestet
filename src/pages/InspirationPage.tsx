@@ -7,6 +7,7 @@ import { ShopProductCard } from '../components/ShopVariants.tsx';
 import { BeforeAfterSlider } from '../components/BeforeAfterSlider.tsx';
 import { STORE_NAMES, affiliateLink, loadShopCatalog, pickSpread, variantsFor } from '../lib/shop.ts';
 import { ArrowRight, ArrowLeft, ExternalLink, ShoppingBag } from 'lucide-react';
+import { t } from '../i18n/index.ts';
 
 const STEP_VARIANTS = 3;
 /** Articles show variants regardless of budget; this just keeps the list to realistic everyday prices. */
@@ -20,7 +21,7 @@ function StepShopping({ section, catalog }: { section: ArticleIdeaSection; catal
     <div className="bg-white border border-[#E6E0D6] rounded-xl p-4 sm:p-5 space-y-3">
       <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-stone-700 font-semibold">
         <ShoppingBag className="w-4 h-4 text-[#967259]" aria-hidden="true" />
-        <span>Варіанти з магазинів</span>
+        <span>{t('Варіанти з магазинів')}</span>
       </div>
       {items.length > 0 && (
         <ul className="grid grid-cols-3 gap-3 list-none p-0 m-0">
@@ -72,10 +73,10 @@ export function InspirationPage({ articleId, onNavigate, onOpenProduct }: Inspir
   if (articleId && !article) {
     return (
       <div className="bg-[#FAF8F5] min-h-[60vh] py-16 text-center px-4">
-        <h1 className="font-serif text-3xl text-[#2C2C2C]">Статтю не знайдено</h1>
-        <p className="text-sm text-stone-600 mt-2">Можливо, посилання застаріло або містить помилку.</p>
+        <h1 className="font-serif text-3xl text-[#2C2C2C]">{t('Статтю не знайдено')}</h1>
+        <p className="text-sm text-stone-600 mt-2">{t('Можливо, посилання застаріло або містить помилку.')}</p>
         <button type="button" onClick={backToList} className="mt-6 px-5 py-2.5 bg-[#2C2C2C] text-white text-xs font-semibold rounded-lg">
-          До всіх лайфхаків
+          {t('До всіх лайфхаків')}
         </button>
       </div>
     );
@@ -91,7 +92,7 @@ export function InspirationPage({ articleId, onNavigate, onOpenProduct }: Inspir
               onClick={backToList}
               className="text-xs text-stone-500 hover:text-stone-900 flex items-center gap-1 font-medium"
             >
-              <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" /> До всіх лайфхаків
+              <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" /> {t('До всіх лайфхаків')}
             </button>
 
             <header className="space-y-3">
@@ -117,7 +118,7 @@ export function InspirationPage({ articleId, onNavigate, onOpenProduct }: Inspir
             <div className="space-y-10 pt-4">
               {article.sections.map((section) => (
                 <section key={section.step} className="space-y-3">
-                  <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block">Лайфхак №{section.step}</span>
+                  <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block">{t('Лайфхак №{n}', { n: section.step })}</span>
                   <h2 className="font-serif text-2xl text-stone-900 font-medium">{section.title}</h2>
                   <p className="text-sm text-stone-700 leading-relaxed">{section.description}</p>
                   <div className="rounded-xl overflow-hidden aspect-[16/10] border border-stone-200 bg-stone-100">
@@ -129,7 +130,7 @@ export function InspirationPage({ articleId, onNavigate, onOpenProduct }: Inspir
                     <div className="bg-white border border-[#E6E0D6] rounded-xl p-4 sm:p-5">
                       <div className="flex items-center gap-2 mb-3.5 text-xs uppercase tracking-wider text-stone-700 font-semibold">
                         <ShoppingBag className="w-4 h-4 text-[#967259]" aria-hidden="true" />
-                        <span>Купити деталь з фото</span>
+                        <span>{t('Купити деталь з фото')}</span>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {section.products.map((product) => (
@@ -145,24 +146,24 @@ export function InspirationPage({ articleId, onNavigate, onOpenProduct }: Inspir
             {article.beforeAfter && <BeforeAfterSlider data={article.beforeAfter} />}
 
             <div className="p-8 bg-[#FAF2EB] rounded-2xl border border-[#E6D4C2] text-center space-y-4 my-10">
-              <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block">Практичний крок</span>
-              <h2 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C]">Хочеш таку зону у своєму домі?</h2>
+              <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block">{t('Практичний крок')}</span>
+              <h2 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C]">{t('Хочеш таку зону у своєму домі?')}</h2>
               <p className="text-xs sm:text-sm text-stone-600 max-w-md mx-auto leading-relaxed">
-                HomeEstet налаштує готову схему під ваш бюджет і предмети, які вже є у вас вдома.
+                {t('HomeEstet налаштує готову схему під ваш бюджет і предмети, які вже є у вас вдома.')}
               </p>
               <button
                 type="button"
                 onClick={() => onNavigate({ type: 'zone-builder', zoneId: article.zoneId })}
                 className="px-8 py-3 bg-[#2C2C2C] hover:bg-[#444] text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors inline-flex items-center gap-2 shadow-sm"
               >
-                <span>Зробити мою зону</span>
+                <span>{t('Зробити мою зону')}</span>
                 <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
 
             {article.relatedArticleIds.length > 0 && (
               <section className="pt-8 border-t border-[#ECE8E1] space-y-4">
-                <h2 className="font-serif text-2xl text-[#2C2C2C] font-normal">Схожі добірки</h2>
+                <h2 className="font-serif text-2xl text-[#2C2C2C] font-normal">{t('Схожі добірки')}</h2>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {article.relatedArticleIds
                     .map(findArticle)
@@ -189,10 +190,10 @@ export function InspirationPage({ articleId, onNavigate, onOpenProduct }: Inspir
         ) : (
           <div className="space-y-10">
             <div>
-              <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">Практичний журнал HomeEstet</span>
-              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#2C2C2C] font-normal tracking-tight">💡 Лайфхаки простору</h1>
+              <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">{t('Практичний журнал HomeEstet')}</span>
+              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#2C2C2C] font-normal tracking-tight">{t('💡 Лайфхаки простору')}</h1>
               <p className="text-stone-600 text-xs sm:text-base mt-2 max-w-xl">
-                Короткі прийоми, які можна повторити за вечір: що зробити з наявного, що переставити і що докупити, якщо дуже треба.
+                {t('Короткі прийоми, які можна повторити за вечір: що зробити з наявного, що переставити і що докупити, якщо дуже треба.')}
               </p>
             </div>
 
@@ -203,7 +204,7 @@ export function InspirationPage({ articleId, onNavigate, onOpenProduct }: Inspir
                     type="button"
                     className="aspect-[16/10] overflow-hidden bg-stone-100 block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8A9A86]"
                     onClick={() => onNavigate({ type: 'inspiration', articleId: item.id })}
-                    aria-label={`Читати: ${item.title}`}
+                    aria-label={t('Читати: {title}', { title: item.title })}
                   >
                     <AppImage image={item.coverImage} alt="" sizes="(min-width: 768px) 33vw, 100vw" className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500" />
                   </button>
@@ -232,7 +233,7 @@ export function InspirationPage({ articleId, onNavigate, onOpenProduct }: Inspir
                       onClick={() => onNavigate({ type: 'zone-builder', zoneId: item.zoneId })}
                       className="w-full py-2.5 bg-[#FAF8F5] hover:bg-[#FAF2EB] text-[#2C2C2C] hover:text-[#967259] border border-stone-200 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5"
                     >
-                      <span>Зробити цю зону</span>
+                      <span>{t('Зробити цю зону')}</span>
                       <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                     </button>
                   </div>

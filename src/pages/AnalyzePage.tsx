@@ -22,6 +22,7 @@ import {
   Recycle,
   Info,
 } from 'lucide-react';
+import { plural, t } from '../i18n/index.ts';
 
 interface AnalyzePageProps {
   /** When set, shows a saved analysis from localStorage instead of the upload form. */
@@ -37,10 +38,10 @@ interface AnalyzePageProps {
 type Stage = 'form' | 'loading' | 'result';
 
 const LOADING_STEPS = [
-  'Дивимося на фото…',
-  'Визначаємо зону, стиль і палітру…',
-  'Шукаємо, що заважає спокою…',
-  'Складаємо 5 кроків і підбираємо речі в бюджет…',
+  t('Дивимося на фото…'),
+  t('Визначаємо зону, стиль і палітру…'),
+  t('Шукаємо, що заважає спокою…'),
+  t('Складаємо 5 кроків і підбираємо речі в бюджет…'),
 ];
 
 function planEntryId(id: string): string {
@@ -49,10 +50,8 @@ function planEntryId(id: string): string {
 
 /** "5 кроків", "3 кроки", "1 крок" */
 function stepsHeading(count: number): string {
-  const mod10 = count % 10;
-  const mod100 = count % 100;
-  const word = mod10 === 1 && mod100 !== 11 ? 'крок' : mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20) ? 'кроки' : 'кроків';
-  return `${count} ${word} для цього кута`;
+  const word = plural(count, t('крок'), t('кроки'), t('кроків'));
+  return t('{n} {word} для цього кута', { n: count, word });
 }
 
 export function AnalyzePage({
@@ -98,7 +97,7 @@ export function AnalyzePage({
     } catch (e) {
       setImage(null);
       setError(
-        e instanceof AnalyzeError ? { code: e.code, message: e.message } : { code: 'decode', message: 'Не вдалося обробити файл.' }
+        e instanceof AnalyzeError ? { code: e.code, message: e.message } : { code: 'decode', message: t('Не вдалося обробити файл.') }
       );
       window.setTimeout(() => document.querySelector('[role="alert"]')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 50);
     } finally {
@@ -110,7 +109,7 @@ export function AnalyzePage({
     if (!image) return;
     if (getAnalysisQuota().remaining <= 0) {
       setQuota(getAnalysisQuota());
-      setError({ code: 'daily_limit', message: `На сьогодні ${quota.limit} аналізи використано. Повертайся завтра або відкрий збережені плани.` });
+      setError({ code: 'daily_limit', message: t('На сьогодні {n} аналізи використано. Повертайся завтра або відкрий збережені плани.', { n: quota.limit }) });
       return;
     }
     const params: AnalyzeParams = { budgetId, rental, note: note.trim() || undefined };
@@ -129,7 +128,7 @@ export function AnalyzePage({
     } catch (e) {
       setStage('form');
       setError(
-        e instanceof AnalyzeError ? { code: e.code, message: e.message } : { code: 'unknown', message: 'Щось пішло не так. Спробуйте ще раз.' }
+        e instanceof AnalyzeError ? { code: e.code, message: e.message } : { code: 'unknown', message: t('Щось пішло не так. Спробуйте ще раз.') }
       );
       window.setTimeout(() => document.querySelector('[role="alert"]')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 50);
     }
@@ -150,10 +149,10 @@ export function AnalyzePage({
     if (!saved) {
       return (
         <div className="bg-[#FAF8F5] min-h-[60vh] py-16 text-center px-4">
-          <h1 className="font-serif text-3xl text-[#2C2C2C]">Аналіз не знайдено</h1>
-          <p className="text-sm text-stone-600 mt-2">Збережені аналізи живуть у цьому браузері. Можливо, їх було очищено.</p>
+          <h1 className="font-serif text-3xl text-[#2C2C2C]">{t('Аналіз не знайдено')}</h1>
+          <p className="text-sm text-stone-600 mt-2">{t('Збережені аналізи живуть у цьому браузері. Можливо, їх було очищено.')}</p>
           <button type="button" onClick={reset} className="mt-6 px-5 py-2.5 bg-[#2C2C2C] text-white text-xs font-semibold rounded-lg">
-            Новий аналіз
+            {t('Новий аналіз')}
           </button>
         </div>
       );
@@ -211,12 +210,12 @@ export function AnalyzePage({
     <div className="bg-[#FAF8F5] min-h-[85vh] py-10 sm:py-16">
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-8">
-          <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-2">Головний інструмент HomeEstet</span>
+          <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-2">{t('Головний інструмент HomeEstet')}</span>
           <h1 className="font-serif text-3xl sm:text-5xl text-[#2C2C2C] font-normal tracking-tight text-balance">
-            Сфотографуй кут, отримай план
+            {t('Сфотографуй кут, отримай план')}
           </h1>
           <p className="text-stone-600 text-sm sm:text-base mt-3 max-w-xl mx-auto leading-relaxed">
-            Один знімок кімнати. У відповідь: що заважає простору, 5 конкретних кроків і лише ті речі, які варто докупити у твій бюджет.
+            {t('Один знімок кімнати. У відповідь: що заважає простору, 5 конкретних кроків і лише ті речі, які варто докупити у твій бюджет.')}
           </p>
         </div>
 
@@ -228,7 +227,7 @@ export function AnalyzePage({
             <div className="w-12 h-12 rounded-full border-4 border-[#967259] border-t-transparent animate-spin mx-auto" />
             <div>
               <h2 className="font-serif text-2xl text-stone-900">{LOADING_STEPS[loadingStep]}</h2>
-              <p className="text-xs text-stone-500 mt-1">Зазвичай це займає 20–60 секунд. Фото нікуди не зберігається.</p>
+              <p className="text-xs text-stone-500 mt-1">{t('Зазвичай це займає 20–60 секунд. Фото нікуди не зберігається.')}</p>
             </div>
           </div>
         ) : (
@@ -261,9 +260,9 @@ export function AnalyzePage({
                 />
                 {image ? (
                   <span className="block relative">
-                    <img src={image.previewUrl} alt="Обране фото кімнати" className="w-full max-h-[420px] object-contain rounded-lg bg-stone-100" />
+                    <img src={image.previewUrl} alt={t('Обране фото кімнати')} className="w-full max-h-[420px] object-contain rounded-lg bg-stone-100" />
                     <span className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-white/90 backdrop-blur-sm rounded-lg text-xs font-medium text-stone-700 shadow-sm">
-                      Обрати інше фото
+                      {t('Обрати інше фото')}
                     </span>
                   </span>
                 ) : (
@@ -273,11 +272,11 @@ export function AnalyzePage({
                     ) : (
                       <UploadCloud className="w-12 h-12 text-stone-400 group-hover:text-[#967259] mx-auto mb-3 transition-colors" aria-hidden="true" />
                     )}
-                    <span className="font-medium text-base text-stone-800 block">Перетягни фото сюди або натисни, щоб обрати</span>
-                    <span className="text-xs text-stone-500 mt-1.5 block">JPG, PNG або WebP. Фотографуй при денному світлі, щоб було видно весь кут.</span>
+                    <span className="font-medium text-base text-stone-800 block">{t('Перетягни фото сюди або натисни, щоб обрати')}</span>
+                    <span className="text-xs text-stone-500 mt-1.5 block">{t('JPG, PNG або WebP. Фотографуй при денному світлі, щоб було видно весь кут.')}</span>
                     <span className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 bg-[#2C2C2C] text-white text-xs font-semibold rounded-lg">
                       <Camera className="w-4 h-4" aria-hidden="true" />
-                      Обрати фото
+                      {t('Обрати фото')}
                     </span>
                   </span>
                 )}
@@ -285,7 +284,7 @@ export function AnalyzePage({
             </div>
 
             <fieldset>
-              <legend className="text-xs uppercase tracking-wider text-stone-500 font-semibold mb-2">Бюджет на зміни</legend>
+              <legend className="text-xs uppercase tracking-wider text-stone-500 font-semibold mb-2">{t('Бюджет на зміни')}</legend>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2" role="radiogroup">
                 {BUDGET_TIERS.map((tier) => {
                   const active = budgetId === tier.id;
@@ -311,13 +310,13 @@ export function AnalyzePage({
               <label className="flex items-start gap-3 p-3 rounded-lg border border-stone-200 bg-[#FAF8F5] cursor-pointer has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[#8A9A86]">
                 <input type="checkbox" checked={rental} onChange={(e) => setRental(e.target.checked)} className="mt-0.5 w-4 h-4 accent-[#967259]" />
                 <span className="block">
-                  <span className="text-sm font-medium text-stone-900 block">Орендоване житло</span>
-                  <span className="text-xs text-stone-500 block">Без свердління, фарбування і заміни меблів власника</span>
+                  <span className="text-sm font-medium text-stone-900 block">{t('Орендоване житло')}</span>
+                  <span className="text-xs text-stone-500 block">{t('Без свердління, фарбування і заміни меблів власника')}</span>
                 </span>
               </label>
               <div>
                 <label htmlFor={noteId} className="text-xs uppercase tracking-wider text-stone-500 font-semibold block mb-1.5">
-                  Що найбільше заважає? <span className="normal-case tracking-normal font-normal">(необов’язково)</span>
+                  {t('Що найбільше заважає?')} <span className="normal-case tracking-normal font-normal">{t('(необов’язково)')}</span>
                 </label>
                 <textarea
                   id={noteId}
@@ -325,7 +324,7 @@ export function AnalyzePage({
                   maxLength={300}
                   onChange={(e) => setNote(e.target.value)}
                   rows={2}
-                  placeholder="Наприклад: немає де працювати, занадто темно ввечері"
+                  placeholder={t('Наприклад: немає де працювати, занадто темно ввечері')}
                   className="w-full px-3 py-2 text-sm rounded-lg border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#8A9A86]"
                 />
               </div>
@@ -338,7 +337,7 @@ export function AnalyzePage({
                   {error.message}
                   {(error.code === 'not_configured' || error.code === 'budget_exhausted' || error.code === 'daily_limit' || error.code === 'ip_limit') && (
                     <span className="block text-xs text-red-700/80 mt-1">
-                      Поки що можна отримати рішення вручну: обери зону, стиль і бюджет у майстрі «Зроби цю зону».
+                      {t('Поки що можна отримати рішення вручну: обери зону, стиль і бюджет у майстрі «Зроби цю зону».')}
                     </span>
                   )}
                 </span>
@@ -347,11 +346,11 @@ export function AnalyzePage({
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-stone-100">
               <p className="text-[11px] text-stone-500 leading-relaxed max-w-sm">
-                Фото стискається в браузері і надсилається моделі лише для цього аналізу. HomeEstet не зберігає знімки.
+                {t('Фото стискається в браузері і надсилається моделі лише для цього аналізу. HomeEstet не зберігає знімки.')}
                 <span className="block mt-1 text-stone-600">
                   {quota.remaining > 0
-                    ? `Сьогодні доступно ще ${quota.remaining} з ${quota.limit} безкоштовних аналізів.`
-                    : `Сьогодні всі ${quota.limit} безкоштовні аналізи використано.`}
+                    ? t('Сьогодні доступно ще {left} з {limit} безкоштовних аналізів.', { left: quota.remaining, limit: quota.limit })
+                    : t('Сьогодні всі {limit} безкоштовні аналізи використано.', { limit: quota.limit })}
                 </span>
               </p>
               <button
@@ -361,7 +360,7 @@ export function AnalyzePage({
                 className="px-6 py-3 bg-[#967259] hover:bg-[#7e5f49] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg flex items-center justify-center gap-2 shadow-sm shrink-0"
               >
                 <Sparkles className="w-4 h-4" aria-hidden="true" />
-                <span>Проаналізувати</span>
+                <span>{t('Проаналізувати')}</span>
               </button>
             </div>
           </div>
@@ -369,16 +368,16 @@ export function AnalyzePage({
 
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-stone-600">
           <div className="p-4 bg-white/70 rounded-xl border border-stone-200/80">
-            <span className="font-semibold text-stone-800 block mb-1">1. Фото</span>
-            Один кут або кімната цілком, при денному світлі.
+            <span className="font-semibold text-stone-800 block mb-1">{t('1. Фото')}</span>
+            {t('Один кут або кімната цілком, при денному світлі.')}
           </div>
           <div className="p-4 bg-white/70 rounded-xl border border-stone-200/80">
-            <span className="font-semibold text-stone-800 block mb-1">2. Діагноз</span>
-            Зона, стиль, палітра і що саме створює візуальний шум.
+            <span className="font-semibold text-stone-800 block mb-1">{t('2. Діагноз')}</span>
+            {t('Зона, стиль, палітра і що саме створює візуальний шум.')}
           </div>
           <div className="p-4 bg-white/70 rounded-xl border border-stone-200/80">
-            <span className="font-semibold text-stone-800 block mb-1">3. План</span>
-            5 кроків від безкоштовних до покупок у межах бюджету.
+            <span className="font-semibold text-stone-800 block mb-1">{t('3. План')}</span>
+            {t('5 кроків від безкоштовних до покупок у межах бюджету.')}
           </div>
         </div>
       </div>
@@ -390,7 +389,7 @@ function buildPlanEntry(id: string, plan: PhotoPlan): PlanEntry {
   const zone = plan.zoneId ? ZONES.find((z) => z.id === plan.zoneId) : undefined;
   return {
     id: planEntryId(id),
-    title: `📸 ${plan.zoneLabel}: план за фото`,
+    title: t('📸 {zone}: план за фото', { zone: plan.zoneLabel }),
     zoneId: zone?.id ?? 'sofa',
     zoneName: zone?.name ?? plan.zoneLabel,
     tasks: plan.steps.map((step, idx) => ({ id: String(idx + 1).padStart(2, '0'), title: step.title, description: step.description })),
@@ -418,7 +417,7 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
   const style = STYLES.find((s) => s.id === plan.suggestedStyleId) ?? STYLES[0];
   const budgetTier = BUDGET_TIERS.find((b) => b.id === params.budgetId) ?? BUDGET_TIERS[1];
   const noiseTone = plan.noiseLevel >= 60 ? 'bg-red-600/90' : plan.noiseLevel >= 35 ? 'bg-amber-600/90' : 'bg-emerald-600/90';
-  const noiseLabel = plan.noiseLevel >= 60 ? 'високий' : plan.noiseLevel >= 35 ? 'середній' : 'низький';
+  const noiseLabel = plan.noiseLevel >= 60 ? t('високий') : plan.noiseLevel >= 35 ? t('середній') : t('низький');
 
   if (!plan.isInterior) {
     return (
@@ -427,14 +426,14 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
             <div>
-              <h1 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C]">На цьому фото не видно кімнати</h1>
+              <h1 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C]">{t('На цьому фото не видно кімнати')}</h1>
               <p className="text-sm text-stone-600 mt-2 leading-relaxed">{plan.summary}</p>
             </div>
           </div>
           <img src={previewUrl} alt="" className="w-full max-h-64 object-cover rounded-xl opacity-70" />
           <button type="button" onClick={onReset} className="px-5 py-2.5 bg-[#2C2C2C] text-white text-xs font-semibold rounded-lg inline-flex items-center gap-2">
             <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
-            Спробувати інше фото
+            {t('Спробувати інше фото')}
           </button>
         </div>
       </div>
@@ -447,21 +446,21 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
         <div>
           <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-[#967259] font-semibold mb-1">
             <Camera className="w-3.5 h-3.5" aria-hidden="true" />
-            <span>План за фото</span>
+            <span>{t('План за фото')}</span>
           </div>
           <h1 className="font-serif text-3xl sm:text-4xl text-[#2C2C2C] font-normal leading-tight">{plan.zoneLabel}</h1>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-stone-600 mt-2">
             <span>
-              <strong>Бюджет:</strong> {budgetTier.label}
+              <strong>{t('Бюджет:')}</strong> {budgetTier.label}
             </span>
             <span aria-hidden="true">·</span>
             <span>
-              <strong>Житло:</strong> {params.rental ? 'оренда, без свердління' : 'власне'}
+              <strong>{t('Житло:')}</strong> {params.rental ? 'оренда, без свердління' : 'власне'}
             </span>
             {plan.confidence !== 'high' && (
               <>
                 <span aria-hidden="true">·</span>
-                <span className="text-amber-800">{plan.confidence === 'low' ? 'на фото видно мало, висновки обережні' : 'частину деталей видно нечітко'}</span>
+                <span className="text-amber-800">{plan.confidence === 'low' ? t('на фото видно мало, висновки обережні') : t('частину деталей видно нечітко')}</span>
               </>
             )}
           </div>
@@ -471,7 +470,7 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
           {onRemove ? (
             <button type="button" onClick={onRemove} className="px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 border bg-white text-stone-700 border-stone-300 hover:text-red-600 hover:border-red-300">
               <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
-              <span>Видалити</span>
+              <span>{t('Видалити')}</span>
             </button>
           ) : (
             <button
@@ -483,24 +482,24 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
               }`}
             >
               <Bookmark className="w-3.5 h-3.5" fill={saved ? 'currentColor' : 'none'} aria-hidden="true" />
-              <span>{saved ? 'Збережено ✓' : 'Зберегти'}</span>
+              <span>{saved ? t('Збережено ✓') : t('Зберегти')}</span>
             </button>
           )}
           <button type="button" onClick={onReset} className="px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 border bg-white text-stone-700 border-stone-300 hover:bg-stone-50">
             <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
-            <span>Новий аналіз</span>
+            <span>{t('Новий аналіз')}</span>
           </button>
         </div>
       </div>
 
       {/* Photo with badges */}
       <div className="relative rounded-2xl overflow-hidden bg-stone-100 border border-stone-200 shadow-sm">
-        <img src={previewUrl} alt="Проаналізоване фото" className="w-full max-h-[520px] object-cover object-center" />
+        <img src={previewUrl} alt={t('Проаналізоване фото')} className="w-full max-h-[520px] object-cover object-center" />
         <div className="absolute top-3 left-3 bg-black/75 backdrop-blur-xs text-white text-[11px] font-medium px-3 py-1 rounded-md">
-          Визначено: {plan.zoneLabel}
+          {t('Визначено: {zone}', { zone: plan.zoneLabel })}
         </div>
         <div className={`absolute bottom-3 right-3 ${noiseTone} text-white text-[11px] font-semibold px-2.5 py-1 rounded-md`}>
-          Візуальний шум: {plan.noiseLevel}% ({noiseLabel})
+          {t('Візуальний шум: {n}% ({label})', { n: plan.noiseLevel, label: noiseLabel })}
         </div>
       </div>
 
@@ -509,33 +508,33 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
       {/* Facts */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
         <div className="p-3.5 bg-white rounded-xl border border-stone-200">
-          <span className="text-[10px] uppercase tracking-wider text-stone-500 block mb-1">Зараз</span>
-          <span className="font-semibold text-stone-900">{plan.currentStyle || 'Без вираженого стилю'}</span>
+          <span className="text-[10px] uppercase tracking-wider text-stone-500 block mb-1">{t('Зараз')}</span>
+          <span className="font-semibold text-stone-900">{plan.currentStyle || t('Без вираженого стилю')}</span>
         </div>
         <div className="p-3.5 bg-white rounded-xl border border-stone-200">
-          <span className="text-[10px] uppercase tracking-wider text-stone-500 block mb-1">Потенціал</span>
+          <span className="text-[10px] uppercase tracking-wider text-stone-500 block mb-1">{t('Потенціал')}</span>
           <span className="font-semibold text-emerald-800">{style.name}</span>
           <span className="text-stone-500 block">{style.uaName}</span>
         </div>
         <div className="p-3.5 bg-white rounded-xl border border-stone-200">
-          <span className="text-[10px] uppercase tracking-wider text-stone-500 block mb-1.5">Палітра на фото</span>
-          <span className="flex items-center gap-1.5" aria-label={`Кольори: ${plan.palette.join(', ')}`}>
+          <span className="text-[10px] uppercase tracking-wider text-stone-500 block mb-1.5">{t('Палітра на фото')}</span>
+          <span className="flex items-center gap-1.5" aria-label={t('Кольори: {list}', { list: plan.palette.join(', ') })}>
             {plan.palette.map((hex) => (
               <span key={hex} className="w-6 h-6 rounded-full border border-stone-200 shadow-2xs" style={{ backgroundColor: hex }} title={hex} />
             ))}
-            {plan.palette.length === 0 && <span className="text-stone-500">не визначено</span>}
+            {plan.palette.length === 0 && <span className="text-stone-500">{t('не визначено')}</span>}
           </span>
         </div>
         <div className="p-3.5 bg-white rounded-xl border border-stone-200">
-          <span className="text-[10px] uppercase tracking-wider text-stone-500 block mb-1">Матеріали</span>
-          <span className="text-stone-800">{plan.materials.join(', ') || 'не визначено'}</span>
+          <span className="text-[10px] uppercase tracking-wider text-stone-500 block mb-1">{t('Матеріали')}</span>
+          <span className="text-stone-800">{plan.materials.join(', ') || t('не визначено')}</span>
         </div>
       </div>
 
       {/* Problems */}
       {plan.problems.length > 0 && (
         <section className="bg-white p-5 sm:p-6 rounded-2xl border border-stone-200 space-y-3">
-          <h2 className="text-xs uppercase tracking-widest text-[#967259] font-semibold">Що заважає простору</h2>
+          <h2 className="text-xs uppercase tracking-widest text-[#967259] font-semibold">{t('Що заважає простору')}</h2>
           {plan.noiseComment && <p className="text-xs text-stone-500">{plan.noiseComment}</p>}
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-stone-700">
             {plan.problems.map((item, idx) => (
@@ -551,7 +550,7 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
       {/* Steps */}
       <section className="bg-white p-5 sm:p-8 rounded-2xl border border-stone-200 space-y-5">
         <div>
-          <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">Покроковий план</span>
+          <span className="text-xs uppercase tracking-widest text-[#967259] font-semibold block mb-1">{t('Покроковий план')}</span>
           <h2 className="font-serif text-2xl sm:text-3xl text-[#2C2C2C]">{stepsHeading(plan.steps.length)}</h2>
         </div>
         <ol className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -570,9 +569,9 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
 
       {/* Remove / rearrange / use owned */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <ActionList icon={<MinusCircle className="w-4 h-4 text-red-600" aria-hidden="true" />} title="Прибрати" items={plan.remove} />
-        <ActionList icon={<Move className="w-4 h-4 text-[#967259]" aria-hidden="true" />} title="Переставити" items={plan.rearrange} />
-        <ActionList icon={<Recycle className="w-4 h-4 text-emerald-700" aria-hidden="true" />} title="Використати з наявного" items={plan.useOwned} />
+        <ActionList icon={<MinusCircle className="w-4 h-4 text-red-600" aria-hidden="true" />} title={t('Прибрати')} items={plan.remove} />
+        <ActionList icon={<Move className="w-4 h-4 text-[#967259]" aria-hidden="true" />} title={t('Переставити')} items={plan.rearrange} />
+        <ActionList icon={<Recycle className="w-4 h-4 text-emerald-700" aria-hidden="true" />} title={t('Використати з наявного')} items={plan.useOwned} />
       </div>
 
       {/* Shopping: real store products for the categories the analysis suggested */}
@@ -581,8 +580,8 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
       {/* Actions */}
       <div className="p-5 sm:p-6 bg-[#FAF2EB] rounded-2xl border border-[#E6D4C2] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h3 className="font-serif text-lg font-medium text-stone-900">Перенести ці кроки в мій план на 30 днів?</h3>
-          <p className="text-xs text-stone-600 mt-0.5">Кроки стануть чек-листом із прогресом, усе зберігається у цьому браузері.</p>
+          <h3 className="font-serif text-lg font-medium text-stone-900">{t('Перенести ці кроки в мій план на 30 днів?')}</h3>
+          <p className="text-xs text-stone-600 mt-0.5">{t('Кроки стануть чек-листом із прогресом, усе зберігається у цьому браузері.')}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 shrink-0">
           <button
@@ -591,7 +590,7 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
             className={`px-5 py-2.5 text-white text-xs font-semibold rounded-lg flex items-center gap-2 ${inPlan ? 'bg-[#8A9A86] hover:bg-[#75856F]' : 'bg-[#967259] hover:bg-[#7e5f49]'}`}
           >
             <Calendar className="w-4 h-4" aria-hidden="true" />
-            <span>{inPlan ? 'Додано до плану ✓ · Відкрити' : 'Додати до плану'}</span>
+            <span>{inPlan ? t('Додано до плану ✓ · Відкрити') : t('Додати до плану')}</span>
           </button>
           {plan.zoneId && (
             <button
@@ -599,7 +598,7 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
               onClick={() => onNavigate({ type: 'zone-builder', zoneId: plan.zoneId ?? undefined, prefilledStyle: plan.suggestedStyleId })}
               className="px-4 py-2.5 bg-white border border-stone-300 hover:bg-stone-50 text-stone-800 text-xs font-semibold rounded-lg flex items-center gap-1.5"
             >
-              <span>Майстер для цієї зони</span>
+              <span>{t('Майстер для цієї зони')}</span>
               <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
             </button>
           )}
@@ -608,7 +607,7 @@ function PlanResult({ plan, params, previewUrl, saved, inPlan, onSave, onRemove,
 
       <p className="text-[11px] text-stone-500 flex items-start gap-1.5">
         <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" aria-hidden="true" />
-        План складено за одним фото і може не враховувати те, чого на ньому не видно. Ціни в каталозі орієнтовні.
+        {t('План складено за одним фото і може не враховувати те, чого на ньому не видно. Ціни в каталозі орієнтовні.')}
       </p>
     </div>
   );
