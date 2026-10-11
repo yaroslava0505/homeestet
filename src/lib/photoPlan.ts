@@ -130,11 +130,17 @@ export const DEFAULT_WORKERS_AI_MODEL = '@cf/meta/llama-4-scout-17b-16e-instruct
  * Extra, very explicit field-by-field rules for open models (Workers AI). Claude follows the main prompt
  * on its own; smaller models need the format spelled out and an example of what "concrete" means.
  */
-export function buildOpenModelGuide(): string {
+/** Language of the plan text. Ids and the schema never change; only the prose does. */
+export type PlanLocale = 'uk' | 'ru';
+
+const LANGUAGE_NAME: Record<PlanLocale, string> = { uk: 'українською', ru: 'російською' };
+
+export function buildOpenModelGuide(locale: PlanLocale = 'uk'): string {
+  const lang = LANGUAGE_NAME[locale];
   return [
     'ФОРМАТ ВІДПОВІДІ (обов’язково для кожного поля):',
-    '- zone_label: назва кімнати або кута українською, 2–5 слів, наприклад «Диванна зона у вітальні».',
-    '- current_style: 2–5 слів українською про те, як виглядає простір зараз, наприклад «Сучасний із випадковим декором». Не пиши id стилю.',
+    `- zone_label: назва кімнати або кута ${lang}, 2–5 слів, наприклад «Диванна зона у вітальні».`,
+    `- current_style: 2–5 слів ${lang} про те, як виглядає простір зараз, наприклад «Сучасний із випадковим декором». Не пиши id стилю.`,
     '- suggested_style_id: лише один id зі списку стилів.',
     '- palette: 3–5 кольорів #RRGGBB, які видно на фото.',
     '- materials: 2–5 назв матеріалів словами (дерево, льон, метал, кераміка). Не кольори.',
@@ -142,7 +148,7 @@ export function buildOpenModelGuide(): string {
     '- problems: 3–5 конкретних речей з фото, кожна з назвою предмета і місцем («три пульти на журнальному столику»).',
     '- remove: 2–4 пункти, що прибрати з виду. rearrange: 2–4 пункти, що переставити і куди. use_owned: 2–4 пункти, як використати те, що вже є на фото.',
     '- steps: рівно 5 кроків. title: дія з конкретним предметом, 4–8 слів. description: 1–2 речення, що саме зробити і де. impact: що зміниться. Перші кроки безкоштовні, покупки в кінці.',
-    '- shopping: 2–4 об’єкти {category, why}. category лише з переліку категорій магазинів (наприклад "organizers", "table-lamps", "wall-art") і лише з тих, що пасують зоні з фото. why: одне речення українською про те, що зміниться саме тут.',
+    `- shopping: 2–4 об’єкти {category, why}. category лише з переліку категорій магазинів (наприклад "organizers", "table-lamps", "wall-art") і лише з тих, що пасують зоні з фото. why: одне речення ${lang} про те, що зміниться саме тут.`,
     '- summary: 2 речення, перше про головне враження, друге про найважливіший крок.',
     '',
     'ПРИКЛАД РІВНЯ КОНКРЕТНОСТІ:',
@@ -156,7 +162,7 @@ export function budgetLimitFor(budgetId: string): number {
 }
 
 /** Stable system prompt (identical for every request, so it can be cached). */
-export function buildSystemPrompt(): string {
+export function buildSystemPrompt(locale: PlanLocale = 'uk'): string {
   const zones = ZONES.map((z) => `${z.id} = ${z.name} (${z.description})`).join('; ');
   const styles = STYLES.map((s) => `${s.id} = ${s.name} (${s.uaName})`).join('; ');
   const shopCategories = SHOP_CATEGORIES.map((c) => `${c.id} = ${c.name}: ${c.hint}`).join('; ');
@@ -174,7 +180,9 @@ export function buildSystemPrompt(): string {
     '4. Жодного ремонту. Якщо це орендоване житло: без свердління, фарбування і заміни меблів власника.',
     '',
     'Правила відповіді:',
-    '- Пиши українською, звертайся на «ти», тепло і без зверхності.',
+    locale === 'ru'
+      ? '- МОВА ВІДПОВІДІ: російська. Усі текстові поля (zone_label, current_style, noise_comment, problems, remove, rearrange, use_owned, steps, shopping.why, summary) пиши російською, звертайся на «ты», тепло і без зверхності. Ідентифікатори (zone_id, suggested_style_id, shopping.category) лишаються як у схемі.'
+      : '- Пиши українською, звертайся на «ти», тепло і без зверхності.',
     '- Посилайся на конкретні предмети з фото («плед на спинці дивана», «коробки на верхній полиці»). Не вигадуй речей, яких не видно.',
     '- problems: 2–5 речей, які найбільше заважають простору виглядати спокійно. remove, rearrange, use_owned: по 1–5 коротких пунктів.',
     '- steps: рівно 5 кроків у порядку виконання, від безкоштовних до покупок. title до 8 слів, description 1–2 речення, impact: що зміниться.',

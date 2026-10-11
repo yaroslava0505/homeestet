@@ -69,8 +69,13 @@ const MAX_NOTE_LENGTH = 300;
 const DEFAULT_DAILY_LIMIT = 100;
 const DEFAULT_IP_DAILY_LIMIT = 5;
 
-const SYSTEM_PROMPT = buildSystemPrompt();
-const OPEN_MODEL_SYSTEM_PROMPT = `${SYSTEM_PROMPT}\n\n${buildOpenModelGuide()}`;
+// One stable prompt per language, so prompt caching keeps working for both.
+const SYSTEM_PROMPTS = { uk: buildSystemPrompt('uk'), ru: buildSystemPrompt('ru') } as const;
+const OPEN_MODEL_SYSTEM_PROMPTS = {
+  uk: `${SYSTEM_PROMPTS.uk}\n\n${buildOpenModelGuide('uk')}`,
+  ru: `${SYSTEM_PROMPTS.ru}\n\n${buildOpenModelGuide('ru')}`,
+} as const;
+const promptLocale = (params: AnalyzeParams): 'uk' | 'ru' => (params.locale === 'ru' ? 'ru' : 'uk');
 const JSON_SCHEMA = modelPlanJsonSchema();
 
 interface AnalyzeBody {
@@ -200,7 +205,7 @@ async function runAnthropic(env: Env, body: AnalyzeBody, params: AnalyzeParams):
         format: zodOutputFormat(ModelPlanSchema),
         ...(options.effort ? { effort: options.effort } : {}),
       },
-      system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
+      system: [{ type: 'text', text: SYSTEM_PROMPTS[promptLocale(params)], cache_control: { type: 'ephemeral' } }],
       messages: [
         {
           role: 'user',
@@ -286,7 +291,7 @@ async function runWorkersAi(env: Env, body: AnalyzeBody, params: AnalyzeParams):
     try {
       return await ai.run(model, {
         messages: [
-          { role: 'system', content: `${OPEN_MODEL_SYSTEM_PROMPT}\n\n${WORKERS_AI_JSON_REMINDER}${extraInstruction}` },
+          { role: 'system', content: `${OPEN_MODEL_SYSTEM_PROMPTS[promptLocale(params)]}\n\n${WORKERS_AI_JSON_REMINDER}${extraInstruction}` },
           {
             role: 'user',
             content: [

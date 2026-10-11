@@ -54,6 +54,13 @@ describe('photo plan schema and prompt', () => {
     expect(extractJsonObject('{"broken": ')).toBeNull();
   });
 
+  it('system prompt switches the answer language with the locale', () => {
+    expect(buildSystemPrompt('uk')).toContain('Пиши українською');
+    expect(buildSystemPrompt('ru')).toContain('МОВА ВІДПОВІДІ: російська');
+    expect(buildSystemPrompt('ru')).not.toContain('Пиши українською');
+    expect(buildUserPrompt({ budgetId: 'under-1000', rental: false, locale: 'ru' })).toContain('російська');
+  });
+
   it('user prompt carries budget, rental flag and a trimmed note', () => {
     const text = buildUserPrompt({ budgetId: 'under-1000', rental: true, note: '  Не люблю жовтий  ' });
     expect(text).toContain('1000 ₴');
