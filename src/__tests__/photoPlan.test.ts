@@ -56,9 +56,11 @@ describe('photo plan schema and prompt', () => {
 
   it('system prompt switches the answer language with the locale', () => {
     expect(buildSystemPrompt('uk')).toContain('Пиши українською');
-    expect(buildSystemPrompt('ru')).toContain('МОВА ВІДПОВІДІ: російська');
-    expect(buildSystemPrompt('ru')).not.toContain('Пиши українською');
-    expect(buildUserPrompt({ budgetId: 'under-1000', rental: false, locale: 'ru' })).toContain('російська');
+    const ru = buildSystemPrompt('ru');
+    expect(ru).toContain('Пиши по-русски');
+    expect(ru).not.toMatch(/[іїєґІЇЄҐ]/); // the whole Russian prompt is Russian, zone and category names included
+    for (const z of ZONES) expect(ru).toContain(`${z.id} = `);
+    expect(buildUserPrompt({ budgetId: 'under-1000', rental: false, locale: 'ru' })).toContain('по-русски');
   });
 
   it('user prompt carries budget, rental flag and a trimmed note', () => {

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { AnalyzeParams, PhotoPlan, PhotoPlanShopping } from '../types.ts';
 import { BUDGET_TIERS, STYLES, ZONES } from '../data/homeestetData.ts';
 import { SHOP_CATEGORIES, SHOP_CATEGORY_IDS, ZONE_SHOP_DEFAULTS, defaultShoppingFor, isShopCategoryId } from '../data/shopCategories.ts';
+import { DATA_RU } from '../i18n/dataRu.ts';
 
 /**
  * Shared between the Cloudflare Pages Function (functions/api/analyze.ts) and the unit tests:
@@ -133,14 +134,40 @@ export const DEFAULT_WORKERS_AI_MODEL = '@cf/meta/llama-4-scout-17b-16e-instruct
 /** Language of the plan text. Ids and the schema never change; only the prose does. */
 export type PlanLocale = 'uk' | 'ru';
 
-const LANGUAGE_NAME: Record<PlanLocale, string> = { uk: 'українською', ru: 'російською' };
+/** Data names (zones, styles, categories) in the prompt language. */
+function dataText(text: string, locale: PlanLocale): string {
+  return locale === 'ru' ? (DATA_RU[text] ?? text) : text;
+}
 
+/**
+ * Field-by-field guide for open models (Workers AI), which otherwise return vague or empty fields.
+ * Written in the answer language: a Ukrainian prompt pulls the model back into Ukrainian.
+ */
 export function buildOpenModelGuide(locale: PlanLocale = 'uk'): string {
-  const lang = LANGUAGE_NAME[locale];
+  if (locale === 'ru') {
+    return [
+      'ФОРМАТ ОТВЕТА (обязательно для каждого поля):',
+      '- zone_label: название комнаты или угла по-русски, 2–5 слов, например «Диванная зона в гостиной».',
+      '- current_style: 2–5 слов по-русски о том, как выглядит пространство сейчас, например «Современный со случайным декором». Не пиши id стиля.',
+      '- suggested_style_id: только один id из списка стилей.',
+      '- palette: 3–5 цветов #RRGGBB, которые видны на фото.',
+      '- materials: 2–5 названий материалов словами (дерево, лён, металл, керамика). Не цвета.',
+      '- noise_level: число 0–100. noise_comment: одно предложение о том, что именно создаёт шум, обязательно не пустое.',
+      '- problems: 3–5 конкретных вещей с фото, каждая с названием предмета и местом («три пульта на журнальном столике»).',
+      '- remove: 2–4 пункта, что убрать с глаз. rearrange: 2–4 пункта, что переставить и куда. use_owned: 2–4 пункта, как использовать то, что уже есть на фото.',
+      '- steps: ровно 5 шагов. title: действие с конкретным предметом, 4–8 слов. description: 1–2 предложения, что именно сделать и где. impact: что изменится. Первые шаги бесплатные, покупки в конце.',
+      '- shopping: 2–4 объекта {category, why}. category только из перечня категорий магазинов (например "organizers", "table-lamps", "wall-art") и только из тех, что подходят зоне с фото. why: одно предложение по-русски о том, что изменится именно здесь.',
+      '- summary: 2 предложения, первое о главном впечатлении, второе о самом важном шаге.',
+      '',
+      'ПРИМЕР УРОВНЯ КОНКРЕТНОСТИ:',
+      'Плохо: title «Добавить освещение», description «Добавить дополнительное освещение».',
+      'Хорошо: title «Поставь лампу на тумбу слева от дивана», description «Вечером выключи люстру и оставь лампу на уровне глаз, чтобы свет падал на зону чтения, а не на потолок.»',
+    ].join('\n');
+  }
   return [
     'ФОРМАТ ВІДПОВІДІ (обов’язково для кожного поля):',
-    `- zone_label: назва кімнати або кута ${lang}, 2–5 слів, наприклад «Диванна зона у вітальні».`,
-    `- current_style: 2–5 слів ${lang} про те, як виглядає простір зараз, наприклад «Сучасний із випадковим декором». Не пиши id стилю.`,
+    '- zone_label: назва кімнати або кута українською, 2–5 слів, наприклад «Диванна зона у вітальні».',
+    '- current_style: 2–5 слів українською про те, як виглядає простір зараз, наприклад «Сучасний із випадковим декором». Не пиши id стилю.',
     '- suggested_style_id: лише один id зі списку стилів.',
     '- palette: 3–5 кольорів #RRGGBB, які видно на фото.',
     '- materials: 2–5 назв матеріалів словами (дерево, льон, метал, кераміка). Не кольори.',
@@ -148,7 +175,7 @@ export function buildOpenModelGuide(locale: PlanLocale = 'uk'): string {
     '- problems: 3–5 конкретних речей з фото, кожна з назвою предмета і місцем («три пульти на журнальному столику»).',
     '- remove: 2–4 пункти, що прибрати з виду. rearrange: 2–4 пункти, що переставити і куди. use_owned: 2–4 пункти, як використати те, що вже є на фото.',
     '- steps: рівно 5 кроків. title: дія з конкретним предметом, 4–8 слів. description: 1–2 речення, що саме зробити і де. impact: що зміниться. Перші кроки безкоштовні, покупки в кінці.',
-    `- shopping: 2–4 об’єкти {category, why}. category лише з переліку категорій магазинів (наприклад "organizers", "table-lamps", "wall-art") і лише з тих, що пасують зоні з фото. why: одне речення ${lang} про те, що зміниться саме тут.`,
+    '- shopping: 2–4 об’єкти {category, why}. category лише з переліку категорій магазинів (наприклад "organizers", "table-lamps", "wall-art") і лише з тих, що пасують зоні з фото. why: одне речення українською про те, що зміниться саме тут.',
     '- summary: 2 речення, перше про головне враження, друге про найважливіший крок.',
     '',
     'ПРИКЛАД РІВНЯ КОНКРЕТНОСТІ:',
@@ -161,14 +188,43 @@ export function budgetLimitFor(budgetId: string): number {
   return (BUDGET_TIERS.find((b) => b.id === budgetId) ?? BUDGET_TIERS[1]).limit;
 }
 
-/** Stable system prompt (identical for every request, so it can be cached). */
+/** Stable system prompt per language (identical for every request in that language, so it can be cached). */
 export function buildSystemPrompt(locale: PlanLocale = 'uk'): string {
-  const zones = ZONES.map((z) => `${z.id} = ${z.name} (${z.description})`).join('; ');
-  const styles = STYLES.map((s) => `${s.id} = ${s.name} (${s.uaName})`).join('; ');
-  const shopCategories = SHOP_CATEGORIES.map((c) => `${c.id} = ${c.name}: ${c.hint}`).join('; ');
+  const zones = ZONES.map((z) => `${z.id} = ${dataText(z.name, locale)} (${dataText(z.description, locale)})`).join('; ');
+  const styles = STYLES.map((s) => `${s.id} = ${s.name} (${dataText(s.uaName, locale)})`).join('; ');
+  const shopCategories = SHOP_CATEGORIES.map((c) => `${c.id} = ${dataText(c.name, locale)}: ${dataText(c.hint, locale)}`).join('; ');
   const zoneShopping = Object.entries(ZONE_SHOP_DEFAULTS)
     .map(([zoneId, ids]) => `${zoneId}: ${ids.join(', ')}`)
     .join('; ');
+
+  if (locale === 'ru') {
+    return [
+      'Ты стилист интерьера сервиса HomeEstet. Пользователь присылает фото угла или комнаты своего дома, а ты составляешь честный, конкретный и доброжелательный план изменений, который опирается на то, что реально видно на фото.',
+      '',
+      'Принципы HomeEstet:',
+      '1. Сначала используй то, что уже есть. Большинство шагов должны быть о том, что убрать, переставить, сгруппировать, а не купить.',
+      '2. Покупай только то, что действительно изменит пространство: две-четыре категории вещей, часто хватает одной-двух.',
+      '3. Все покупки вместе должны укладываться в бюджет пользователя. Никогда не превышай лимит.',
+      '4. Никакого ремонта. Если жильё съёмное: без сверления, покраски и замены мебели владельца.',
+      '',
+      'Правила ответа:',
+      '- Пиши по-русски, обращайся на «ты», тепло и без снисходительности. Все текстовые поля (zone_label, current_style, noise_comment, problems, remove, rearrange, use_owned, steps, shopping.why, summary) только по-русски. Идентификаторы (zone_id, suggested_style_id, shopping.category) остаются как в схеме.',
+      '- Ссылайся на конкретные предметы с фото («плед на спинке дивана», «коробки на верхней полке»). Не выдумывай вещей, которых не видно.',
+      '- problems: 2–5 вещей, которые больше всего мешают пространству выглядеть спокойно. remove, rearrange, use_owned: по 1–5 коротких пунктов.',
+      '- steps: ровно 5 шагов в порядке выполнения, от бесплатных к покупкам. title до 8 слов, description 1–2 предложения, impact: что изменится.',
+      '- noise_level: 0 означает идеально спокойное пространство, 100 означает сплошной визуальный хаос.',
+      '- palette: 3–5 цветов в формате #RRGGBB, которые действительно есть на фото.',
+      '- shopping: 2–4 категории вещей из перечня ниже, которые действительно помогут именно этому углу. Выбирай под зону и под то, чего на фото не хватает: для рабочего стола это органайзеры, настольная лампа, полка или постер, а не плед; для кухни банки, рейлинг, поднос; для прихожей крючки, зеркало, корзина. Ниже есть типичные категории для каждой зоны, отходи от них только когда на фото видна другая потребность. Пользователь увидит несколько реальных товаров разной цены для каждой категории, поэтому выбирай категорию, а не конкретную вещь. why: одно предложение о том, что изменится именно здесь. Не предлагай категорию, если такой вещи на фото уже достаточно.',
+      '- budget_min и budget_max: реалистичная вилка в гривнах для воплощения всего плана (0, если покупать ничего не нужно).',
+      '- summary: 2 предложения о главном впечатлении и главном шаге.',
+      '- Если на фото не интерьер или комнаты не видно: is_interior = false, zone_id = "other", в summary коротко объясни, что нужно сфотографировать, остальные поля заполни пустыми списками или нейтральными значениями.',
+      '',
+      `Зоны (zone_id): ${zones}.`,
+      `Стили (suggested_style_id): ${styles}.`,
+      `Категории магазинов (shopping.category): ${shopCategories}.`,
+      `Типичные категории для зон: ${zoneShopping}.`,
+    ].join('\n');
+  }
 
   return [
     'Ти стиліст інтер’єру сервісу HomeEstet. Користувач надсилає фото кута або кімнати свого дому, а ти складаєш чесний, конкретний і доброзичливий план змін, який спирається на те, що реально видно на фото.',
@@ -180,9 +236,7 @@ export function buildSystemPrompt(locale: PlanLocale = 'uk'): string {
     '4. Жодного ремонту. Якщо це орендоване житло: без свердління, фарбування і заміни меблів власника.',
     '',
     'Правила відповіді:',
-    locale === 'ru'
-      ? '- МОВА ВІДПОВІДІ: російська. Усі текстові поля (zone_label, current_style, noise_comment, problems, remove, rearrange, use_owned, steps, shopping.why, summary) пиши російською, звертайся на «ты», тепло і без зверхності. Ідентифікатори (zone_id, suggested_style_id, shopping.category) лишаються як у схемі.'
-      : '- Пиши українською, звертайся на «ти», тепло і без зверхності.',
+    '- Пиши українською, звертайся на «ти», тепло і без зверхності.',
     '- Посилайся на конкретні предмети з фото («плед на спинці дивана», «коробки на верхній полиці»). Не вигадуй речей, яких не видно.',
     '- problems: 2–5 речей, які найбільше заважають простору виглядати спокійно. remove, rearrange, use_owned: по 1–5 коротких пунктів.',
     '- steps: рівно 5 кроків у порядку виконання, від безкоштовних до покупок. title до 8 слів, description 1–2 речення, impact: що зміниться.',
@@ -203,19 +257,25 @@ export function buildSystemPrompt(locale: PlanLocale = 'uk'): string {
 /** Per-request text that accompanies the image. */
 export function buildUserPrompt(params: AnalyzeParams): string {
   const tier = BUDGET_TIERS.find((b) => b.id === params.budgetId) ?? BUDGET_TIERS[1];
+  const note = (params.note ?? '').trim().slice(0, 300);
+  if (params.locale === 'ru') {
+    const lines = [
+      `Бюджет пользователя: ${tier.label}, лимит ${tier.limit} ₴.`,
+      params.rental
+        ? 'Жильё съёмное: без сверления, покраски и замены мебели владельца.'
+        : 'Жильё собственное, небольшие изменения без ремонта допустимы.',
+    ];
+    if (note) lines.push(`Комментарий пользователя: «${note}».`);
+    lines.push('Проанализируй фото и составь план по схеме. Весь текст ответа по-русски.');
+    return lines.join('\n');
+  }
   const lines = [
     `Бюджет користувача: ${tier.label}, ліміт ${tier.limit} ₴.`,
     params.rental
       ? 'Житло орендоване: без свердління, фарбування та заміни меблів власника.'
       : 'Житло власне, невеликі зміни без ремонту допустимі.',
   ];
-  const note = (params.note ?? '').trim().slice(0, 300);
   if (note) lines.push(`Коментар користувача: «${note}».`);
-  if (params.locale === 'ru') {
-    lines.push(
-      'Мова відповіді: російська. Усі текстові поля (zone_label, current_style, noise_comment, problems, remove, rearrange, use_owned, steps, shopping.why, summary) пиши російською, звертайся на «ты». Ідентифікатори (zone_id, suggested_style_id, shopping.category) лишаються як у схемі.'
-    );
-  }
   lines.push('Проаналізуй фото і склади план за схемою.');
   return lines.join('\n');
 }
