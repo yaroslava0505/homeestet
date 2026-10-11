@@ -12,13 +12,15 @@ export type Locale = 'uk' | 'ru';
 /** The few browser globals this module touches, typed locally so the Workers build (no DOM lib) compiles too. */
 interface BrowserGlobals {
   window?: {
-    location: { pathname: string; search: string; assign: (url: string) => void };
+    location: { pathname: string; search: string; origin: string; assign: (url: string) => void };
     localStorage?: { getItem: (key: string) => string | null; setItem: (key: string, value: string) => void };
   };
   document?: {
     documentElement: { lang: string };
     title: string;
     querySelector: (selector: string) => { setAttribute: (name: string, value: string) => void } | null;
+    createElement: (tag: string) => { setAttribute: (name: string, value: string) => void };
+    head: { appendChild: (node: unknown) => void };
   };
 }
 const browser = globalThis as unknown as BrowserGlobals;
@@ -79,6 +81,15 @@ export function initLocale(pathname: string): string | null {
   const doc = browser.document;
   if (doc) {
     doc.documentElement.lang = current;
+    // Tell search engines about the other language of this page.
+    const origin = browser.window?.location.origin ?? '';
+    for (const locale of LOCALES) {
+      const link = doc.createElement('link');
+      link.setAttribute('rel', 'alternate');
+      link.setAttribute('hreflang', locale);
+      link.setAttribute('href', origin + withLocale(stripLocale(pathname), locale));
+      doc.head.appendChild(link);
+    }
     if (current === 'ru') {
       doc.title = t('HOMEESTET — Сервіс для створення естетичного та затишного дому');
       doc
