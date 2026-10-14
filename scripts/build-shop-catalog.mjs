@@ -7,11 +7,13 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const SOURCES = ['sinsay', 'epicentr', 'bi'];
+const SOURCES = ['sinsay', 'epicentr', 'bi', 'answear'];
 const OUT = path.join(ROOT, 'src/data/shopCatalog.ts');
 
-const TARGET_PER_CATEGORY = 14;
-const MAX_PER_STORE_PER_CATEGORY = { sinsay: 7, epicentr: 14, bi: 14 };
+const TARGET_PER_CATEGORY = 16;
+// Smaller stores would never win a slot against the two big ones, so each gets a guaranteed share first.
+const RESERVED_PER_STORE = { answear: 3, bi: 3 };
+const MAX_PER_STORE_PER_CATEGORY = { sinsay: 7, epicentr: 14, bi: 14, answear: 4 };
 const MIN_PRICE = 40;
 const PRICE_BANDS = [250, 600, 1200, Infinity];
 
@@ -72,6 +74,20 @@ const MAP = {
     palatki: (name) => (/намет|вігвам|будиночок/i.test(name) ? 'play-tents' : null),
     'myaki-ihrashky-podushky': (name) => (/подушка/i.test(name) ? 'toy-pillows' : null),
   },
+  answear: {
+    'kovdry-ta-pledy': 'throws',
+    podushky: 'pillows',
+    'kartyny-ta-postery': 'wall-art',
+    dzerkala: 'mirrors',
+    lamps: 'table-lamps',
+    girlyandy: 'garlands',
+    organajzery: 'organizers',
+    vishalky: 'hooks',
+    vazy: 'vases',
+    svichnyky: 'candle-holders',
+    godynnyky: 'clocks',
+    svichky: 'candles',
+  },
 };
 
 /** Seasonal, children's and off-topic items never make good "variants". */
@@ -96,8 +112,8 @@ for (const store of SOURCES) {
     const price = Math.round(Number(raw.price));
     if (!name || !Number.isFinite(price) || price < MIN_PRICE) continue;
     if (!/^https:\/\//.test(raw.url) || !/^https:\/\//.test(raw.image)) continue;
-    // The toy store is children's by definition: only its own off-topic items are filtered.
-    if (store === 'bi' ? BI_EXCLUDE.test(name) : EXCLUDE.test(name)) continue;
+    // The toy store is children's by definition, and Answear's home section is already curated.
+    if (store === 'bi' ? BI_EXCLUDE.test(name) : store === 'answear' ? false : EXCLUDE.test(name)) continue;
     const item = { id: `shop-${store}-${sha(raw.url)}`, name, category, price, store, url: raw.url, image: raw.image };
     if (raw.rating) item.rating = Number(raw.rating);
     if (raw.reviews) item.reviews = Number(raw.reviews);
@@ -117,7 +133,7 @@ const unique = candidates.filter((p) => {
 });
 
 const bandOf = (price) => PRICE_BANDS.findIndex((limit) => price < limit);
-const storeRank = { sinsay: 0, epicentr: 1, bi: 2 };
+const storeRank = { sinsay: 0, epicentr: 1, bi: 2, answear: 3 };
 const byPreference = (a, b) =>
   storeRank[a.store] - storeRank[b.store] || (b.reviews ?? 0) - (a.reviews ?? 0) || a.price - b.price;
 
@@ -128,7 +144,18 @@ for (const category of CATEGORY_IDS) {
   const bands = PRICE_BANDS.map(() => []);
   for (const p of pool) bands[bandOf(p.price)].push(p);
   const picked = [];
-  const perStore = { sinsay: 0, epicentr: 0, bi: 0 };
+  const perStore = { sinsay: 0, epicentr: 0, bi: 0, answear: 0 };
+
+  // Reserved slots first: the cheapest items of each small store, so its range is always represented.
+  for (const [store, reserve] of Object.entries(RESERVED_PER_STORE)) {
+    const own = pool.filter((p) => p.store === store).sort((a, b) => a.price - b.price).slice(0, reserve);
+    for (const p of own) {
+      bands[bandOf(p.price)] = bands[bandOf(p.price)].filter((x) => x !== p);
+      perStore[store] += 1;
+      picked.push(p);
+    }
+  }
+
   // Round-robin across price bands so the cheap and the upper range are both represented.
   while (picked.length < TARGET_PER_CATEGORY && bands.some((b) => b.length)) {
     for (const band of bands) {
@@ -144,7 +171,7 @@ for (const category of CATEGORY_IDS) {
   }
   picked.sort((a, b) => a.price - b.price);
   selected.push(...picked);
-  report.push(`${category.padEnd(15)} ${String(picked.length).padStart(2)} items  ${picked[0]?.price ?? '-'}–${picked.at(-1)?.price ?? '-'} ₴  sinsay ${perStore.sinsay}, epicentr ${perStore.epicentr}, bi ${perStore.bi}`);
+  report.push(`${category.padEnd(15)} ${String(picked.length).padStart(2)} items  ${picked[0]?.price ?? '-'}–${picked.at(-1)?.price ?? '-'} ₴  sinsay ${perStore.sinsay}, epicentr ${perStore.epicentr}, bi ${perStore.bi}, answear ${perStore.answear}`);
 }
 
 const header = [

@@ -384,7 +384,7 @@ export interface SavedPhotoPlan {
   plan: PhotoPlan;
 }
 
-export type ShopStore = 'sinsay' | 'epicentr' | 'bi';
+export type ShopStore = 'sinsay' | 'epicentr' | 'bi' | 'answear';
 
 /** A real product from a partner store (generated catalogue in src/data/shopCatalog.ts). */
 export interface ShopProduct {

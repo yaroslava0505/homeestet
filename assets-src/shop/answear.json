@@ -1,0 +1,329 @@
+{
+"store": "answear",
+"collected": "2026-10-14",
+"note": "Answear.ua, розділ «Дім». Зібрано вручну з DOM сторінок категорій у Chrome (сайт закритий для curl). Партнерське посилання Admitad у src/lib/shop.ts. Ціни преміального рівня, тому товари підходять переважно для бюджетів від 1 000 ₴.",
+"items": [
+{
+"cat": "kovdry-ta-pledy",
+"name": "Bloomingville Покривало Nann 100 x 80 см, коричневе",
+"price": 539,
+"image": "https://img2.ans-media.com/i/350x530/AA00-TEU0DR_88X_F1.jpg",
+"url": "https://answear.ua/p/pokryvalo-bloomingville-nann-100-x-80-cm-kolir-korychnevyj-0-835331"
+},
+{
+"cat": "kovdry-ta-pledy",
+"name": "Bloomingville Ковдра Frello 160 x 130 см, помаранчева",
+"price": 839,
+"image": "https://img2.ans-media.com/i/350x530/AA00-PLU00T-32X_F1.webp",
+"url": "https://answear.ua/p/kovdra-bloomingville-frello-160-x-130-cm-kolir-pomaranchevyj-1517638"
+},
+{
+"cat": "kovdry-ta-pledy",
+"name": "Au Maison Бавовняна ковдра 130 x 180 см",
+"price": 839,
+"image": "https://img2.ans-media.com/i/350x530/AA00-TEU24N-MLC_F1.jpg",
+"url": "https://answear.ua/p/bavovnyana-kovdra-au-maison-130-x-180-cm-1249833"
+},
+{
+"cat": "kovdry-ta-pledy",
+"name": "Au Maison Бавовняна ковдра 130 x 170 см",
+"price": 839,
+"image": "https://img2.ans-media.com/i/350x530/AA00-TEU24H-MLC_F1.jpg",
+"url": "https://answear.ua/p/bavovnyana-kovdra-au-maison-130-x-170-cm-1249860"
+},
+{
+"cat": "kovdry-ta-pledy",
+"name": "Calma House Ковдра Tedy 90 x 120 см, рожева",
+"price": 839,
+"image": "https://img2.ans-media.com/i/350x530/AA00-PLU025-39X_F1.webp",
+"url": "https://answear.ua/p/kovdra-calma-house-tedy-90-x-120-cm-kolir-rozhevyj-1494738"
+},
+{
+"cat": "kovdry-ta-pledy",
+"name": "Bloomingville Ковдра з бавовною 160 x 130 см",
+"price": 839,
+"image": "https://img2.ans-media.com/i/350x530/AA00-PLU00S-MLC_F1.webp",
+"url": "https://answear.ua/p/bloomingville-kovdra-z-bavovnoyu-160-x-130-cm-1522455"
+},
+{
+"cat": "podushky",
+"name": "Medicine Декоративна подушка, коричнева",
+"price": 219,
+"image": "https://img2.ans-media.com/i/350x530/RW25-PSU630-88X_F1.webp",
+"url": "https://answear.ua/p/dekoratyvna-podushka-medicine-kolir-korychnevyj-1638157"
+},
+{
+"cat": "podushky",
+"name": "Medicine Декоративна наволочка для подушки",
+"price": 219,
+"image": "https://img2.ans-media.com/i/350x530/RS26-PSU407-MLA_F1.webp",
+"url": "https://answear.ua/p/dekoratyvna-navolochka-dlya-podushky-medicine-1718088"
+},
+{
+"cat": "podushky",
+"name": "Medicine Декоративна наволочка для подушки, бежева",
+"price": 329,
+"image": "https://img2.ans-media.com/i/350x530/RW25-PSU402-01A_F0.jpg",
+"url": "https://answear.ua/p/dekoratyvna-navolochka-dlya-podushky-medicine-kolir-bezhevyj-1596801"
+},
+{
+"cat": "podushky",
+"name": "Medicine Декоративна наволочка для подушки, фіолетова",
+"price": 329,
+"image": "https://img2.ans-media.com/i/350x530/RS26-PSU409-45A_F0.jpg",
+"url": "https://answear.ua/p/dekoratyvna-navolochka-dlya-podushky-medicine-kolir-fioletovyj-1721344"
+},
+{
+"cat": "podushky",
+"name": "Calma House Декоративна наволочка Berlin",
+"price": 599,
+"image": "https://img2.ans-media.com/i/350x530/AA00-PSU001-MLC_F1.webp",
+"url": "https://answear.ua/p/dekoratyvna-navolochka-dlya-podushky-calma-house-berlin-1407362"
+},
+{
+"cat": "podushky",
+"name": "Calma House Декоративна наволочка Berlin, зелена",
+"price": 599,
+"image": "https://img2.ans-media.com/i/350x530/AA00-PSU004-77X_F1.webp",
+"url": "https://answear.ua/p/dekoratyvna-navolochka-dlya-podushky-calma-house-berlin-kolir-zelenyj-1407324"
+},
+{
+"cat": "kartyny-ta-postery",
+"name": "House Doctor Підвісний декор HDHumi 8,5 x 12,5 см",
+"price": 479,
+"image": "https://img2.ans-media.com/i/350x530/AA00-OAU04S-MLC_F1.webp",
+"url": "https://answear.ua/p/pidvisnyj-dekor-house-doctor-hdhumi-8-5-x-12-5-cm-1569652"
+},
+{
+"cat": "kartyny-ta-postery",
+"name": "Bloomingville Декорація настінна, 2 шт",
+"price": 589,
+"image": "https://img2.ans-media.com/i/350x530/AA00-DEU3B4-MLC_F1.jpg",
+"url": "https://answear.ua/p/dekoratsiya-nastinna-bloomingville-2-pack-1067148"
+},
+{
+"cat": "kartyny-ta-postery",
+"name": "Vissevasse Плакат The Zookeeper 30 x 40 см",
+"price": 629,
+"image": "https://img2.ans-media.com/i/350x530/AA00-DEU0GP_MLC_F1.jpg",
+"url": "https://answear.ua/p/vissevasse-plakat-the-zookeeper-30x40-cm-678541"
+},
+{
+"cat": "kartyny-ta-postery",
+"name": "Vissevasse Плакат It's All About Love 30 x 40 см",
+"price": 629,
+"image": "https://img2.ans-media.com/i/350x530/AA00-DEU0H2_MLC_F1.jpg",
+"url": "https://answear.ua/p/vissevasse-plakat-its-all-about-love-30x40-cm-678551"
+},
+{
+"cat": "kartyny-ta-postery",
+"name": "Vissevasse Плакат The Astronaut 30 x 40 см",
+"price": 629,
+"image": "https://img2.ans-media.com/i/350x530/AA00-DEU0GS_MLC_F1.jpg",
+"url": "https://answear.ua/p/vissevasse-plakat-the-astronaut-30x40-cm-678543"
+},
+{
+"cat": "dzerkala",
+"name": "AYTM Настінне дзеркало Unity",
+"price": 829,
+"image": "https://img2.ans-media.com/i/350x530/AA00-DEU2TR-MLC_F1.jpg",
+"url": "https://answear.ua/p/nastinne-dzerkalo-aytm-unity-983295"
+},
+{
+"cat": "dzerkala",
+"name": "House Doctor Настінне дзеркало Diamond 16 x 22 см",
+"price": 959,
+"image": "https://img2.ans-media.com/i/350x530/AA00-LAU013-TSP_F1.webp",
+"url": "https://answear.ua/p/nastinne-dzerkalo-house-doctor-diamond-16-x-22-cm-kolir-prozoryj-1573651"
+},
+{
+"cat": "dzerkala",
+"name": "AYTM Настінне дзеркало Unity",
+"price": 1159,
+"image": "https://img2.ans-media.com/i/350x530/AA00-DEU2TS-18X_F1.jpg",
+"url": "https://answear.ua/p/nastinne-dzerkalo-aytm-unity-983349"
+},
+{
+"cat": "dzerkala",
+"name": "House Nordic Настінне дзеркало Jersey",
+"price": 1199,
+"image": "https://img2.ans-media.com/i/350x530/AA00-DEU48F-18X_F1.jpg",
+"url": "https://answear.ua/p/nastinne-dzerkalo-house-nordic-jersey-1129802"
+},
+{
+"cat": "dzerkala",
+"name": "vtwonen Настінне дзеркало",
+"price": 1399,
+"image": "https://img2.ans-media.com/i/350x530/AA00-DEU34Z-18X_F1.jpg",
+"url": "https://answear.ua/p/nastinne-dzerkalo-vtwonen-1015324"
+},
+{
+"cat": "lamps",
+"name": "Rice Світлодіодна лампа Dino Design",
+"price": 479,
+"image": "https://img2.ans-media.com/i/350x530/AA00-OSU0OM-MLC_F1.jpg",
+"url": "https://answear.ua/p/svitlodiodna-lampa-rice-dino-design-1141088"
+},
+{
+"cat": "lamps",
+"name": "Lexon Світлодіодна лампа-кліпса Lucie",
+"price": 639,
+"image": "https://img2.ans-media.com/i/350x530/AA00-OSU0NC-55X_F1.jpg",
+"url": "https://answear.ua/p/svitlodiodna-klipsa-lexon-lucie-1167899"
+},
+{
+"cat": "lamps",
+"name": "Balvi Нічник LED Starman",
+"price": 709,
+"image": "https://img2.ans-media.com/i/350x530/AA00-OSU0PZ-00X_F1.jpg",
+"url": "https://answear.ua/p/nichnyk-led-balvi-starman-1181148"
+},
+{
+"cat": "girlyandy",
+"name": "Sirius Світловий ланцюг Knirke, 80 LED",
+"price": 669,
+"image": "https://img2.ans-media.com/i/350x530/AA00-OSU0ST-77X_F1.jpg",
+"url": "https://answear.ua/p/svitlovyj-lantsyug-sirius-knirke-80l-1213591"
+},
+{
+"cat": "girlyandy",
+"name": "Sirius Світловий ланцюг Kiki, 300 LED",
+"price": 679,
+"image": "https://img2.ans-media.com/i/350x530/AA00-OSU0SR-77X_F1.jpg",
+"url": "https://answear.ua/p/svitlovyj-lantsyug-sirius-kiki-300-led-4m-3m-1213563"
+},
+{
+"cat": "organajzery",
+"name": "Medicine Органайзер",
+"price": 369,
+"image": "https://img2.ans-media.com/i/350x530/RW26-JEU411-MLA_F1.avif",
+"url": "https://answear.ua/p/medicine-organajzer-1888448"
+},
+{
+"cat": "organajzery",
+"name": "Medicine Органайзер",
+"price": 369,
+"image": "https://img2.ans-media.com/i/350x530/RW26-JEU409-MLA_F1.avif",
+"url": "https://answear.ua/p/medicine-organajzer-1888439"
+},
+{
+"cat": "organajzery",
+"name": "Medicine Органайзер",
+"price": 369,
+"image": "https://img2.ans-media.com/i/350x530/RW26-JEU302-MLA_F1.avif",
+"url": "https://answear.ua/p/medicine-organajzer-1888450"
+},
+{
+"cat": "vishalky",
+"name": "Medicine Вішалка настінна з металу",
+"price": 219,
+"image": "https://img2.ans-media.com/i/350x530/RS26-DEU219-GLX_F1.avif",
+"url": "https://answear.ua/p/medicine-vishalka-nastinna-z-metalu-1763401"
+},
+{
+"cat": "vishalky",
+"name": "Medicine Вішалка настінна із зістареного металу",
+"price": 329,
+"image": "https://img2.ans-media.com/i/350x530/RS26-DEU207-GLX_F1.avif",
+"url": "https://answear.ua/p/medicine-vishalka-nastinna-iz-zistarenogo-metalu-1769431"
+},
+{
+"cat": "vazy",
+"name": "Medicine Ваза декоративна з доломіту",
+"price": 219,
+"image": "https://img2.ans-media.com/i/350x530/RW26-DEU300-MLA_F1.avif",
+"url": "https://answear.ua/p/medicine-vaza-dekoratsijna-z-dolomitu-1775956"
+},
+{
+"cat": "vazy",
+"name": "Medicine Ваза декоративна з глини",
+"price": 329,
+"image": "https://img2.ans-media.com/i/350x530/RS26-DEU405-01X_F1.avif",
+"url": "https://answear.ua/p/medicine-vaza-dekoratsijna-z-glyny-1771107"
+},
+{
+"cat": "svichnyky",
+"name": "Medicine Декоративний свічник, зелений",
+"price": 219,
+"image": "https://img2.ans-media.com/i/350x530/RW25-DEU814-77X_F0.jpg",
+"url": "https://answear.ua/p/dekoratyvnyj-svichnyk-medicine-kolir-zelenyj-1645602"
+},
+{
+"cat": "svichnyky",
+"name": "Medicine Декоративний свічник, червоний",
+"price": 269,
+"image": "https://img2.ans-media.com/i/350x530/RW25-DEU813-33X_F0.jpg",
+"url": "https://answear.ua/p/dekoratyvnyj-svichnyk-medicine-kolir-chervonyj-1645667"
+},
+{
+"cat": "godynnyky",
+"name": "Karlsson Будильник Travel 8,5 x 8,5 см, сірий",
+"price": 619,
+"image": "https://img2.ans-media.com/i/350x530/AA00-ZEU05U-90X_F1.webp",
+"url": "https://answear.ua/p/budylnyk-karlsson-travel-8-5-x-8-5-cm-kolir-siryj-1581141"
+},
+{
+"cat": "godynnyky",
+"name": "Karlsson Будильник Gradient, зелений",
+"price": 619,
+"image": "https://img2.ans-media.com/i/350x530/AA00-ZEU04G-70X_F1.webp",
+"url": "https://answear.ua/p/budylnyk-karlsson-gradient-kolir-zelenyj-1549192"
+},
+{
+"cat": "godynnyky",
+"name": "Karlsson Будильник Gradient, жовтий",
+"price": 619,
+"image": "https://img2.ans-media.com/i/350x530/AA00-ZEU04H-10X_F1.webp",
+"url": "https://answear.ua/p/budylnyk-karlsson-gradient-kolir-zhovtyj-1549196"
+},
+{
+"cat": "godynnyky",
+"name": "Karlsson Будильник Travel",
+"price": 639,
+"image": "https://img2.ans-media.com/i/350x530/AA00-ZEU00H-MLC_F1.webp",
+"url": "https://answear.ua/p/budylnyk-karlsson-travel-1419027"
+},
+{
+"cat": "svichky",
+"name": "OYOY Свічка декоративна Fukai M, 2 шт, сіра",
+"price": 319,
+"image": "https://img2.ans-media.com/i/350x530/AA00-SIU06T-09X_F1.webp",
+"url": "https://answear.ua/p/svichka-dekoratyvna-oyoy-fukai-candles-m-2-pack-kolir-siryj-1524434"
+},
+{
+"cat": "svichky",
+"name": "Mr & Mrs Fragrance Ароматичні палички для дифузора, 7 шт",
+"price": 319,
+"image": "https://img2.ans-media.com/i/350x530/AA00-SIU06Z-30X_F1.webp",
+"url": "https://answear.ua/p/aromatychni-palychky-dlya-dyfuzora-mr-mrs-fragrance-7-pack-kolir-rozhevyj-1525129"
+},
+{
+"cat": "svichky",
+"name": "Medicine Ароматизована свічка, бордова",
+"price": 329,
+"image": "https://img2.ans-media.com/i/350x530/RW25-SCU608-83X_F1.webp",
+"url": "https://answear.ua/p/aromatyzovana-svichka-medicine-kolir-bordovyj-1650277"
+},
+{
+"cat": "svichky",
+"name": "Medicine Ароматизована свічка, бежева",
+"price": 329,
+"image": "https://img2.ans-media.com/i/350x530/RW25-SCU606-12X_F0.jpg",
+"url": "https://answear.ua/p/aromatyzovana-svichka-medicine-kolir-bezhevyj-1650272"
+},
+{
+"cat": "svichky",
+"name": "OYOY Свічка декоративна Fukai M, 2 шт, червона",
+"price": 379,
+"image": "https://img2.ans-media.com/i/350x530/AA00-SIU06W-92X_F1.webp",
+"url": "https://answear.ua/p/svichka-dekoratyvna-oyoy-fukai-candles-m-2-pack-kolir-chervonyj-1524437"
+},
+{
+"cat": "svichky",
+"name": "Aroma Home Ароматизатор для приміщень Revive 100 мл",
+"price": 409,
+"image": "https://img2.ans-media.com/i/350x530/AA00-ZAU0YE-MLC_F1.webp",
+"url": "https://answear.ua/p/aromatyzator-dlya-prymischen-aroma-home-revive-bath-oil-100-ml-1414505"
+}
+]
+}

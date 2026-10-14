@@ -27,6 +27,8 @@ npm run dev        # http://localhost:3000
 | `npm run images`    | Перегенерувати WebP з оригіналів у `assets-src/images` (потрібен `sharp`) |
 | `npm run shop`      | Зібрати `src/data/shopCatalog.ts` з `assets-src/shop/*.json` (варіанти товарів) |
 | `npm run shop:fetch`| Оновити `assets-src/shop/epicentr.json` зі сторінок категорій Епіцентру     |
+
+Магазини в каталозі: Sinsay, Епіцентр, Будинок іграшок, Answear.
 | `npm run dev:cf`    | Збірка + локальний Cloudflare Pages з функцією `/api/analyze` на :8788   |
 
 ## Аналіз фото («Фото → план»)
@@ -55,12 +57,15 @@ AnalyzePage ──prepareImage──►  POST /api/analyze (functions/api/)  ─
 у плані за фото більше не використовується (він лишається для майстра зон і статей). Каталог: `src/data/shopCatalog.ts`,
 генерується з `assets-src/shop/sinsay.json` (зібрано вручну, сайт рендериться скриптами),
 `assets-src/shop/epicentr.json` (`npm run shop:fetch` читає JSON-LD зі сторінок категорій) і
-`assets-src/shop/bi.json` (Будинок іграшок: намети та іграшки-подушки для дитячого кутка, зібрано вручну).
+`assets-src/shop/bi.json` (Будинок іграшок: намети та іграшки-подушки для дитячого кутка, зібрано вручну) і
+`assets-src/shop/answear.json` (Answear, розділ «Дім»: преміальні пледи, подушки, постери, дзеркала, свічки;
+зібрано вручну). Малі магазини мають зарезервовані місця в кожній категорії (`RESERVED_PER_STORE`), інакше
+великі каталоги витіснили б їх повністю.
 Статті теж показують товари з цього каталогу (`shopCategory` у кроках статті) і можуть мати контекстне
 партнерське посилання (`partnerLink`). Картинки
 завантажуються з CDN магазинів, у репозиторій не копіюються. Для аналізів, збережених до появи блоку, беруться
 типові категорії зони (`ZONE_SHOP_DEFAULTS`). Партнерські посилання: префікси deeplink Admitad лежать в
-`AFFILIATE_PREFIX` у `src/lib/shop.ts` (зараз підключено Будинок іграшок); нові магазини додаються одним
+`AFFILIATE_PREFIX` у `src/lib/shop.ts` (зараз підключено Будинок іграшок і Answear); нові магазини додаються одним
 рядком, каталог не змінюється. Sinsay в Admitad немає, AliExpress через Admitad веде на aliexpress.ru і
 губить товар, тому не використовується.
 

@@ -8,7 +8,7 @@ import { t } from '../i18n/index.ts';
  * is loaded on demand by the component, so these functions take it as an argument and stay pure.
  */
 
-export const STORE_NAMES: Record<ShopStore, string> = { sinsay: 'Sinsay', epicentr: t('Епіцентр'), bi: 'Будинок іграшок' };
+export const STORE_NAMES: Record<ShopStore, string> = { sinsay: 'Sinsay', epicentr: t('Епіцентр'), bi: 'Будинок іграшок', answear: 'Answear' };
 
 /**
  * Affiliate deeplink prefix per store. Empty until the partner-network account (Admitad) is approved;
@@ -16,6 +16,7 @@ export const STORE_NAMES: Record<ShopStore, string> = { sinsay: 'Sinsay', epicen
  */
 const AFFILIATE_PREFIX: Partial<Record<ShopStore, string>> = {
   bi: 'https://gndrz.com/g/1xuxd52d9o28fa5118602165fe5e9d/?ulp=',
+  answear: 'https://hxbok.com/g/h29o15jdr628fa511860a76d99edd2/?ulp=',
 };
 
 /** Store URL wrapped into the partner-network deeplink when the store has one. */

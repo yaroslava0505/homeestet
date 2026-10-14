@@ -9,6 +9,8 @@ import { STORE_NAMES } from '../lib/shop.ts';
 const STORE_HOSTS: Record<string, RegExp> = {
   sinsay: /^https:\/\/www\.sinsay\.com\/ua\/uk\//,
   epicentr: /^https:\/\/epicentrk\.ua\/ua\/shop\//,
+  bi: /^https:\/\/bi\.ua\/ukr\/product\//,
+  answear: /^https:\/\/answear\.ua\/p\//,
 };
 
 describe('partner-store catalogue', () => {
@@ -84,8 +86,14 @@ describe('variants for a plan', () => {
     expect(shoppingFor({ zoneId: 'sofa', isInterior: true, shopping: own })).toBe(own);
   });
 
-  it('store links are plain product URLs until an affiliate prefix is configured', () => {
-    const p = SHOP_CATALOG[0];
-    expect(storeLink(p)).toBe(p.url);
+  it('wraps links of partner-network stores and leaves the others as plain product URLs', () => {
+    for (const store of ['bi', 'answear'] as const) {
+      const p = SHOP_CATALOG.find((x) => x.store === store)!;
+      const link = storeLink(p);
+      expect(link, store).toMatch(/^https:\/\/[a-z]+\.com\/g\/[a-z0-9]+\/\?ulp=/);
+      expect(decodeURIComponent(link.split('?ulp=')[1]), store).toBe(p.url);
+    }
+    const plain = SHOP_CATALOG.find((x) => x.store === 'sinsay')!;
+    expect(storeLink(plain)).toBe(plain.url);
   });
 });
